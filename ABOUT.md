@@ -2,6 +2,8 @@
 
 **Visual Alchemist** is a web app to seamlessly create `sqlalchemy` models by dragging/dropping objects in a canvas.
 
+[!Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenAddTable.png)
+
 ### The Stack
 
 VA is built using `Twitter-Bootstrap` and `jQuery` on the front-end.
@@ -14,3 +16,4 @@ However, Support is added for `Flask and sqlalchemy` on the backend, so it can a
 - [sqlalchemy](http://docs.sqlalchemy.org), the outstanding ORM that takes care of all the *low level details* for us.
 - [Twitter-Bootstrap](http://getbootstrap.com), for being the Backend Developer's sole guide and confidant in the CSS Jungle.
 - [jQuery](http://jquery.com), who made people fall in love with JavaScript once again.
+- [Alex Gorbatchev](http://alexgorbatchev.com/SyntaxHighlighter/) for providing the very useful Syntax Highlighter tool.

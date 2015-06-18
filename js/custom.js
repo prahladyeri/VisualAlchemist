@@ -99,10 +99,10 @@ Base = declarative_base()\n\n";
 }
 
 function showResultsDialog() {
-	/*if (Object.keys(tables).length==0) {
+	if (Object.keys(tables).length==0) {
 		alert("There should be at least one table");
 		return;
-	}*/
+	}
 	if ($("#resultsDialog").length==0) {
 		$("#holder").load("assets/partials/resultsDialog.html?time=" + (new Date()).getTime(), function(){
 			runResultsDialog();
@@ -117,6 +117,7 @@ function runResultsDialog() {
 	dbname = 'sql00' + parseInt(Math.random() * 4000 + 9999);
 	var code = generateCode(dbname);
 	$("#resultsDialog #theCode").text(code);
+	SyntaxHighlighter.highlight('pre');
 	$("#resultsDialog").modal();
 }
 
