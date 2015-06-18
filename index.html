@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<!-- 
+* @author: Prahlad Yeri
+* @copyright: MIT License
+* @brief: App to create sqlalchemy models from scratch.
+* @date: 26-04-2015
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visual Alchemist</title>
+<link rel='stylesheet' href='css/bootstrap.min.css' />
+
+<link rel="icon" href="img/valchemist.png">
+<!--link rel='stylesheet' href='fullcalendar/fullcalendar.css' />
+<link rel='stylesheet' media='print' href='fullcalendar/fullcalendar.print.css' /-->
+<link rel='stylesheet' href='css/custom.css' />
+
+<script src='lib/jquery.min.js'></script>
+<script src='lib/bootstrap.min.js'></script>
+<!--script src='fullcalendar/lib/moment.min.js'></script>
+<script src='fullcalendar/fullcalendar.js'></script-->
+<script src='js/classes.js'></script>
+<script src='js/custom.js'></script>
+</head>
+<body >
+
+	<script type="text/javascript">
+		$(window).load(function(){
+			this.version = 1.34;
+			$(".navbar-brand").text($(".navbar-brand").text() +  " v" + window.version);
+		});
+	</script>
+	
+	  <img width="70px;" style="position:absolute;margin-left:10px;" src="img/valchemist.png"></img>
+
+<nav class="header navbar navbar-inverse" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+	
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Visual Alchemist</a>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li ><a href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a></li>
+        <li><a href="#" onclick="tables={}; $('.tableDesign').remove();">Clear All</a></li>
+        <li><a href="javascript:" onclick="showResultsDialog();">Generate Models</a></li>
+        <!--li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li-->
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Help</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Links <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Github Project</a></li>
+            <li class="divider"></li>
+            <li><a href="#">About Visual Alchemist</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+	
+
+	<div class="container">
+		<div class="row">
+				<div class="col-md-12 canvas" style="position:relative;height:500px;background:rgb(247, 247, 236);" ondragover="dragOver(event)" ondrop="drop(event)" >
+				<div class="mainAlert col-md-push-3 col-md-6 alert alert-info alert-dismissible" role="alert">
+				  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				  <strong>How to:</strong> Just click the <a class="alert-link" href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a> link above to get started.
+				  Once done, simply click the <strong>Generate Models</strong> button to generate the code!
+				</div>
+					<div hidden id="dragme" style="position:absolute" class="panel panel-primary tableDesign" draggable="true" ondragstart="drag(event)">
+						  <div style="cursor:move" class="panel-heading">dummy
+							<button title="Delete" style="margin-top: -4px; float:right; cursor:pointer;" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+							<button title="Edit" style="margin-top: -4px; float:right; cursor:pointer;" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-edit"></span></button>
+						  </div>
+						  <!-- Table -->
+						  <table class="table">
+							<tr>
+								<td>id</td>
+								<td>varchar2</td>
+								<td>primary</td>
+							</tr>
+							<tr>
+								<td>username</td>
+								<td>text</td>
+								<td>unique</td>
+							</tr>
+						  </table>
+
+						</div>
+				</div>
+		</div>
+	</div>
+	<div id="holder"></div>
+	
+<nav class="navbar navbar-default  navbar-fixed-bottom  footer" role="navigation">
+  <div class="container">
+	<div class="row">
+		<div class="col-md-12" >
+				<p style="margin-top: 12px;">&copy; Prahlad Yeri 2015. Code licensed under MIT, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+		</div>
+	</div>
+  </div>
+</nav>
+	
+</body>
+</html>

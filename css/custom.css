@@ -1,0 +1,19 @@
+body {
+	font-family: verdana;
+}
+h2 {
+	text-align: center;
+}
+
+/*.container {
+	background: grey;
+}
+
+.panel.tableDesign {
+	width: 200px;
+}*/
+
+nav.header {
+	margin-left: 100px;
+	margin-right: 100px;
+}
