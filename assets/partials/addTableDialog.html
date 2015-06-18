@@ -121,6 +121,14 @@ function setThePanel(table, mode) {
 		});
 		$('#tbl' + table.name + " .table").append(html);
 		
+		$("#tbl" + table.name + " tr").on('mouseover', function(){
+			/*if ($(this).text().indexOf('primary') >=0) {
+				console.log('im primary');
+				$(this).css({'cursor': 'pointer'});
+			}*/
+		});
+		console.log('added event listener');
+		
 		if (mode=='add') {
 			if (window.lastPos == undefined) {
 				window.lastPos = {'x':0, 'y':0};

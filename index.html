@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <!-- 
+* @brief: App to create sqlalchemy models from scratch.
 * @author: Prahlad Yeri
 * @copyright: MIT License
-* @brief: App to create sqlalchemy models from scratch.
 * @date: 26-04-2015
 -->
 <head>
@@ -16,12 +16,16 @@
 <!--link rel='stylesheet' href='fullcalendar/fullcalendar.css' />
 <link rel='stylesheet' media='print' href='fullcalendar/fullcalendar.print.css' /-->
 <link rel='stylesheet' href='css/custom.css' />
-
-	<script type="text/javascript" src="sh/scripts/shCore.js"></script>
-	<script type="text/javascript" src="sh/scripts/shBrushPython.js"></script>
-	<link type="text/css" rel="stylesheet" href="css/shCoreDjango.css"/>
+<!--link type="text/css" rel="stylesheet" href="css/shCore.css"/-->
+<link type="text/css" rel="stylesheet" href="css/shCoreEclipse.css"/>
+<link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"/>
+<script type="text/javascript" src="sh/scripts/shCore.js"></script>
+<script type="text/javascript" src="sh/scripts/shBrushPython.js"></script>
 
 <script src='lib/jquery.min.js'></script>
+
+
+
 <script src='lib/bootstrap.min.js'></script>
 <!--script src='fullcalendar/lib/moment.min.js'></script>
 <script src='fullcalendar/fullcalendar.js'></script-->
@@ -30,11 +34,14 @@
 </head>
 <body >
 
-	<script type="text/javascript">SyntaxHighlighter.highlight('pre');</script>
+	<script type="text/javascript">
+		//SyntaxHighlighter.all()
+	</script>
+	
 	<script type="text/javascript">
 		$(window).load(function(){
-			this.version = 1.34;
-			$(".navbar-brand").text($(".navbar-brand").text() +  " v" + window.version);
+			//this.version = 1.34;
+			//$(".navbar-brand").text($(".navbar-brand").text() +  " v" + window.version);
 		});
 	</script>
 	
@@ -120,6 +127,7 @@
 		</div>
 	</div>
 	<div id="holder"></div>
+	<div id="holderResults"></div>
 	
 <nav class="navbar navbar-default  navbar-fixed-bottom  footer" role="navigation">
   <div class="container">

@@ -1,3 +1,8 @@
+/**
+* @brief Custom Javascript functions
+* @author Prahlad Yeri
+* @copyright MIT License
+*/
 $(window).load(function() {
 	//alert("foo");
 	$("#dragme").css({
@@ -22,13 +27,20 @@ $(window).load(function() {
 });
 
 //Object Initialization
+if (window.location.href.indexOf('127.0.0.1:') >=0 ) {
+	window.DEBUG = true;
+}
+else {
+	window.DEBUG  = false;
+}
 
 tables = {}; //dict of String:Table objects
 
 
 function drag(ev){
-	var ss  = (parseInt($(ev.target).position().left,10) - ev.clientX) + ',' + (parseInt($(ev.target).position().top,10) - ev.clientY);
-	ev.dataTransfer.setData("text/plain", ss + ',' + $(ev.target).attr('id'));
+	//console.log(ev.target.parentNode);
+	var ss  = (parseInt($(ev.target.parentNode).position().left,10) - ev.clientX) + ',' + (parseInt($(ev.target.parentNode).position().top,10) - ev.clientY);
+	ev.dataTransfer.setData("text/plain", ss + ',' + $(ev.target.parentNode).attr('id'));
 	//ev.dataTransfer.setDragImage(document.getElementById("draggit"), 10, 10);
 	//console.log("drag:target", $(ev.target).position().left + "," + $(ev.target).position().top);
 	//console.log("drag:offset", ss);
@@ -99,16 +111,26 @@ Base = declarative_base()\n\n";
 }
 
 function showResultsDialog() {
-	if (Object.keys(tables).length==0) {
+	if (!window.DEBUG && Object.keys(tables).length==0) {
 		alert("There should be at least one table");
 		return;
 	}
+	
 	if ($("#resultsDialog").length==0) {
-		$("#holder").load("assets/partials/resultsDialog.html?time=" + (new Date()).getTime(), function(){
+		console.log('not found in cache');
+		$("#holderResults").load("assets/partials/resultsDialog.html?time=" + (new Date()).getTime(), function(){
+			$('#resultsDialog').on('shown.bs.modal', function(e) {
+				//console.log('just highlighted');
+				//SyntaxHighlighter.highlight();
+				SyntaxHighlighter.all('pre');
+			});
+			//SyntaxHighlighter.highlight();
+
 			runResultsDialog();
 		});
 	}
 	else {
+			console.log('found in cache');
 			runResultsDialog();
 	}
 }
@@ -116,10 +138,19 @@ function showResultsDialog() {
 function runResultsDialog() {
 	dbname = 'sql00' + parseInt(Math.random() * 4000 + 9999);
 	var code = generateCode(dbname);
-	$("#resultsDialog #theCode").text(code);
+	//remove all child elements of #theCode
+	$("#resultsDialog #theCode").empty();
+	//add a pre tag
+	$("#resultsDialog #theCode").append('<pre class="brush:python"></pre>');
+	//set code
+	$("#resultsDialog #theCode pre").text(code);
+	//syntax highlight
 	SyntaxHighlighter.highlight('pre');
+	//console.log('code' + code);
+	//$("#resultsDialog #theCode").text("def index():\n\n    print 'foo'");
 	$("#resultsDialog").modal();
 }
+
 
 function showAddTableDialog() {
 	console.log("showAddTableDialog()");
@@ -177,7 +208,7 @@ function runAddTableDialog(tableName, mode)
 				$("#fieldUnique").prop("checked", false);
 			}
 			
-			addField(); //inside the addFieldDialog.html
+			addField(); //inside the addTableDialog.html
 		});
 	}
 	//TODO: This routine should be written each time before showing a bootstrap modal:
