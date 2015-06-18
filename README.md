@@ -2,6 +2,8 @@
 
 **Visual Alchemist** is a web app to seamlessly create `sqlalchemy` models by dragging/dropping objects in a canvas.
 
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenAddTable.png)
+
 Presently, the tool just automates the code creation to build the corresponding `sqlite` database. Following features are coming soon:
 
 - Implement joins and relations by drag/drop.
