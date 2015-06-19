@@ -73,13 +73,12 @@ function generateCode(dbname) {
 from sqlalchemy import create_engine\n\
 from sqlalchemy.ext.declarative import declarative_base\n\
 from sqlalchemy import Column, Integer, Date, String, Text, Float, ForeignKey\n\
-from sqlalchemy.orm import sessionmaker, relationship, backref\n\
-import os\n\n\
+from sqlalchemy.orm import sessionmaker, relationship, backref\n\n\
 Base = declarative_base()\n\n";
 	$.each(tables, function(key, val) {
 		//console.log(val.name);
-		code += "class " + val.name + "(Base):\n";
-		code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
+		code += "class " + val.name + "(Base):\n\n";
+		code += "\t" + "__tablename__ = \"" + val.name + "\"\n\n";
 		$.each(val.fields, function(fkey, fval){
 			code += "\t" + fval.name + " = Column(" + fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')   
 			+ (fval.primaryKey ? ", primary_key=True" : "")
@@ -94,10 +93,10 @@ Base = declarative_base()\n\n";
 	
 	code += 
 "if __name__ == '__main__':\n\
-\tprint 'running sqlalchemy ' + sqlalchemy.__version__\n\
+\tprint('running sqlalchemy ' + sqlalchemy.__version__)\n\
 \tengine = create_engine(r'sqlite:///" + dbname + ".db', echo=True) #connect to database\n\
 \tBase.metadata.create_all(engine) #Lets create the actual sqlite database and schema!\n\
-\tprint 'database created: " + dbname  + ".db'";
+\tprint('database created: " + dbname  + ".db')";
 
 /*\t\n\
 \tSession = sessionmaker(bind=engine) #create a session class. (alternatively, Session.configure(bind=engine)\n\
