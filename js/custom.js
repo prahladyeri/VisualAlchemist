@@ -78,8 +78,8 @@ import os\n\n\
 Base = declarative_base()\n\n";
 	$.each(tables, function(key, val) {
 		//console.log(val.name);
-		code += "class " + val.name + "(Base):\n";
-		code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
+		code += "class " + val.name + "(Base):\n\n";
+		code += "\t" + "__tablename__ = \"" + val.name + "\"\n\n";
 		$.each(val.fields, function(fkey, fval){
 			code += "\t" + fval.name + " = Column(" + fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')   
 			+ (fval.primaryKey ? ", primary_key=True" : "")
