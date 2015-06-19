@@ -121,12 +121,12 @@ function setThePanel(table, mode) {
 		});
 		$('#tbl' + table.name + " .table").append(html);
 		
-		$("#tbl" + table.name + " tr").on('mouseover', function(){
-			/*if ($(this).text().indexOf('primary') >=0) {
+		/*$("#tbl" + table.name + " tr").on('mouseover', function(){
+			if ($(this).text().indexOf('primary') >=0) {
 				console.log('im primary');
 				$(this).css({'cursor': 'pointer'});
-			}*/
-		});
+			}
+		});*/
 		console.log('added event listener');
 		
 		if (mode=='add') {
@@ -147,6 +147,12 @@ function setThePanel(table, mode) {
 		else {
 				alert("Table updated!");
 		}
+		
+		//jsPlumb.addEndpoint($('#tbl' + table.name), {  });
+		//jsPlumb.setContainer('theCanvas');
+		jsPlumb.draggable('tbl' + table.name);
+		//console.log('made draggable ;' + 'tbl' + table.name);
+		//jsPlumb.addEndpoint('tbl' + table.name, {  });
 }
 
 function addField()

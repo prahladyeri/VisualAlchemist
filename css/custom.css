@@ -5,11 +5,11 @@ h2 {
 	text-align: center;
 }
 
-/*.container {
-	background: grey;
+#theCanvas {
+	z-index: 255;
 }
 
-.panel.tableDesign {
+/*.panel.tableDesign {
 	width: 200px;
 }*/
 

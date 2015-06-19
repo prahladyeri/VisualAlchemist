@@ -13,10 +13,10 @@ else {
 
 $(window).load(function() {
 	//alert("foo");
-	$("#dragme").css({
+	/*$("#dragme").css({
 		"left": "500px",
 		"top" : "50px",
-	});
+	});*/
 	
 	if (!window.DEBUG) {
 		if (readCookie(".mainAlert.closed") != null) {
@@ -38,25 +38,18 @@ $(window).load(function() {
 
 tables = {}; //dict of String:Table objects
 
+jsPlumb.setContainer("theCanvas");
 
-function drag(ev){
-	//console.log(ev.target.parentNode);
+/*function drag(ev){
 	var ss  = (parseInt($(ev.target.parentNode).position().left,10) - ev.clientX) + ',' + (parseInt($(ev.target.parentNode).position().top,10) - ev.clientY);
 	ev.dataTransfer.setData("text/plain", ss + ',' + $(ev.target.parentNode).attr('id'));
-	//ev.dataTransfer.setDragImage(document.getElementById("draggit"), 10, 10);
-	//console.log("drag:target", $(ev.target).position().left + "," + $(ev.target).position().top);
-	//console.log("drag:offset", ss);
-	//console.log();
+	//ev.dataTransfer.setDragImage(document.getElementById("draggit"), 10, 10); //NOT WORKING
 }
 
 function drop(ev) {
 	var offset = ev.dataTransfer.getData("text/plain");
 	var npos = offset.split(",");
-	//console.log("drop_clientpos:" +  ev.clientX + "," + ev.clientY);
-	//console.log("drop_newpos:" +  (ev.clientX + parseInt(npos[0])) + "," + (ev.clientY + parseInt(npos[1])));
 	var ctrl = npos[2];
-	//document.getElementById("dragme").style.left = (ev.clientX + parseInt(npos[0])) + "px";
-	//document.getElementById("dragme").style.top = (ev.clientY + parseInt(npos[1])) + "px";
 	document.getElementById(ctrl).style.left = (ev.clientX + parseInt(npos[0])) + "px";
 	document.getElementById(ctrl).style.top = (ev.clientY + parseInt(npos[1])) + "px";
 	console.log(ctrl);
@@ -67,7 +60,7 @@ function drop(ev) {
 function dragOver(ev) {
 	ev.preventDefault();
 	return false;
-}
+}*/
 
 function generateCode(dbname) {
 	var code = 

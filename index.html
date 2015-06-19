@@ -32,6 +32,7 @@
 
 
 <script src='lib/bootstrap.min.js'></script>
+<script src="lib/dom.jsPlumb-1.7.5-min.js"></script>
 <!--script src='fullcalendar/lib/moment.min.js'></script>
 <script src='fullcalendar/fullcalendar.js'></script-->
 <script src='js/classes.js'></script>
@@ -104,23 +105,18 @@
 
 	<div class="container">
 		<div class="row">
-				<div class="col-md-12 canvas" style="position:relative;height:500px;background:rgb(247, 247, 236);" ondragover="dragOver(event)" ondrop="drop(event)" >
-				<!--pre class='prettyprint'>
-				public static void main() {
-					//code 
-				}
-				</pre-->
+				<!-- ondragover="dragOver(event)" ondrop="drop(event)" -->
+				<div id="theCanvas" class="col-md-12 canvas" style="position:relative;height:500px;background:rgb(247, 247, 236);" >
 				<div class="mainAlert col-md-push-3 col-md-6 alert alert-warning alert-dismissible" role="alert">
 				  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 				  <strong>How to:</strong> Just click the <a class="alert-link" href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a> link above to start building tables.
 				  Once done, simply click the <strong>Generate Models</strong> button to get the python code for the sqlalchemy models!
 				</div>
-					<div hidden id="dragme" style="position:absolute" class="panel panel-primary tableDesign" draggable="true" ondragstart="drag(event)">
+					<!--div hidden id="dragme" style="position:absolute" class="panel panel-primary tableDesign" draggable="true" ondragstart="drag(event)">
 						  <div style="cursor:move" class="panel-heading">dummy
 							<button title="Delete" style="margin-top: -4px; float:right; cursor:pointer;" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
 							<button title="Edit" style="margin-top: -4px; float:right; cursor:pointer;" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-edit"></span></button>
 						  </div>
-						  <!-- Table -->
 						  <table class="table">
 							<tr>
 								<td>id</td>
@@ -133,8 +129,7 @@
 								<td>unique</td>
 							</tr>
 						  </table>
-
-						</div>
+						</div-->
 				</div>
 		</div>
 	</div>
@@ -152,5 +147,5 @@
 </nav>
 	
 </body>
-	  <a href="https://github.com/prahladyeri/valchemist"><img style="position:absolute;left:0px;top:0px;margin-left:10px;" src="img/forkme.png"></img></a>
+	  <a href="https://github.com/prahladyeri/valchemist"><img style="position:absolute;left:0px;top:0px;margin-left:0px;" src="img/forkme.png"></img></a>
 </html>

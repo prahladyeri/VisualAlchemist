@@ -1,7 +1,8 @@
 <div id="tbl{0}" style="position:absolute" class="panel panel-primary tableDesign">
-	  <div tableid="{0}" style="cursor:move" class="panel-heading"  draggable="true" ondragstart="drag(event)">{0}&nbsp;
-		<button title="Delete" onclick='deleteTable("{0}");' style="float:right; cursor:pointer;" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
-		<button title="Edit" onclick='editTable("{0}");' style="float:right; cursor:pointer;" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-edit"></span></button>
+		<!-- style="cursor:move" draggable="true" ondragstart="drag(event)" -->
+	  <div class="panel-heading"  style="cursor:move" >{0}&nbsp;
+		<button title="Delete" onclick='deleteTable("{0}");' style="float:right;" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+		<button title="Edit" onclick='editTable("{0}");' style="float:right;" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-edit"></span></button>
 	  </div>
 	  <!-- Table -->
 	  <table class="table table-striped">
