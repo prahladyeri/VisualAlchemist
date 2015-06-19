@@ -23,8 +23,8 @@ blueprint = Blueprint('lib', __name__, static_url_path='/lib', static_folder='li
 app.register_blueprint(blueprint)
 blueprint = Blueprint('assets', __name__, static_url_path='/assets', static_folder='assets')
 app.register_blueprint(blueprint)
-blueprint = Blueprint('sh', __name__, static_url_path='/sh', static_folder='sh')
-app.register_blueprint(blueprint)
+#blueprint = Blueprint('sh', __name__, static_url_path='/sh', static_folder='sh')
+#app.register_blueprint(blueprint)
 #blueprint = Blueprint('fullcalendar', __name__, static_url_path='/fullcalendar', static_folder='fullcalendar')
 #app.register_blueprint(blueprint)
 

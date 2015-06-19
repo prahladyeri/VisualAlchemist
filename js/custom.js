@@ -3,6 +3,14 @@
 * @author Prahlad Yeri
 * @copyright MIT License
 */
+
+if (window.location.href.indexOf('127.0.0.1:') >=0 ) {
+	window.DEBUG = true;
+}
+else {
+	window.DEBUG  = false;
+}
+
 $(window).load(function() {
 	//alert("foo");
 	$("#dragme").css({
@@ -10,29 +18,23 @@ $(window).load(function() {
 		"top" : "50px",
 	});
 	
-	
-	if (readCookie(".mainAlert.closed") != null) {
-		console.log("alert cookie already exists!");
-		$(".mainAlert").hide();
+	if (!window.DEBUG) {
+		if (readCookie(".mainAlert.closed") != null) {
+			console.log("alert cookie already exists!");
+			$(".mainAlert").hide();
+		}
+		else {
+			$('.mainAlert').on('closed.bs.alert',  function(){
+				//alert('closed');
+				createCookie(".mainAlert.closed", "true", 365);
+				console.log('alert cookie created');
+			})
+			console.log('alert event added');
+		}
 	}
-	else {
-		$('.mainAlert').on('closed.bs.alert',  function(){
-			//alert('closed');
-			createCookie(".mainAlert.closed", "true", 365);
-			console.log('alert cookie created');
-		})
-		console.log('alert event added');
-	}
-	
 });
 
 //Object Initialization
-if (window.location.href.indexOf('127.0.0.1:') >=0 ) {
-	window.DEBUG = true;
-}
-else {
-	window.DEBUG  = false;
-}
 
 tables = {}; //dict of String:Table objects
 
@@ -121,7 +123,8 @@ function showResultsDialog() {
 			$('#resultsDialog').on('shown.bs.modal', function(e) {
 				//console.log('just highlighted');
 				//SyntaxHighlighter.highlight();
-				SyntaxHighlighter.all('pre');
+				//SyntaxHighlighter.all('pre');
+				prettyPrint();
 			});
 			//SyntaxHighlighter.highlight();
 
@@ -140,11 +143,18 @@ function runResultsDialog() {
 	//remove all child elements of #theCode
 	$("#resultsDialog #theCode").empty();
 	//add a pre tag
-	$("#resultsDialog #theCode").append('<pre class="brush:python"></pre>');
+	//$("#resultsDialog #theCode").append('<pre class="brush:python"></pre>');
+	$("#resultsDialog #theCode").append('<pre class="prettyprint"></pre>');
+	//<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+	//prettyPrint();
+
 	//set code
 	$("#resultsDialog #theCode pre").text(code);
+  	  //
 	//syntax highlight
-	SyntaxHighlighter.highlight('pre');
+	//SyntaxHighlighter.defaults['gutter'] = false;
+	//SyntaxHighlighter.defaults['smart-tabs'] = false;	
+	//SyntaxHighlighter.highlight('pre');
 	//console.log('code' + code);
 	//$("#resultsDialog #theCode").text("def index():\n\n    print 'foo'");
 	$("#resultsDialog").modal();

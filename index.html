@@ -16,11 +16,16 @@
 <!--link rel='stylesheet' href='fullcalendar/fullcalendar.css' />
 <link rel='stylesheet' media='print' href='fullcalendar/fullcalendar.print.css' /-->
 <link rel='stylesheet' href='css/custom.css' />
+
 <!--link type="text/css" rel="stylesheet" href="css/shCore.css"/-->
-<link type="text/css" rel="stylesheet" href="css/shCoreEclipse.css"/>
-<link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"/>
-<script type="text/javascript" src="sh/scripts/shCore.js"></script>
-<script type="text/javascript" src="sh/scripts/shBrushPython.js"></script>
+<!--link type="text/css" rel="stylesheet" href="css/shCoreDjango.css"/>
+<link type="text/css" rel="stylesheet" href="css/shThemeDjango.css"/>
+<script type="text/javascript" src="lib/sh/scripts/shCore.js"></script>
+<script type="text/javascript" src="lib/sh/scripts/shBrushPython.js"></script-->
+
+<!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script-->
+<link type="text/css" href="lib/prettify/prettify.css" rel="stylesheet" />
+<script type="text/javascript"  src="lib/prettify/prettify.js"></script>
 
 <script src='lib/jquery.min.js'></script>
 
@@ -86,7 +91,9 @@
           <ul class="dropdown-menu" role="menu">
             <li><a href="https://github.com/prahladyeri/valchemist">Github Project</a></li>
             <li class="divider"></li>
-            <li><a href="https://github.com/prahladyeri/valchemist/blob/master/ABOUT.md">About Visual Alchemist</a></li>
+            <li><a href="https://github.com/prahladyeri/valchemist/issues">Bug Tracker</a></li>
+            <li><a href="https://github.com/prahladyeri/valchemist/blob/master/ABOUT.md">About VA</a></li>
+			
           </ul>
         </li>
       </ul>
@@ -98,10 +105,15 @@
 	<div class="container">
 		<div class="row">
 				<div class="col-md-12 canvas" style="position:relative;height:500px;background:rgb(247, 247, 236);" ondragover="dragOver(event)" ondrop="drop(event)" >
-				<div class="mainAlert col-md-push-3 col-md-6 alert alert-info alert-dismissible" role="alert">
+				<!--pre class='prettyprint'>
+				public static void main() {
+					//code 
+				}
+				</pre-->
+				<div class="mainAlert col-md-push-3 col-md-6 alert alert-warning alert-dismissible" role="alert">
 				  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				  <strong>How to:</strong> Just click the <a class="alert-link" href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a> link above to get started.
-				  Once done, simply click the <strong>Generate Models</strong> button to generate the code!
+				  <strong>How to:</strong> Just click the <a class="alert-link" href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a> link above to start building tables.
+				  Once done, simply click the <strong>Generate Models</strong> button to get the python code for the sqlalchemy models!
 				</div>
 					<div hidden id="dragme" style="position:absolute" class="panel panel-primary tableDesign" draggable="true" ondragstart="drag(event)">
 						  <div style="cursor:move" class="panel-heading">dummy
@@ -140,4 +152,5 @@
 </nav>
 	
 </body>
+	  <a href="https://github.com/prahladyeri/valchemist"><img style="position:absolute;left:0px;top:0px;margin-left:10px;" src="img/forkme.png"></img></a>
 </html>

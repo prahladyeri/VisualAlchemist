@@ -17,3 +17,8 @@ nav.header {
 	margin-left: 100px;
 	margin-right: 100px;
 }
+
+.mainAlert {
+	margin-top: 100px;
+  font-size: 18px;
+}
