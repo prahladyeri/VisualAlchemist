@@ -73,8 +73,7 @@ function generateCode(dbname) {
 from sqlalchemy import create_engine\n\
 from sqlalchemy.ext.declarative import declarative_base\n\
 from sqlalchemy import Column, Integer, Date, String, Text, Float, ForeignKey\n\
-from sqlalchemy.orm import sessionmaker, relationship, backref\n\
-import os\n\n\
+from sqlalchemy.orm import sessionmaker, relationship, backref\n\n\
 Base = declarative_base()\n\n";
 	$.each(tables, function(key, val) {
 		//console.log(val.name);
