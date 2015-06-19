@@ -94,10 +94,10 @@ Base = declarative_base()\n\n";
 	
 	code += 
 "if __name__ == '__main__':\n\
-\tprint 'running sqlalchemy ' + sqlalchemy.__version__\n\
+\tprint('running sqlalchemy ' + sqlalchemy.__version__)\n\
 \tengine = create_engine(r'sqlite:///" + dbname + ".db', echo=True) #connect to database\n\
 \tBase.metadata.create_all(engine) #Lets create the actual sqlite database and schema!\n\
-\tprint 'database created: " + dbname  + ".db'";
+\tprint('database created: " + dbname  + ".db')";
 
 /*\t\n\
 \tSession = sessionmaker(bind=engine) #create a session class. (alternatively, Session.configure(bind=engine)\n\
