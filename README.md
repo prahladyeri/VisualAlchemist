@@ -19,7 +19,7 @@ Visit [http://valchemist-inn.rhcloud.com](http://valchemist-inn.rhcloud.com) to 
 
 Visual Alchemist is presently a pure html app, so you can simply copy the github repo and host it. However, Flask support is also added as I intend to add more backend-specific features soon.
 
-To run VA in Flask, you'll need to install the minimum requirements via the requirements.txt file. Run the following commands to install requirements in a virtual environment from within the application root directory (assuming you have pip and virtualenv installed: 
+To run VA in Flask, you'll need to install the minimum requirements via the requirements.txt file. Run the following commands to install requirements in a virtual environment from within the application root directory (assuming you have pip and virtualenv installed): 
 
     virtualenv venv
     source venv/bin/activate
