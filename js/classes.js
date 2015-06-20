@@ -4,7 +4,16 @@
 * @copyright MIT License
 * @date 2015/06/16
 */
-var Table = function() {
+var Table = function(name) {
+	if (name != undefined) {
+		this.name = name;
+		console.log('name set');
+	}
+	else {
+		this.name='Unnamed';
+		console.log('name undefined');
+	}
+	
 };
 var Field = function(){
 };

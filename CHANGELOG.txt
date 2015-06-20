@@ -1,0 +1,8 @@
+### 2015-06-20
+
+- Sanitized user input for the window.prompt().
+- Reduce delay in showing popup dialogs by removing time from query string (pending).
+- Put the bs alerts display as a separate jQuery plugin.
+- Implemented foreign keys (pending).
+- Save state in local datastore (pending).
+- CSS transitions/transformations (pending).

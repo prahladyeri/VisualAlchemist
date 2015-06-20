@@ -18,4 +18,4 @@ However, Support is added for `Flask and sqlalchemy` on the backend, so it can a
 - [jQuery](http://jquery.com), who made people fall in love with JavaScript once again.
 
 - [Prettify by Google](http://code.google.com/p/google-code-prettify), A pretty good Syntax Highlighting tool!
-<!--- [Alex Gorbatchev](http://alexgorbatchev.com/SyntaxHighlighter/) for providing the very useful Syntax Highlighter tool.--></!--->
+- [jsPlumb](http://www.jsplumb.org/) for giving that outstanding library which makes JavaScript Drag/Drop a piece of cake.

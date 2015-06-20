@@ -32,13 +32,121 @@ $(window).load(function() {
 			console.log('alert event added');
 		}
 	}
+	
+	//Objects Initialization
+	tables = {}; //dict of String:Table objects
+	
+	jsPlumb.setContainer("theCanvas");
+	console.log('jsPlumb.getContainer():', jsPlumb.getContainer());
+	
+	if (window.DEBUG) {
+		//create a dummy table for testing
+		table = new Table("product");
+		table.addField({
+			name: 'id',
+			type: 'Integer',
+			size: 0,
+			primaryKey: true,
+			defaultValue: 1
+		});
+		table.addField({
+			name: 'name',
+			type: 'Text',
+			size: 255,
+			unique: true,
+			defaultValue: 'foo'
+		});
+		tables['product'] = table;
+		createThePanel(table, 'add');
+	}
 });
 
-//Object Initialization
 
-tables = {}; //dict of String:Table objects
+/**
+* @brief: Creates a new panel from scratch for a table
+* @param mode Should be 'add' or 'edit'
+*/
+function createThePanel(table, mode) {
+	if (mode == "add") {
+		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data){
+			$('.canvas').append(data.format(table.name));
+			setThePanel(table, mode);
+		});
+	}
+	else {
+		setThePanel(table, mode);
+	}
+}
 
-jsPlumb.setContainer("theCanvas");
+function setThePanel(table, mode) {
+		html = '';
+		if (mode=='edit') {
+			//$('#tbl' + table.name + " .table tr").remove();
+			jsPlumb.remove($('#tbl' + table.name + " .table tr"));
+			jsPlumb.repaintEverything();
+		}
+		
+		$.each(table.fields, function(key, field) {
+			var sprim = "";
+			if (field.primaryKey) {
+				//sprim+= " style='cursor:move' ";
+			}
+			html += "<tr" +  ">";
+			html += "<td>" + (field.primaryKey ? '' : "<div class='field'></div>") + "</td>"; //virtual
+			html += "<td>" + field.name + "</td>";
+			html += "<td>" + field.type + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
+			html += "<td>" + (field.primaryKey ? 'primary' : '') + (field.unique ? 'unique' : '') + "</td>";
+			html += "<td>" + (field.primaryKey ? "<div class='prima'></div>" : '') + "</td>"; //virtual
+			html += "</tr>";
+		});
+		$('#tbl' + table.name + " .table").append(html);
+		//jsPlumb.draggable($('#tbl' + table.name + " tr.prima"),{}); //containment:true
+		console.log('#tbl' + table.name + " td.prima",'#tbl' + table.name + " td:not(.prima)");
+		jsPlumb.addEndpoint($('#tbl' + table.name + " div.prima"), {isSource: true});
+		jsPlumb.addEndpoint($('#tbl' + table.name + " div.field"), {isTarget: true});
+		/*$("#tbl" + table.name + " tr").on('mouseover', function(){
+			if ($(this).text().indexOf('primary') >=0) {
+				console.log('im primary');
+				$(this).css({'cursor': 'pointer'});
+			}
+		});*/
+		console.log('added event listener');
+		jsPlumb.draggable('tbl' + table.name, {
+		   containment:true
+		});
+		
+		if (mode=='add') {
+			if (window.lastPos == undefined) {
+				window.lastPos = {'x':0, 'y':0};
+			}
+			else {
+				window.lastPos.x += 40;
+				window.lastPos.y += 40;
+			}
+
+			$('#tbl' + table.name).css({
+				'left': window.lastPos.x + "px",
+				'top': window.lastPos.y + "px"
+			});
+			
+			jsPlumb.repaintEverything();
+			bsalert("Table added!", 'success');
+		}
+		else {
+			jsPlumb.repaintEverything();
+			bsalert("Table updated!", 'success');
+		}
+		
+		//jsPlumb.addEndpoint($('#tbl' + table.name), {  });
+		//jsPlumb.setContainer('theCanvas');
+		//console.log(
+		//);
+		//jsPlumb.repaint('#theCanvas');
+		//console.log('repaint done');
+		//console.log('made draggable ;' + 'tbl' + table.name);
+		//jsPlumb.addEndpoint('tbl' + table.name, {  });
+}
+
 
 /*function drag(ev){
 	var ss  = (parseInt($(ev.target.parentNode).position().left,10) - ev.clientX) + ',' + (parseInt($(ev.target.parentNode).position().top,10) - ev.clientY);
@@ -72,8 +180,8 @@ from sqlalchemy.orm import sessionmaker, relationship, backref\n\n\
 Base = declarative_base()\n\n";
 	$.each(tables, function(key, val) {
 		//console.log(val.name);
-		code += "class " + val.name + "(Base):\n\n";
-		code += "\t" + "__tablename__ = \"" + val.name + "\"\n\n";
+		code += "class " + val.name + "(Base):\n";
+		code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
 		$.each(val.fields, function(fkey, fval){
 			code += "\t" + fval.name + " = Column(" + fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')   
 			+ (fval.primaryKey ? ", primary_key=True" : "")
@@ -169,6 +277,9 @@ function showAddTableDialog() {
 		alert('This table already exists.');
 		return;
 	}
+	else {
+		tableName = escape(tableName);
+	}
 	if ($("#addTableDialog").length==0) {
 		$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
 			runAddTableDialog(tableName, "add");
@@ -230,12 +341,52 @@ function editTable(tableName) {
 function deleteTable(tableName) {
 	if (confirm("Sure you want to delete this table?")) {
 		delete tables[tableName];
-		$("#tbl" + tableName).remove();
+		//$("#tbl" + tableName).remove();
+		jsPlumb.remove("tbl" + tableName);
 	}
 }
 
-// First, checks if it isn't implemented yet.
+/* START UTILITY/CORE FUNCTIONS */
+
+//depends on bootstrap
+function bsalert(text, type, title) {
+	//config:
+	cont = $('.header'); //container
+	delay = 2000; //millis
+	
+	if (type==undefined) type='info';
+	if ($('#bsalertPlugin').length==0) 
+	{
+		html = '<div id="bsalertPlugin" style="z-index:2000;position:absolute;right:0;top:0;width:200px;" class="alert alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><strong class="bsaTitle"></strong>&nbsp;<span class="bsaBody"></span></div>';
+		$('body').append(html);
+		//$('#bsalertPlugin').css( {'top': $('.header').css('height'), "left": $('.header').offset().left + $('.header').width() } );
+		//} );
+	}
+	else {
+	
+	}
+
+	tval = cont.height();
+	lval = cont.offset().left + parseInt(cont.css('width')); //cont.width();
+	lval -= parseInt($('#bsalertPlugin').css('width'));
+	
+	$('#bsalertPlugin').css( {'top': tval, 'left': lval} );
+		
+	$('#bsalertPlugin').addClass('alert-' + type);
+	$('#bsalertPlugin .bsaBody').text(text);
+	$('#bsalertPlugin .bsaTitle').text(title);
+	//$('#bsalertPlugin').removeClass('hidden');
+	//$('#bsalertPlugin').addClass('in');
+	//var ba = $('#bsalertPlugin').alert();
+	//window.setTimeout(function() { ba.alert('close') }, delay);
+	$('#bsalertPlugin').alert().hide().fadeIn(1000).delay(2000).fadeOut(1000, function() {
+		$(this).alert('close');
+	});
+}
+
+
 // source: http://stackoverflow.com/a/18405800/849365
+// example: "{0} is dead, but {1} is alive! {0} {2}".format("ASP", "ASP.NET")
 if (!String.prototype.format) {
   String.prototype.format = function() {
     var args = arguments;
@@ -247,11 +398,14 @@ if (!String.prototype.format) {
     });
   };
 }
-//"{0} is dead, but {1} is alive! {0} {2}".format("ASP", "ASP.NET")
 
-/*START UTILITY FUNCTIONS - COOKIE*/
+if (!String.prototype.capitalize) {
+	String.prototype.capitalize =  function() { 
+		return this.replace(/^./, function(match){return match.toUpperCase()} );
+	}
+}
+
 COOKIE_ENCODER = '{|}~';
-
 function createCookie(name, value, days) 
 {
 	value = value.replace(';', COOKIE_ENCODER);
@@ -289,4 +443,5 @@ function eraseCookie(name)
 {
     createCookie(name, "", -1);
 }
+
 /*END UTILITY FUNCTIONS*/

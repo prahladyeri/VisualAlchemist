@@ -95,66 +95,13 @@ function saveData() {
 	
 	
 	//Now Build the new panel!
-	if ($('#editMode').val() == "add") {
-		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data){
-			$('.canvas').append(data.format(table.name));
-			setThePanel(table, $('#editMode').val());
-		});
-	}
-	else {
-		setThePanel(table, $('#editMode').val());
-	}
+	createThePanel(table, $('#editMode').val());
 }
 
-function setThePanel(table, mode) {
-		html = '';
-		if (mode=='edit') {
-			$('#tbl' + table.name + " .table tr").remove();
-		}
-		
-		$.each(table.fields, function(key, field) {
-			html += "<tr>";
-			html += "<td>" + field.name + "</td>";
-			html += "<td>" + field.type + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
-			html += "<td>" + (field.primaryKey ? 'primary' : '') + (field.unique ? 'unique' : '') + "</td>";
-			html += "</tr>";
-		});
-		$('#tbl' + table.name + " .table").append(html);
-		
-		/*$("#tbl" + table.name + " tr").on('mouseover', function(){
-			if ($(this).text().indexOf('primary') >=0) {
-				console.log('im primary');
-				$(this).css({'cursor': 'pointer'});
-			}
-		});*/
-		console.log('added event listener');
-		
-		if (mode=='add') {
-			if (window.lastPos == undefined) {
-				window.lastPos = {'x':0, 'y':0};
-			}
-			else {
-				window.lastPos.x += 40;
-				window.lastPos.y += 40;
-			}
 
-			$('#tbl' + table.name).css({
-				'left': window.lastPos.x + "px",
-				'top': window.lastPos.y + "px"
-			});
-				alert("Table added!");
-		}
-		else {
-				alert("Table updated!");
-		}
-		
-		//jsPlumb.addEndpoint($('#tbl' + table.name), {  });
-		//jsPlumb.setContainer('theCanvas');
-		jsPlumb.draggable('tbl' + table.name);
-		//console.log('made draggable ;' + 'tbl' + table.name);
-		//jsPlumb.addEndpoint('tbl' + table.name, {  });
-}
-
+/**
+* Creates a new field from the input boxes and adds to the table.
+*/
 function addField()
 {
 	if ($("#fieldSize").val() =="" || $("#fieldSize").attr('disabled')) $("#fieldSize").val(0);

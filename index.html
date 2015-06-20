@@ -70,7 +70,7 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li ><a href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a></li>
-        <li><a href="#" onclick="tables={}; $('.tableDesign').remove();">Clear All</a></li>
+        <li><a href="#" onclick="tables={}; jsPlumb.remove($('.tableDesign'))">Clear All</a></li>
         <li><a href="javascript:" onclick="showResultsDialog();">Generate Models</a></li>
         <!--li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
@@ -107,7 +107,7 @@
 		<div class="row">
 				<!-- ondragover="dragOver(event)" ondrop="drop(event)" -->
 				<div id="theCanvas" class="col-md-12 canvas" style="position:relative;height:500px;background:rgb(247, 247, 236);" >
-				<div class="mainAlert col-md-push-3 col-md-6 alert alert-warning alert-dismissible" role="alert">
+				<div class="mainAlert col-md-push-3 col-md-6 alert alert-success alert-dismissible" role="alert">
 				  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 				  <strong>How to:</strong> Just click the <a class="alert-link" href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a> link above to start building tables.
 				  Once done, simply click the <strong>Generate Models</strong> button to get the python code for the sqlalchemy models!
