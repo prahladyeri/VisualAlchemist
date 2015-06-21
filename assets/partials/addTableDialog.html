@@ -100,7 +100,7 @@ function saveData() {
 
 
 /**
-* Creates a new field from the input boxes and adds to the table.
+* Creates a new field from the input boxes and adds to the display.
 */
 function addField()
 {
@@ -141,7 +141,7 @@ function addField()
 	html += "<td class='hidden hfieldDefaultValue'>" + $("#fieldDefault").val()  + "</td>";
 	html += "<td class='hidden hfieldPrimary'>" + (isPrimary ? 'true' : '')  + "</td>";
 	html += "<td class='hidden hfieldUnique'>" + (isUnique ? 'true' : '')  + "</td>";
-	html += "<td class='delete'><button onclick='$(\"#" + $("#fieldName").val() + "\").remove();' title='Delete Field' class='btn btn-xs btn-danger'><span class='glyphicon glyphicon-remove'></span></button></td>";
+	html += "<td class='delete'><button onclick='tryToDelete(\"" + $("#fieldName").val() + "\")' title='Delete Field' class='btn btn-xs btn-danger'><span class='glyphicon glyphicon-remove'></span></button></td>";
 	html += "</tr>";
 	
 	$("#fields").append(html);
@@ -154,6 +154,22 @@ function addField()
 	$('#fieldUnique').removeAttr("checked");	
 
 	$("#fieldName").focus();
+}
+
+function tryToDelete(fieldName) {
+	for (conn in jsPlumb.getAllConnections()) {
+		if ($(conn.source).attr('ffname') == $("#tableName").text() + '.' + fieldName) {
+			alert("This key is acting as a primary key in a relation. Please delete that relation first.");
+			return;
+		}
+		else if ($(conn.target).attr('ffname') == $("#tableName").text() + '.' + fieldName) {
+			alert("This key is acting as a foreign key in a relation. Please delete that relation first.");
+			return;
+		}
+	}
+	//jsPlumb.remove($('#' + fieldName));
+	//jsPlumb.remove('#' + fieldName);
+	$('#' + fieldName).remove();
 }
 </script>
 

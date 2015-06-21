@@ -71,7 +71,7 @@
       <ul class="nav navbar-nav">
         <li ><a href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a></li>
         <li><a href="#" onclick="tables={}; jsPlumb.remove($('.tableDesign'))">Clear All</a></li>
-        <li><a href="javascript:" onclick="showResultsDialog();">Generate Models</a></li>
+        <li><a href="javascript:" onclick="showResultsDialog();">Build</a></li>
         <!--li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
@@ -86,7 +86,7 @@
         </li-->
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="https://github.com/prahladyeri/valchemist">Help</a></li>
+        <li><a onclick="bsalert({title:'How to:',text:'Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the red dots (primary-keys) and connect them to green dots (candidate foreign-keys).', type:'success', delay:0});" href="javascript:">Help</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Links <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
@@ -105,14 +105,18 @@
 
 	<div class="container">
 		<div class="row">
-				<!-- ondragover="dragOver(event)" ondrop="drop(event)" -->
 				<div id="theCanvas" class="col-md-12 canvas" style="position:relative;height:500px;background:rgb(247, 247, 236);" >
+				<!-- ondragover="dragOver(event)" ondrop="drop(event)" -->
 				<div class="mainAlert col-md-push-3 col-md-6 alert alert-success alert-dismissible" role="alert">
 				  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				  <strong>How to:</strong> Just click the <a class="alert-link" href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a> link above to start building tables.
-				  Once done, simply click the <strong>Generate Models</strong> button to get the python code for the sqlalchemy models!
+				  <strong>How to:</strong> Just click the <a class="alert-link" href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a> link above to start creating tables.
+				  Once done, simply click the <strong>Build</strong> button to get the python code for the sqlalchemy models!
+				  <br>
+				  <br>
+				  To create relationships, drag the red dots (primary-keys) and connect them to green dots (candidate foreign-keys).
 				</div>
-					<!--div hidden id="dragme" style="position:absolute" class="panel panel-primary tableDesign" draggable="true" ondragstart="drag(event)">
+
+				<!--div hidden id="dragme" style="position:absolute" class="panel panel-primary tableDesign" draggable="true" ondragstart="drag(event)">
 						  <div style="cursor:move" class="panel-heading">dummy
 							<button title="Delete" style="margin-top: -4px; float:right; cursor:pointer;" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
 							<button title="Edit" style="margin-top: -4px; float:right; cursor:pointer;" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-edit"></span></button>

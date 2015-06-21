@@ -36,31 +36,56 @@ $(window).load(function() {
 	//Objects Initialization
 	tables = {}; //dict of String:Table objects
 	
+	//EndpointHoverStyle: {color: "blue"},
+	jsPlumb.importDefaults({
+		Endpoint: ["Rectangle", {width:12, height:12}] ,
+		Endpoints : [ [ "Rectangle" ], [ "Rectangle" ] ],
+		Connector: "Bezier",
+		PaintStyle: {strokeStyle: "rgba(0,0,0,100)", lineWidth:4},
+		HoverPaintStyle: { lineWidth:4,
+			strokeStyle: 'rgba(200,0,0,100)'
+		}
+	});
+	
 	jsPlumb.setContainer("theCanvas");
 	console.log('jsPlumb.getContainer():', jsPlumb.getContainer());
 	
 	if (window.DEBUG) {
 		//create a dummy table for testing
-		table = new Table("product");
-		table.addField({
-			name: 'id',
-			type: 'Integer',
-			size: 0,
-			primaryKey: true,
-			defaultValue: 1
-		});
-		table.addField({
-			name: 'name',
-			type: 'Text',
-			size: 255,
-			unique: true,
-			defaultValue: 'foo'
-		});
-		tables['product'] = table;
-		createThePanel(table, 'add');
+		for (i=1;i<=2;i++) {
+			table = new Table("product" + i);
+			table.addField({name: 'id', type: 'Integer', size: 0, primaryKey: true, defaultValue: 1});
+			table.addField({name: 'name', type: 'Text', size: 255, unique: true, defaultValue: 'foo'});
+			tables['product' + i] = table;
+			createThePanel(table, 'add');
+		}
 	}
 });
 
+//jsPlumb events
+
+jsPlumb.bind("beforeDrop", function(info) {
+	var pkey = $(info.connection.source).attr('ffname').split(".");
+	var fkey = $(info.connection.target).attr('ffname').split(".");
+	if (pkey[0] == fkey[0]) {
+		alert("Source and Target table cannot be the same");
+		return false;
+	}
+	//console.log(pkey, fkey);
+	tables[pkey[0]].fields[pkey[1]].foreign = fkey[0] + '.' + fkey[1];
+	tables[fkey[0]].fields[fkey[1]].ref = pkey[0] + '.' + pkey[1];
+	bsalert({text: pkey[1] + '->' + fkey[1], title:"Established: "});
+	//window.tobj = info;
+	return true; //return false or just quit to drop the new connection.
+});
+
+jsPlumb.bind("connection", function(info) {
+	//console.log(info);
+	//window.tobj = info;
+});
+
+
+//Other misc functions
 
 /**
 * @brief: Creates a new panel from scratch for a table
@@ -82,8 +107,9 @@ function setThePanel(table, mode) {
 		html = '';
 		if (mode=='edit') {
 			//$('#tbl' + table.name + " .table tr").remove();
-			jsPlumb.remove($('#tbl' + table.name + " .table tr"));
-			jsPlumb.repaintEverything();
+			//jsPlumb.remove($('#tbl' + table.name + " .table tr"));
+			jsPlumb.empty($('#tbl' + table.name + " .table"));
+			//jsPlumb.repaintEverything();
 		}
 		
 		$.each(table.fields, function(key, field) {
@@ -92,25 +118,33 @@ function setThePanel(table, mode) {
 				//sprim+= " style='cursor:move' ";
 			}
 			html += "<tr" +  ">";
-			html += "<td>" + (field.primaryKey ? '' : "<div class='field'></div>") + "</td>"; //virtual
+			if (mode=='add') html += "<td>" + (field.primaryKey ? '' : "<div ffname='" + table.name + "." + field.name +  "' class='field'></div>") + "</td>"; //virtual
 			html += "<td>" + field.name + "</td>";
 			html += "<td>" + field.type + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
 			html += "<td>" + (field.primaryKey ? 'primary' : '') + (field.unique ? 'unique' : '') + "</td>";
-			html += "<td>" + (field.primaryKey ? "<div class='prima'></div>" : '') + "</td>"; //virtual
+			if (mode=='add') html += "<td>" + (field.primaryKey ? "<div ffname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
 			html += "</tr>";
 		});
 		$('#tbl' + table.name + " .table").append(html);
 		//jsPlumb.draggable($('#tbl' + table.name + " tr.prima"),{}); //containment:true
 		console.log('#tbl' + table.name + " td.prima",'#tbl' + table.name + " td:not(.prima)");
-		jsPlumb.addEndpoint($('#tbl' + table.name + " div.prima"), {isSource: true});
-		jsPlumb.addEndpoint($('#tbl' + table.name + " div.field"), {isTarget: true});
-		/*$("#tbl" + table.name + " tr").on('mouseover', function(){
-			if ($(this).text().indexOf('primary') >=0) {
-				console.log('im primary');
-				$(this).css({'cursor': 'pointer'});
-			}
-		});*/
-		console.log('added event listener');
+		 if (mode=='add') jsPlumb.addEndpoint($('#tbl' + table.name + " div.prima"), {
+			isSource: true,
+			paintStyle:{ fillStyle:"red", outlineColor:"black", outlineWidth:1 },
+			//connectorPaintStyle:{ strokeStyle:"blue", lineWidth:10 },
+			connectorOverlays:[ 
+				[ "Arrow", { width:10, length:15, location:1, id:"arrow" } ],
+				//[ "Label", { label:"Relationship", id:"lblPrimary_" + table.name } ]
+				],
+		});
+		if (mode=='add') jsPlumb.addEndpoint($('#tbl' + table.name + " div.field"), {isTarget: true,
+			paintStyle: { fillStyle:"green", outlineColor:"black", outlineWidth:1 },
+			//connectorPaintStyle:{ strokeStyle:"blue", lineWidth:10 },
+			connectorOverlays:[ 
+				//[ "Arrow", { width:10, length:20, location:1, id:"arrow" } ],
+				//[ "Label", { label:"Relationship", id:"lblField_" + table.name } ]
+				],
+		});
 		jsPlumb.draggable('tbl' + table.name, {
 		   containment:true
 		});
@@ -119,22 +153,23 @@ function setThePanel(table, mode) {
 			if (window.lastPos == undefined) {
 				window.lastPos = {'x':0, 'y':0};
 			}
-			else {
-				window.lastPos.x += 40;
-				window.lastPos.y += 40;
-			}
 
-			$('#tbl' + table.name).css({
+			$('#tbl' + table.name).css({ 
 				'left': window.lastPos.x + "px",
 				'top': window.lastPos.y + "px"
 			});
 			
+			window.lastPos.x += $('#tbl' + table.name).width() + 20;
+			window.lastPos.y += $('#tbl' + table.name).position().top;
+			
 			jsPlumb.repaintEverything();
-			bsalert("Table added!", 'success');
+			bsalert({text:"Table added!", type:'success'});
 		}
-		else {
-			jsPlumb.repaintEverything();
-			bsalert("Table updated!", 'success');
+		else 
+		{
+			jsPlumb.repaintEverything(); //all connections
+			jsPlumb.repaint(['tbl' + table.name]);
+			bsalert({text:"Table updated!", type:'success'});
 		}
 		
 		//jsPlumb.addEndpoint($('#tbl' + table.name), {  });
@@ -340,24 +375,34 @@ function editTable(tableName) {
 
 function deleteTable(tableName) {
 	if (confirm("Sure you want to delete this table?")) {
+		//TODO: Check relations of this table
 		delete tables[tableName];
 		//$("#tbl" + tableName).remove();
-		jsPlumb.remove("tbl" + tableName);
+		jsPlumb.empty("tbl" + tableName);
+		//jsPlumb.repaintEverything();
 	}
 }
 
 /* START UTILITY/CORE FUNCTIONS */
 
 //depends on bootstrap
-function bsalert(text, type, title) {
-	//config:
+function bsalert(obj) {
+	//initial config:
 	cont = $('.header'); //container
 	delay = 2000; //millis
+	theWidth = "300px";
+	
+	//text, type, title
+	text = obj.text;
+	type = obj.type;
+	title = obj.title;
+	if (obj.delay!=undefined) delay = obj.delay;
 	
 	if (type==undefined) type='info';
+	
 	if ($('#bsalertPlugin').length==0) 
 	{
-		html = '<div id="bsalertPlugin" style="z-index:2000;position:absolute;right:0;top:0;width:200px;" class="alert alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><strong class="bsaTitle"></strong>&nbsp;<span class="bsaBody"></span></div>';
+		html = '<div id="bsalertPlugin" style="z-index:2000;position:absolute;right:0;top:0;width:' + theWidth + ';" class="alert alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><strong class="bsaTitle"></strong>&nbsp;<span class="bsaBody"></span></div>';
 		$('body').append(html);
 		//$('#bsalertPlugin').css( {'top': $('.header').css('height'), "left": $('.header').offset().left + $('.header').width() } );
 		//} );
@@ -379,9 +424,14 @@ function bsalert(text, type, title) {
 	//$('#bsalertPlugin').addClass('in');
 	//var ba = $('#bsalertPlugin').alert();
 	//window.setTimeout(function() { ba.alert('close') }, delay);
-	$('#bsalertPlugin').alert().hide().fadeIn(1000).delay(2000).fadeOut(1000, function() {
-		$(this).alert('close');
-	});
+	if (delay==0) {
+		$('#bsalertPlugin').alert();
+	}
+	else {
+		$('#bsalertPlugin').alert().hide().fadeIn(500).delay(delay).fadeOut(1000, function() {
+			$(this).alert('close');
+		});
+	}
 }
 
 

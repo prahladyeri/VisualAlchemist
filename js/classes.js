@@ -28,6 +28,8 @@ Field.prototype.unique = false;
 Field.prototype.primaryKey = false;
 Field.prototype.references = "";
 Field.prototype.defaultValue = null;
+Field.prototype.foreign = null; //for primary only: the name[s] of fields that refer to this primary key.
+Field.prototype.ref = null; //for non-primary only: the name[s] of primary key field in another table that this refers to.
 
 
 /**

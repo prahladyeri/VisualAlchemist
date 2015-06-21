@@ -1,8 +1,12 @@
 body {
-	font-family: verdana;
+	font-family: georgia;
 }
 h2 {
 	text-align: center;
+}
+
+.mainAlert {
+	font-family: georgia;
 }
 
 #theCanvas {
