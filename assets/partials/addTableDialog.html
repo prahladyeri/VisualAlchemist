@@ -72,6 +72,23 @@ function saveData() {
 	}
 	
 	table.name = $('#tableName').text();
+	
+	//remove old endpoints
+	window.oldrefs = {};
+	if ($('#editMode').val() == 'edit') {
+		jsPlumb.detachAllConnections($('#tbl' + table.name + " .table"));
+		$.each(tables[table.name].fields, function(k,v) {
+			//console.log(v.ep);
+			jsPlumb.deleteEndpoint(v.ep);
+			console.log('deleted ep for',v.name);
+			
+			//preserve existing relations
+			window.oldrefs[v.name] = {};
+			window.oldrefs[v.name]['foreign'] = v.foreign;
+			window.oldrefs[v.name]['ref'] = v.ref;
+		});
+	}
+	
 	table.fields={};
 	//First update the data model!
 	$('.fieldRow').each(function(index) {
@@ -90,6 +107,8 @@ function saveData() {
 			defaultValue:  (defaultValue=="" ? null : defaultValue)
 			});
 	});
+	
+	
 	tables[table.name] = table;
 	$("#addTableDialog").modal('hide');
 	

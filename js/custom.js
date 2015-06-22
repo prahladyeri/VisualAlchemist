@@ -103,7 +103,7 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 */
 function createThePanel(table, mode) {
 	if (mode == "add") {
-		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data){
+		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data) {
 			$('.canvas').append(data.format(table.name));
 			setThePanel(table, mode);
 		});
@@ -114,11 +114,16 @@ function createThePanel(table, mode) {
 }
 
 function setThePanel(table, mode) {
-		html = '';
 		if (mode=='edit') {
-			jsPlumb.detachAllConnections($('#tbl' + table.name + " .table"));
+			/*jsPlumb.detachAllConnections($('#tbl' + table.name + " .table"));
+			$.each(window.oldTable.fields, function(k,v) {
+				console.log(v.ep);
+				jsPlumb.deleteEndpoint(v.ep);
+				console.log('deleted ep for',v.name);
+			});*/
+			
 			//jsPlumb.deleteEveryEndpoint();
-			jsPlumb.removeAllEndpoints($('#tbl' + table.name + " .table"));
+			//jsPlumb.removeAllEndpoints($('#tbl' + table.name + " .table"));
 			//jsPlumb.remove($('#tbl' + table.name + " .table tr"));
 			//jsPlumb.removeAL
 
@@ -132,10 +137,12 @@ function setThePanel(table, mode) {
 			//TODO: Rebuild connections to/from this table by looping thru tables collection.
 			$.each(table.fields, function(key, val) {
 				console.log('rebuilding ',key,val);
-				if (val.primaryKey) {
+				if (val.foreign != null) {
+					//check outgoing
 					
 				}
 				else if (val.ref != null) {
+					//check incoming
 					
 				}
 			});
@@ -143,43 +150,59 @@ function setThePanel(table, mode) {
 			//jsPlumb.repaintEverything();
 		}
 		
+		//Now lets build the new panel
 		$.each(table.fields, function(key, field) {
+			var html = '';
 			var sprim = "";
 			if (field.primaryKey) {
 				//sprim+= " style='cursor:move' ";
 			}
-			html += "<tr" +  ">";
+			html += "<tr>";
 			//if (mode=='add') 
 			html += "<td>" + (field.primaryKey ? '' : "<div ffname='" + table.name + "." + field.name +  "' class='field'></div>") + "</td>"; //virtual
+			
 			html += "<td>" + field.name + "</td>";
 			html += "<td>" + field.type + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
 			html += "<td>" + (field.primaryKey ? 'primary' : '') + (field.unique ? 'unique' : '') + "</td>";
 			//if (mode=='add') 
+			
 			html += "<td>" + (field.primaryKey ? "<div ffname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
 			html += "</tr>";
 			//
 			$('#tbl' + table.name + " .table").append(html);
+			//
+			var ep;
+			if (field.primaryKey) {
+				//jsPlumb.addEndpoint($('#tbl' + table.name + " div.prima"), {
+				ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
+					isSource: true,
+					paintStyle: {fillStyle:"red", outlineColor:"black", outlineWidth:1 },
+					//connectorPaintStyle:{ strokeStyle:"blue", lineWidth:10 },
+					connectorOverlays: [ 
+						[ "Arrow", { width:10, length:15, location:1, id:"arrow" } ],
+						//[ "Label", { label:"Relationship", id:"lblPrimary_" + table.name } ]
+						],
+				});
+			}
+			else {
+				//jsPlumb.addEndpoint($('#tbl' + table.name + " div.field"), {isTarget: true,
+				ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
+						isTarget: true,
+						paintStyle: { fillStyle:"green", outlineColor:"black", outlineWidth:1 },
+					});
+					jsPlumb.draggable('tbl' + table.name, {
+					   containment:true
+					});
+			}
+			field.ep  = ep;
+			//
+			//console.log('added field', field.name);
 		});
 		
 		//jsPlumb.draggable($('#tbl' + table.name + " tr.prima"),{}); //containment:true
 		console.log('#tbl' + table.name + " td.prima",'#tbl' + table.name + " td:not(.prima)");
 		 //if (mode=='add') 
-		 jsPlumb.addEndpoint($('#tbl' + table.name + " div.prima"), {
-			isSource: true,
-			paintStyle:{ fillStyle:"red", outlineColor:"black", outlineWidth:1 },
-			//connectorPaintStyle:{ strokeStyle:"blue", lineWidth:10 },
-			connectorOverlays:[ 
-				[ "Arrow", { width:10, length:15, location:1, id:"arrow" } ],
-				//[ "Label", { label:"Relationship", id:"lblPrimary_" + table.name } ]
-				],
-		});
 		//if (mode=='add') 
-		jsPlumb.addEndpoint($('#tbl' + table.name + " div.field"), {isTarget: true,
-			paintStyle: { fillStyle:"green", outlineColor:"black", outlineWidth:1 },
-		});
-		jsPlumb.draggable('tbl' + table.name, {
-		   containment:true
-		});
 		
 		if (mode=='add') {
 			if (window.lastPos == undefined) {
@@ -205,12 +228,13 @@ function setThePanel(table, mode) {
 		else 
 		{
 			//EDIT
-			jsPlumb.repaintEverything(); //all connections
 			$.each(tables, function(k,v) {
 				jsPlumb.repaint(['tbl' + k]);
 				jsPlumb.draggable('tbl' + k);
 				console.log('repainted div ' + 'tbl' + k);
 			});
+			jsPlumb.repaintEverything(); //all connections
+			console.log('repainted all connections');
 			bsalert({text:"Table updated!", type:'success'});
 		}
 		
