@@ -78,14 +78,14 @@ function saveData() {
 	if ($('#editMode').val() == 'edit') {
 		jsPlumb.detachAllConnections($('#tbl' + table.name + " .table"));
 		$.each(tables[table.name].fields, function(k,v) {
-			//console.log(v.ep);
-			jsPlumb.deleteEndpoint(v.ep);
-			console.log('deleted ep for',v.name);
-			
 			//preserve existing relations
 			window.oldrefs[v.name] = {};
 			window.oldrefs[v.name]['foreign'] = v.foreign;
 			window.oldrefs[v.name]['ref'] = v.ref;
+			
+			//console.log(v.ep);
+			jsPlumb.deleteEndpoint(v.ep);
+			console.log('deleted ep for',v.name);
 		});
 	}
 	

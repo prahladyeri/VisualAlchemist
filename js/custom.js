@@ -79,12 +79,16 @@ jsPlumb.bind("beforeDrop", function(info) {
 	return true; //return false or just quit to drop the new connection.
 });
 
-jsPlumb.bind("connection", function(info) {
+/*jsPlumb.bind("connection", function(info) {
 	//console.log(info);
 	//window.tobj = info;
-});
+});*/
 
 jsPlumb.bind("connectionDetached", function(info, originalEvent) {
+	//console.log('detached', info.source, info.target);
+	//return;
+	if ($(info.source).attr('ffname') == undefined || $(info.target).attr('ffname')==undefined)
+		return;
 	var pkey = $(info.source).attr('ffname').split(".");
 	var fkey = $(info.target).attr('ffname').split(".");
 	console.log(pkey, fkey);
@@ -133,19 +137,6 @@ function setThePanel(table, mode) {
 				jsPlumb.deleteEndpoint($('#tbl' + table.name +  ' .table tr'));
 			}*/
 			$('#tbl' + table.name + " .table tr").remove();
-			
-			//TODO: Rebuild connections to/from this table by looping thru tables collection.
-			$.each(table.fields, function(key, val) {
-				console.log('rebuilding ',key,val);
-				if (val.foreign != null) {
-					//check outgoing
-					
-				}
-				else if (val.ref != null) {
-					//check incoming
-					
-				}
-			});
 			
 			//jsPlumb.repaintEverything();
 		}
@@ -203,6 +194,34 @@ function setThePanel(table, mode) {
 		console.log('#tbl' + table.name + " td.prima",'#tbl' + table.name + " td:not(.prima)");
 		 //if (mode=='add') 
 		//if (mode=='add') 
+		
+		//TODO: Rebuild connections to/from this table by looping thru tables collection.
+		if (mode=='edit') {
+			$.each(window.oldrefs, function(key, val) {
+				console.log('rebuilding ',key,val);
+				if (val.foreign != null) {
+					//check outgoing
+					console.log('primary key found:',key, val.foreign);
+				}
+				else if (val.ref != null) {
+					//check incoming
+					console.log('foreign key found:',key, val.ref);
+					tsa = val.ref.split('.');
+					//$('#tblproduct2 div[ffname="product2.id"]');
+					ffname = tsa[0] + '.' + tsa[1];
+					//fnode = $('#tbl' + tsa[0] + ' div[ffname="' + ffname + '"]'); 
+					fnode =tables[tsa[0]].fields[tsa[1]].ep;
+					
+					sffname = table.name + '.' + key;
+					//tnode = $('#tbl' + table.name + ' div[ffname="' + sffname + '"]'); //
+					tnode = table.fields[key].ep;
+					
+					console.log('#tbl' + tsa[0] + ' div[ffname="' + ffname + '"]', '#tbl' + table.name + ' div[ffname="' + sffname + '"]');
+					//console.log(fnode.length, tnode.length);
+					jsPlumb.connect({source: fnode, target: tnode});
+				}
+			});
+		}
 		
 		if (mode=='add') {
 			if (window.lastPos == undefined) {
