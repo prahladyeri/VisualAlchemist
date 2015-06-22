@@ -157,6 +157,7 @@ function addField()
 }
 
 function tryToDelete(fieldName) {
+	//TODO: Check this is not working
 	for (conn in jsPlumb.getAllConnections()) {
 		if ($(conn.source).attr('ffname') == $("#tableName").text() + '.' + fieldName) {
 			alert("This key is acting as a primary key in a relation. Please delete that relation first.");
