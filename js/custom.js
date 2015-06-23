@@ -185,7 +185,7 @@ function setThePanel(table, mode) {
 					   containment:true
 					});
 			}
-			field.ep  = ep;
+			field.ep  = ep; //TODO: This may no longer be required since we are not using ep anywhere.
 			//
 			//console.log('added field', field.name);
 		});
@@ -202,23 +202,30 @@ function setThePanel(table, mode) {
 				if (val.foreign != null) {
 					//check outgoing
 					console.log('primary key found:',key, val.foreign);
+					table.fields[key].foreign = val.foreign; //restore the lost foreign
+					tsa = val.foreign.split('.');
+					elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
+					elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
+					//console.log(elist1.length, elist2.length);
+					var el1 = null;
+					var el2 = null;
+					elist1.each(function(key){el1=key});
+					elist2.each(function(key){el2=key});
+					jsPlumb.connect({source:el1, target:el2});
 				}
 				else if (val.ref != null) {
 					//check incoming
 					console.log('foreign key found:',key, val.ref);
+					table.fields[key].ref = val.ref; //restore the lost ref
 					tsa = val.ref.split('.');
-					//$('#tblproduct2 div[ffname="product2.id"]');
-					ffname = tsa[0] + '.' + tsa[1];
-					//fnode = $('#tbl' + tsa[0] + ' div[ffname="' + ffname + '"]'); 
-					fnode =tables[tsa[0]].fields[tsa[1]].ep;
-					
-					sffname = table.name + '.' + key;
-					//tnode = $('#tbl' + table.name + ' div[ffname="' + sffname + '"]'); //
-					tnode = table.fields[key].ep;
-					
-					console.log('#tbl' + tsa[0] + ' div[ffname="' + ffname + '"]', '#tbl' + table.name + ' div[ffname="' + sffname + '"]');
-					//console.log(fnode.length, tnode.length);
-					jsPlumb.connect({source: fnode, target: tnode});
+					elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
+					elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
+					//console.log(elist1.length, elist2.length);
+					var el1 = null;
+					var el2 = null;
+					elist1.each(function(key){el1=key});
+					elist2.each(function(key){el2=key});
+					jsPlumb.connect({source:el1, target:el2});
 				}
 			});
 		}
@@ -248,12 +255,12 @@ function setThePanel(table, mode) {
 		{
 			//EDIT
 			$.each(tables, function(k,v) {
-				jsPlumb.repaint(['tbl' + k]);
-				jsPlumb.draggable('tbl' + k);
-				console.log('repainted div ' + 'tbl' + k);
+				//jsPlumb.repaint(['tbl' + k]);
+				//jsPlumb.draggable('tbl' + k);
+				//console.log('repainted div ' + 'tbl' + k);
 			});
-			jsPlumb.repaintEverything(); //all connections
-			console.log('repainted all connections');
+			//jsPlumb.repaintEverything(); //all connections
+			//console.log('repainted all connections');
 			bsalert({text:"Table updated!", type:'success'});
 		}
 		
