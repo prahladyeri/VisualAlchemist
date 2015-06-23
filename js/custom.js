@@ -18,6 +18,12 @@ $(window).load(function() {
 		"top" : "50px",
 	});*/
 	
+	//document.formImportCanvas.action = window.importCanvas;
+	/*if ($("#inputCanvasFile").files != undefined){
+		//importCanvas($("#inputCanvasFile").files[0]);
+		alert($("#inputCanvasFile").files.length);
+	}*/
+	
 	if (!window.DEBUG) {
 		if (readCookie(".mainAlert.closed") != null) {
 			console.log("alert cookie already exists!");
@@ -52,20 +58,18 @@ $(window).load(function() {
 	
 	if (window.DEBUG) {
 		//create a dummy table for testing
-		//for (i=1;i<=2;i++) {
-		table = new Table("product");
-		table.addField({name: 'id'  , type: 'Integer', size: 0, primaryKey: true, defaultValue: 1});
-		table.addField({name: 'name', type: 'Text', size: 255, unique: true, defaultValue: 'foo'});
-		tables['product'] = table;
-		createThePanel(table, 'add');
+		for (i=1;i<=2;i++) {
+			table = new Table("product" + i);
+			table.addField({name: 'id', type: 'Integer', size: 0, primaryKey: true, defaultValue: 1});
+			table.addField({name: 'name', type: 'Text', size: 255, unique: true, defaultValue: 'foo'});
+			tables['product' + i] = table;
+			createThePanel(table, 'add');
+		}
 		
-		table = new Table("product1");
-		table.addField({name: 'id1'  , type: 'Integer', size: 0, primaryKey: true, defaultValue: 1});
-		table.addField({name: 'name1', type: 'Text', size: 255, unique: true, defaultValue: 'foo'});
-		tables['product1'] = table;
-		createThePanel(table, 'add');
-		
-		//}
+		//DEBUG mode: directly editing tables might need this:
+		$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
+			//runAddTableDialog(tableName, "add");
+		});
 	}
 });
 
@@ -93,13 +97,13 @@ jsPlumb.bind("beforeDrop", function(info) {
 });*/
 
 jsPlumb.bind("connectionDetached", function(info, originalEvent) {
-	//console.log('detached', info.source, info.target);
+	console.log(info.source, info.target);
 	//return;
 	if ($(info.source).attr('ffname') == undefined || $(info.target).attr('ffname')==undefined)
 		return;
 	var pkey = $(info.source).attr('ffname').split(".");
 	var fkey = $(info.target).attr('ffname').split(".");
-	console.log(pkey, fkey);
+	console.log('DETACHED', pkey, fkey);
 	tables[pkey[0]].fields[pkey[1]].foreign = null;
 	tables[fkey[0]].fields[fkey[1]].ref = null;
 	bsalert({text: pkey[1] + '><' + fkey[1], title:"Detached: "});
@@ -203,7 +207,7 @@ function setThePanel(table, mode) {
 		 //if (mode=='add') 
 		//if (mode=='add') 
 		
-		//TODO: Rebuild connections to/from this table by looping thru tables collection.
+		//TODO: [STABLE]Rebuild connections to/from this table by looping thru tables collection.
 		if (mode=='edit') {
 			$.each(window.oldrefs, function(key, val) {
 				console.log('rebuilding ',key,val);
@@ -220,7 +224,7 @@ function setThePanel(table, mode) {
 					var el2 = null;
 					elist1.each(function(key){el1=key});
 					elist2.each(function(key){el2=key});
-					jsPlumb.connect({source:el1, target:el2});
+					jsPlumb.connect({target:el1, source:el2});
 				}
 				else if (val.ref != null) {
 					//check incoming
@@ -321,8 +325,15 @@ Base = declarative_base()\n\n";
 		code += "class " + val.name + "(Base):\n";
 		code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
 		$.each(val.fields, function(fkey, fval){
+			//embed quotes if they don't already exist
+			if (fval.type=='Text' || fval.type=='String') {
+				var sdef = fval.defaultValue;
+				if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
+				if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
+			}
 			code += "\t" + fval.name + " = Column(" + fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')   
 			+ (fval.primaryKey ? ", primary_key=True" : "")
+			+ (fval.ref != null ? ", ForeignKey(" + fval.ref + ")" : "")
 			+ (fval.unique ? ", unique=True" : "")
 			+ (fval.defaultValue!=null ? ", default=" + fval.defaultValue : "")
 			+ ")\n";
@@ -462,7 +473,7 @@ function runAddTableDialog(tableName, mode)
 			addField(); //inside the addTableDialog.html
 		});
 	}
-	//TODO: This routine should be written each time before showing a bootstrap modal:
+	//TODO: [LATER]This routine should be written each time before showing a bootstrap modal:
 	$(".modal").on('shown.bs.modal', function() {
 		//console.log('.modal:shown');
 		$(this).find("[autofocus]:first").focus();
@@ -477,8 +488,8 @@ function editTable(tableName) {
 }
 
 function deleteTable(tableName) {
-	if (confirm("Sure you want to delete this table?")) {
-		//TODO: Check relations of this table
+	if (confirm("Sure you want to delete this table along with all it's relations?")) {
+		//TODO: [NOT-REQUIRED]Check relations of this table
 		delete tables[tableName];
 		//$("#tbl" + tableName).remove();
 		jsPlumb.empty("tbl" + tableName);
@@ -486,7 +497,47 @@ function deleteTable(tableName) {
 	}
 }
 
+//console.log('DEFINED_ImportCanvas');
+function importCanvas() {
+	console.log('IMPORT_CANVAS');
+	var file = $('#inputCanvasFile')[0].files[0];
+	//console.log(file);
+	fr = new FileReader();
+	fr.readAsText(file);
+	fr.onload = function(ev){
+		console.log(ev.target.result);
+	}
+	fr.onerror = function (ev) {
+        console.log("error reading file");
+    }
+	//console.log(fr.result);
+};
+
+function exportCanvas() {
+	downloadSomeText('foo bar', 'foobar.txt');
+}
+
 /* START UTILITY/CORE FUNCTIONS */
+
+function downloadSomeText(text, filename) {
+	var content = text;
+	var uriContent = "data:application/octet-stream," + encodeURIComponent(content);
+	var a = document.createElement('a');
+	
+	if (a.click != undefined) {
+		//method-3
+		a.href = uriContent;
+		a.download  = filename;
+		a.click();
+	}
+	else {
+		//method-2
+		location.href= uriContent;
+	}
+	
+	//method-1
+	//window.open(uriContent, "somefile.txt");
+}
 
 //depends on bootstrap
 function bsalert(obj) {

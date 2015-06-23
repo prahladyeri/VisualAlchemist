@@ -70,8 +70,10 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li ><a href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a></li>
-        <li><a href="#" onclick="tables={}; jsPlumb.remove($('.tableDesign'))">Clear All</a></li>
+        <li class="hidden" ><a href="#" onclick="tables={}; jsPlumb.remove($('.tableDesign'))">Clear All</a></li>
         <li><a href="javascript:" onclick="showResultsDialog();">Build</a></li>
+        <li><a href="javascript:" onclick="exportCanvas();">Export Canvas</a></li>
+		<li><a href="javascript:" class="btn-file"><form action="#" onchange="importCanvas();"><input id="inputCanvasFile" type="file">Import Canvas</input></form></a></li>
         <!--li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">

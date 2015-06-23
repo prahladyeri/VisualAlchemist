@@ -37,9 +37,9 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" onclick="saveData();">Save changes</button>
 	</div>
-		<div class="alert alert-info" role="alert">
+		<!--div class="alert alert-info" role="alert">
 		<small>Note: Write default value exactly as it appears in code. Add quotes for String, ex: "foo"</small>
-		</div>
+		</div-->
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -182,11 +182,15 @@ function addField()
 function tryToDelete(fieldName) {
 	//TODO: Check this is not working
 	for (conn in jsPlumb.getAllConnections()) {
-		if ($(conn.source).attr('ffname') == $("#tableName").text() + '.' + fieldName) {
+		var tname = $('#tableName').text();
+		var existing = tables[tname].fields[fieldName];
+		//if ($(conn.source).attr('ffname') == $("#tableName").text() + '.' + fieldName) {
+		if (existing!=undefined && existing.foreign != null) {
 			alert("This key is acting as a primary key in a relation. Please delete that relation first.");
 			return;
 		}
-		else if ($(conn.target).attr('ffname') == $("#tableName").text() + '.' + fieldName) {
+		//else if ($(conn.target).attr('ffname') == $("#tableName").text() + '.' + fieldName) {
+		else if (existing!=undefined && existing.ref != null) {
 			alert("This key is acting as a foreign key in a relation. Please delete that relation first.");
 			return;
 		}
