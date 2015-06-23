@@ -4,7 +4,8 @@
 * @copyright MIT License
 * @date 2015/06/16
 */
-var Table = function(name) {
+var Table = function(name) 
+{
 	if (name != undefined) {
 		this.name = name;
 		console.log('name set');
@@ -13,9 +14,12 @@ var Table = function(name) {
 		this.name='Unnamed';
 		console.log('name undefined');
 	}
-	
+	this.fields={};
+	return this;
 };
+
 var Field = function(){
+	return this;
 };
 
 Table.prototype.name = "Unnamed";

@@ -52,13 +52,20 @@ $(window).load(function() {
 	
 	if (window.DEBUG) {
 		//create a dummy table for testing
-		for (i=1;i<=2;i++) {
-			table = new Table("product" + i);
-			table.addField({name: 'id', type: 'Integer', size: 0, primaryKey: true, defaultValue: 1});
-			table.addField({name: 'name', type: 'Text', size: 255, unique: true, defaultValue: 'foo'});
-			tables['product' + i] = table;
-			createThePanel(table, 'add');
-		}
+		//for (i=1;i<=2;i++) {
+		table = new Table("product");
+		table.addField({name: 'id'  , type: 'Integer', size: 0, primaryKey: true, defaultValue: 1});
+		table.addField({name: 'name', type: 'Text', size: 255, unique: true, defaultValue: 'foo'});
+		tables['product'] = table;
+		createThePanel(table, 'add');
+		
+		table = new Table("product1");
+		table.addField({name: 'id1'  , type: 'Integer', size: 0, primaryKey: true, defaultValue: 1});
+		table.addField({name: 'name1', type: 'Text', size: 255, unique: true, defaultValue: 'foo'});
+		tables['product1'] = table;
+		createThePanel(table, 'add');
+		
+		//}
 	}
 });
 
@@ -67,6 +74,7 @@ $(window).load(function() {
 jsPlumb.bind("beforeDrop", function(info) {
 	var pkey = $(info.connection.source).attr('ffname').split(".");
 	var fkey = $(info.connection.target).attr('ffname').split(".");
+	console.log('BEFORE_DROP', pkey, fkey);
 	if (pkey[0] == fkey[0]) {
 		alert("Source and Target table cannot be the same");
 		return false;
@@ -204,6 +212,7 @@ function setThePanel(table, mode) {
 					console.log('primary key found:',key, val.foreign);
 					table.fields[key].foreign = val.foreign; //restore the lost foreign
 					tsa = val.foreign.split('.');
+					tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
 					elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
 					elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
 					//console.log(elist1.length, elist2.length);
@@ -218,6 +227,8 @@ function setThePanel(table, mode) {
 					console.log('foreign key found:',key, val.ref);
 					table.fields[key].ref = val.ref; //restore the lost ref
 					tsa = val.ref.split('.');
+					tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
+					
 					elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
 					elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
 					//console.log(elist1.length, elist2.length);

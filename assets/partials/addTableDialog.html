@@ -82,11 +82,15 @@ function saveData() {
 			window.oldrefs[v.name] = {};
 			window.oldrefs[v.name]['foreign'] = v.foreign;
 			window.oldrefs[v.name]['ref'] = v.ref;
+			console.log('oldref backing up',v.name,v.foreign,v.ref);
 			
 			//console.log(v.ep);
-			jsPlumb.deleteEndpoint(v.ep);
-			console.log('deleted ep for',v.name);
+			//elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
+			
+			//jsPlumb.deleteEndpoint(v.ep);
+			//console.log('deleted ep for',v.name);
 		});
+		jsPlumb.empty($('#tbl' + table.name + " .table"));
 	}
 	
 	table.fields={};
