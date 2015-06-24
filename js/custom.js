@@ -44,6 +44,7 @@ $(window).load(function() {
 	jsPlumb.setContainer("theCanvas");
 	console.log('jsPlumb.getContainer():', jsPlumb.getContainer());
 	
+	
 	//check local storage, if any build the tables.
 	$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
 		//runAddTableDialog(tableName, "add");
@@ -251,9 +252,13 @@ function setThePanel(table, mode) {
 				window.lastPos = {'x':0, 'y':0};
 			}
 
-			$('#tbl' + table.name).css({ 
-				'left': window.lastPos.x + "px",
-				'top': window.lastPos.y + "px"
+			var maxX = $(".canvas").width() - $('#tbl' + table.name).width() ;
+			var maxY = $(".canvas").height() - $('#tbl' + table.name).height();
+			$('#tbl' + table.name).css({
+				//'left': window.lastPos.x + "px",
+				//'top': window.lastPos.y + "px"
+				left: (Math.random() * maxX) + 'px',
+				top: (Math.random() * maxY) + 'px'
 			});
 			
 			if (window.lastPos.x >= $('.container').offset().left + $('.container').offset().width) {
@@ -319,9 +324,9 @@ function dragOver(ev) {
 */
 
 function saveCanvasState() {
+	console.log('saveCanvasState()');
 	var json = null;
 	if (window.localStorage) {
-		console.log('saveCanvasState: LOCALSTORAGE found, saving tables!', tables);
 		json = JSON.stringify(tables);
 		window.localStorage.setItem("strTables", json);
 	}
@@ -329,13 +334,24 @@ function saveCanvasState() {
 }
 
 function loadCanvasState(json) {
-	//var tables  = new Object();
+	console.log('loadCanvasState()');
+	tables  = new Object();
 	if (!window.localStorage) return;
-	console.log('loadCanvasState: LOCALSTORAGE found!');
 	console.log("Loading tables");
 	if (localStorage.getItem("strTables") == null) return;
 	
-	if (!json) json = localStorage.getItem("strTables");
+	if (!json) {
+		json = localStorage.getItem("strTables");
+	}
+	else {
+		/*$.each(tables, function(k,v){
+			deleteTable(k);	
+		});*/
+		//jsPlumb.empty(".canvas");
+		console.log('json arg:',json);
+		jsPlumb.detachEveryConnection();
+		jsPlumb.empty($(".canvas"));
+	}
 	ttables = JSON.parse(json);
 	//import the table structures
 	$.each(ttables, function(k,v) {
@@ -351,6 +367,7 @@ function loadCanvasState(json) {
 	});
 			
 	//set the panels
+	console.log('tlen:',Object.keys(tables).length);
 	$.each(tables, function(k,v) {
 		createThePanel(v, 'add', function() {
 			if ($("[id^='tbl']").length < Object.keys(tables).length) return;
@@ -577,14 +594,15 @@ function importCanvas() {
 	//console.log(file);
 	fr = new FileReader();
 	fr.readAsText(file);
-	fr.onload = function(ev){
-		//console.log(ev.target.result);
+	fr.onload = function(ev) {
+		console.log(ev.target.result);
 		json = ev.target.result;
 		loadCanvasState(json);
 	}
 	fr.onerror = function (ev) {
         console.log("error reading file");
     }
+	$("#inputCanvasFile").val("");
 	//console.log(fr.result);
 };
 
