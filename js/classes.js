@@ -14,11 +14,32 @@ var Table = function(name)
 		this.name='Unnamed';
 		console.log('name undefined');
 	}
-	this.fields={};
+	this.fields=new Object();
 	return this;
 };
 
-var Field = function(){
+/**
+* @brief Field object constructor.
+* @param name Name of the field.
+* @param type Data Type of the field.
+* @param unique Boolean, Indicates whether field is unique.
+* @param primary Boolean, Indicates whether this is a primary key
+*/
+var Field = function(obj) {
+	if (obj.unique==undefined) obj.unique=false;
+	if (obj.primaryKey==undefined) obj.primaryKey=false;
+	//if (obj.references==undefined) obj.references=null;
+	if (obj.defaultValue==undefined) obj.defaultValue=null;
+	//c = new Field();
+	this.name = obj.name;
+	this.type = obj.type;
+	this.size = obj.size;
+	this.unique = obj.unique;
+	this.primaryKey = obj.primaryKey;
+	//c.references = obj.references;
+	this.defaultValue = obj.defaultValue;
+	//console.log(name);
+	//this.fields[c.name] = c;
 	return this;
 };
 
@@ -30,33 +51,11 @@ Field.prototype.type = "";
 Field.prototype.size = 0;
 Field.prototype.unique = false;
 Field.prototype.primaryKey = false;
-Field.prototype.references = "";
+//Field.prototype.references = "";
 Field.prototype.defaultValue = null;
 Field.prototype.foreign = null; //for primary only: the name[s] of fields that refer to this primary key.
 Field.prototype.ref = null; //for non-primary only: the name[s] of primary key field in another table that this refers to.
 
 
-/**
-* @brief Add new Field object to this table.
-* @param name Name of the field.
-* @param type Data Type of the field.
-* @param unique Boolean, Indicates whether field is unique.
-* @param primary Boolean, Indicates whether this is a primary key
-* @param references Name of the tablename.field which this key references, blank otherwise.
-*/
-Table.prototype.addField = function(obj) {
-	if (obj.unique==undefined) obj.unique=false;
-	if (obj.primaryKey==undefined) obj.primaryKey=false;
-	if (obj.references==undefined) obj.references=null;
-	if (obj.defaultValue==undefined) obj.defaultValue=null;
-	c = new Field();
-	c.name = obj.name;
-	c.type = obj.type;
-	c.size = obj.size;
-	c.unique = obj.unique;
-	c.primaryKey = obj.primaryKey;
-	c.references = obj.references;
-	c.defaultValue = obj.defaultValue;
-	//console.log(name);
-	this.fields[c.name] = c;
-}
+/*Table.prototype.addField = function(obj) {
+}*/

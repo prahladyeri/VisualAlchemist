@@ -102,7 +102,7 @@ function saveData() {
 		console.log($(this).find(".fieldName").text(), 'primary: ' + $(this).find(".hfieldPrimary").text());
 		console.log($(this).find(".fieldName").text(), 'unique: ' + $(this).find(".hfieldUnique").text());
 		
-		table.addField({ 
+		table.fields[$(this).find(".fieldName").text()] = new Field({ 
 			name: $(this).find(".fieldName").text(),
 			type: $(this).find(".fieldType").text(),
 			size: $(this).find(".hfieldSize").text(),

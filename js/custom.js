@@ -12,18 +12,6 @@ else {
 }
 
 $(window).load(function() {
-	//alert("foo");
-	/*$("#dragme").css({
-		"left": "500px",
-		"top" : "50px",
-	});*/
-	
-	//document.formImportCanvas.action = window.importCanvas;
-	/*if ($("#inputCanvasFile").files != undefined){
-		//importCanvas($("#inputCanvasFile").files[0]);
-		alert($("#inputCanvasFile").files.length);
-	}*/
-	
 	if (!window.DEBUG) {
 		if (readCookie(".mainAlert.closed") != null) {
 			console.log("alert cookie already exists!");
@@ -56,21 +44,30 @@ $(window).load(function() {
 	jsPlumb.setContainer("theCanvas");
 	console.log('jsPlumb.getContainer():', jsPlumb.getContainer());
 	
-	if (window.DEBUG) {
+	//check local storage, if any build the tables.
+	$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
+		//runAddTableDialog(tableName, "add");
+	});
+	
+	
+	loadCanvasState();
+	//if (localStorage.tables) {
+		//console.log("LOCAL_STORAGE found!");
+		//tables = localStorage.tables;
+	//}
+
+	
+/*	if (Object.keys(tables).length==0 && window.DEBUG) {
 		//create a dummy table for testing
 		for (i=1;i<=2;i++) {
 			table = new Table("product" + i);
-			table.addField({name: 'id', type: 'Integer', size: 0, primaryKey: true, defaultValue: 1});
-			table.addField({name: 'name', type: 'Text', size: 255, unique: true, defaultValue: 'foo'});
+			table.fields['id'] = new Field({name: 'id', type: 'Integer', size: 0, primaryKey: true, defaultValue: 1});
+			table.fields['name'] = new Field({name: 'name', type: 'Text', size: 255, unique: true, defaultValue: 'foo'});
 			tables['product' + i] = table;
 			createThePanel(table, 'add');
 		}
-		
-		//DEBUG mode: directly editing tables might need this:
-		$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
-			//runAddTableDialog(tableName, "add");
-		});
-	}
+	}*/
+	
 });
 
 //jsPlumb events
@@ -197,7 +194,7 @@ function setThePanel(table, mode) {
 					   containment:true
 					});
 			}
-			field.ep  = ep; //TODO: This may no longer be required since we are not using ep anywhere.
+			//field.ep  = ep; //TODO: [inprogress]This may no longer be required since we are not using ep anywhere.
 			//
 			//console.log('added field', field.name);
 		});
@@ -279,6 +276,7 @@ function setThePanel(table, mode) {
 			bsalert({text:"Table updated!", type:'success'});
 		}
 		
+		saveCanvasState(); 
 		//jsPlumb.addEndpoint($('#tbl' + table.name), {  });
 		//jsPlumb.setContainer('theCanvas');
 		//console.log(
@@ -311,6 +309,41 @@ function dragOver(ev) {
 	ev.preventDefault();
 	return false;
 }*/
+
+/**
+* @brief Save current canvas state to local store
+*/
+
+function saveCanvasState() {
+	if (window.localStorage) {
+		console.log('saveCanvasState: LOCALSTORAGE found, saving tables!', tables);
+		window.localStorage.setItem("strTables", JSON.stringify(tables));
+	}
+}
+
+function loadCanvasState() {
+	//var tables  = new Object();
+	if (window.localStorage) {
+		console.log('loadCanvasState: LOCALSTORAGE found!');
+		console.log("Loading tables");
+		if (localStorage.getItem("strTables") != null) {
+			ttables = JSON.parse(localStorage.getItem("strTables"));
+			//
+			$.each(ttables, function(k,v) {
+				console.log('PROCESSING: ' + k);
+				tables[k] = new Table(v.name);
+				tables[k].fields = {};
+				$.each(v.fields, function(kk,vv) {
+					tables[k].fields[kk] = new Field(vv);
+				});
+			});
+		}
+	}
+	
+	$.each(tables, function(k,v){
+		createThePanel(v, 'add');
+	});
+}
 
 function generateCode(dbname) {
 	var code = 
