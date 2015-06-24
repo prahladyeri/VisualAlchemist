@@ -50,7 +50,7 @@ $(window).load(function() {
 	});
 	
 	
-	loadCanvasState();
+	loadCanvasState(null);
 	//if (localStorage.tables) {
 		//console.log("LOCAL_STORAGE found!");
 		//tables = localStorage.tables;
@@ -85,6 +85,7 @@ jsPlumb.bind("beforeDrop", function(info) {
 	tables[fkey[0]].fields[fkey[1]].ref = pkey[0] + '.' + pkey[1];
 	bsalert({text: pkey[1] + '->' + fkey[1], title:"Established: "});
 	//window.tobj = info;
+	saveCanvasState();
 	return true; //return false or just quit to drop the new connection.
 });
 
@@ -104,6 +105,7 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 	tables[pkey[0]].fields[pkey[1]].foreign = null;
 	tables[fkey[0]].fields[fkey[1]].ref = null;
 	bsalert({text: pkey[1] + '><' + fkey[1], title:"Detached: "});
+	saveCanvasState();
 	//window.tobj = info;
 })
 
@@ -114,15 +116,17 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 * @brief: Creates a new panel from scratch for a table
 * @param mode Should be 'add' or 'edit'
 */
-function createThePanel(table, mode) {
+function createThePanel(table, mode, func) {
 	if (mode == "add") {
 		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data) {
 			$('.canvas').append(data.format(table.name));
 			setThePanel(table, mode);
+			if (func) func();
 		});
 	}
 	else {
 		setThePanel(table, mode);
+		func();
 	}
 }
 
@@ -190,10 +194,10 @@ function setThePanel(table, mode) {
 						isTarget: true,
 						paintStyle: { fillStyle:"green", outlineColor:"black", outlineWidth:1 },
 					});
-					jsPlumb.draggable('tbl' + table.name, {
-					   containment:true
-					});
 			}
+			jsPlumb.draggable('tbl' + table.name, {
+			   containment:true
+			});
 			//field.ep  = ep; //TODO: [inprogress]This may no longer be required since we are not using ep anywhere.
 			//
 			//console.log('added field', field.name);
@@ -229,7 +233,7 @@ function setThePanel(table, mode) {
 					table.fields[key].ref = val.ref; //restore the lost ref
 					tsa = val.ref.split('.');
 					tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-					
+					console.log("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']");
 					elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
 					elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
 					//console.log(elist1.length, elist2.length);
@@ -315,35 +319,70 @@ function dragOver(ev) {
 */
 
 function saveCanvasState() {
+	var json = null;
 	if (window.localStorage) {
 		console.log('saveCanvasState: LOCALSTORAGE found, saving tables!', tables);
-		window.localStorage.setItem("strTables", JSON.stringify(tables));
+		json = JSON.stringify(tables);
+		window.localStorage.setItem("strTables", json);
 	}
+	return json;
 }
 
-function loadCanvasState() {
+function loadCanvasState(json) {
 	//var tables  = new Object();
-	if (window.localStorage) {
-		console.log('loadCanvasState: LOCALSTORAGE found!');
-		console.log("Loading tables");
-		if (localStorage.getItem("strTables") != null) {
-			ttables = JSON.parse(localStorage.getItem("strTables"));
-			//
-			$.each(ttables, function(k,v) {
-				console.log('PROCESSING: ' + k);
-				tables[k] = new Table(v.name);
-				tables[k].fields = {};
+	if (!window.localStorage) return;
+	console.log('loadCanvasState: LOCALSTORAGE found!');
+	console.log("Loading tables");
+	if (localStorage.getItem("strTables") == null) return;
+	
+	if (!json) json = localStorage.getItem("strTables");
+	ttables = JSON.parse(json);
+	//import the table structures
+	$.each(ttables, function(k,v) {
+		console.log('PROCESSING: ' + k);
+		tables[k] = new Table(v.name);
+		tables[k].fields = {};
+		$.each(v.fields, function(kk,vv) {
+			tables[k].fields[kk] = new Field(vv);
+			tables[k].fields[kk].foreign = (vv.foreign ? vv.foreign : null);
+			tables[k].fields[kk].ref = (vv.ref ? vv.ref : null);
+			//TODO: Remember to add any new attributes here, so canvas loads properly.
+		});
+	});
+			
+	//set the panels
+	$.each(tables, function(k,v) {
+		createThePanel(v, 'add', function() {
+			if ($("[id^='tbl']").length < Object.keys(tables).length) return;
+			//now create the relations after all panels are done.
+			$.each(tables, function(k,v) {
+				console.log('Setting relations:',k);
+				window.oldrefs = {};
 				$.each(v.fields, function(kk,vv) {
-					tables[k].fields[kk] = new Field(vv);
+					if (vv.ref != null) {
+						//check incoming
+						console.log('foreign key found:',vv.name, vv.ref);
+						//k.fields[key].ref = val.ref; //restore the lost ref
+						tsa = vv.ref.split('.');
+						//tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
+						//console.log("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']");
+						elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
+						elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + v.name +  " div[ffname='" + v.name + "." + vv.name +  "']")});
+						//console.log(elist1.length, elist2.length);
+						var el1 = null;
+						var el2 = null;
+						elist1.each(function(key){el1=key});
+						elist2.each(function(key){el2=key});
+						jsPlumb.connect({source:el1, target:el2});
+					}
 				});
 			});
-		}
-	}
-	
-	$.each(tables, function(k,v){
-		createThePanel(v, 'add');
+
+		});
 	});
+	
 }
+
 
 function generateCode(dbname) {
 	var code = 
@@ -359,7 +398,7 @@ Base = declarative_base()\n\n";
 		code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
 		$.each(val.fields, function(fkey, fval){
 			//embed quotes if they don't already exist
-			if (fval.type=='Text' || fval.type=='String') {
+			if ((fval.type=='Text' || fval.type=='String') && fval.defaultValue!=null) {
 				var sdef = fval.defaultValue;
 				if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
 				if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
@@ -526,6 +565,7 @@ function deleteTable(tableName) {
 		delete tables[tableName];
 		//$("#tbl" + tableName).remove();
 		jsPlumb.empty("tbl" + tableName);
+		saveCanvasState();
 		//jsPlumb.repaintEverything();
 	}
 }
@@ -538,7 +578,9 @@ function importCanvas() {
 	fr = new FileReader();
 	fr.readAsText(file);
 	fr.onload = function(ev){
-		console.log(ev.target.result);
+		//console.log(ev.target.result);
+		json = ev.target.result;
+		loadCanvasState(json);
 	}
 	fr.onerror = function (ev) {
         console.log("error reading file");
@@ -547,7 +589,7 @@ function importCanvas() {
 };
 
 function exportCanvas() {
-	downloadSomeText('foo bar', 'foobar.txt');
+	downloadSomeText(saveCanvasState(), 'canvas.json');
 }
 
 /* START UTILITY/CORE FUNCTIONS */
