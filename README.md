@@ -2,14 +2,14 @@
 
 **Visual Alchemist** is a web app to seamlessly create `sqlalchemy` models by dragging/dropping objects in a canvas.
 
-![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenAddTable.png)
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 
-Presently, the tool just automates the code creation to build the corresponding `sqlite` database. Following features are coming soon:
+Features:
 
-- Implement joins and relations by drag/drop.
-- Authentication/Sign-up.
-- Ability to save the visual models on backend.
-- Multi-language support (on-demand).
+- Automatically builds the `models.py` code file to generate the models.
+- Joins and table-movement on canvas by simple drag/drop.
+- Saves the canvas in local data-store (HTML5-enabled browsers only).
+- Ability to export/import the canvas to/from `JSON` files.
 
 ### Demo
 
@@ -31,9 +31,9 @@ To run the app, go to the application root directory and type:
     venv/bin/python valchemist.py
     	
 	
-### Contribute
+### Contribution
 
 I need contributions in the following areas:
 - **Front-end Testing:** To test the app across various Browser/OS environments to make sure it runs all-right.
 - **Design:** My CSS/JavaScript skills aren't that great. So, if you can suggest any improvisation to the front-end workflow, it would be great!
-- Need more suggestions from Python Experts regarding how can I improvise this app, so its useful somewhere.
+- **Suggestions:** Need more suggestions from Python Experts regarding how can I improvise this app, so its useful somewhere.
