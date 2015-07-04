@@ -13,9 +13,13 @@ h2 {
 	z-index: 255;
 }
 
-/*.panel.tableDesign {
-	width: 200px;
-}*/
+.panel.tableDesign, 
+.panel.tableDesign .panel-heading
+ {
+	border-radius: 0px;
+}
+
+
 
 nav.header {
 	margin-left: 100px;
@@ -46,3 +50,4 @@ nav.header {
     cursor: inherit;
     display: block;
 }
+

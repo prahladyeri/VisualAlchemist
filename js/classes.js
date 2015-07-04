@@ -15,6 +15,7 @@ var Table = function(name)
 		console.log('name undefined');
 	}
 	this.fields=new Object();
+	this.position = new Object();
 	return this;
 };
 
@@ -44,6 +45,7 @@ var Field = function(obj) {
 };
 
 Table.prototype.name = "Unnamed";
+Table.prototype.position = {x:0,y:0}; //x,y coordinates on the canvas
 Table.prototype.fields = {}; //dict of String:Field objects
 
 Field.prototype.name = "Unnamed";

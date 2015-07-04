@@ -12,7 +12,7 @@ else {
 }
 
 $(window).load(function() {
-	if (!window.DEBUG) {
+	//if (!window.DEBUG) {
 		if (readCookie(".mainAlert.closed") != null) {
 			console.log("alert cookie already exists!");
 			$(".mainAlert").hide();
@@ -25,7 +25,7 @@ $(window).load(function() {
 			})
 			console.log('alert event added');
 		}
-	}
+	//}
 	
 	//Objects Initialization
 	tables = {}; //dict of String:Table objects
@@ -71,8 +71,7 @@ $(window).load(function() {
 	
 });
 
-//jsPlumb events
-
+/* jsPlumb events */
 jsPlumb.bind("beforeDrop", function(info) {
 	var pkey = $(info.connection.source).attr('ffname').split(".");
 	var fkey = $(info.connection.target).attr('ffname').split(".");
@@ -127,7 +126,7 @@ function createThePanel(table, mode, func) {
 	}
 	else {
 		setThePanel(table, mode);
-		func();
+		if (func) func();
 	}
 }
 
@@ -197,7 +196,13 @@ function setThePanel(table, mode) {
 					});
 			}
 			jsPlumb.draggable('tbl' + table.name, {
-			   containment:true
+			   containment:true,
+			   stop: function(event, ui) {
+					console.log(event.pos[0], event.pos[1]);
+					tables[table.name].position.x = event.pos[0] + 'px';
+					tables[table.name].position.y = event.pos[1] + 'px';
+					saveCanvasState();
+			   }
 			});
 			//field.ep  = ep; //TODO: [inprogress]This may no longer be required since we are not using ep anywhere.
 			//
@@ -254,11 +259,15 @@ function setThePanel(table, mode) {
 
 			var maxX = $(".canvas").width() - $('#tbl' + table.name).width() ;
 			var maxY = $(".canvas").height() - $('#tbl' + table.name).height();
+			if (table.position.x==0 && table.position.y==0) {
+				table.position.x = (Math.random() * maxX) + 'px';
+				table.position.y = (Math.random() * maxY) + 'px';
+			}
 			$('#tbl' + table.name).css({
 				//'left': window.lastPos.x + "px",
 				//'top': window.lastPos.y + "px"
-				left: (Math.random() * maxX) + 'px',
-				top: (Math.random() * maxY) + 'px'
+				left: table.position.x,
+				top: table.position.y
 			});
 			
 			if (window.lastPos.x >= $('.container').offset().left + $('.container').offset().width) {
@@ -353,11 +362,16 @@ function loadCanvasState(json) {
 		jsPlumb.empty($(".canvas"));
 	}
 	ttables = JSON.parse(json);
+	console.log(ttables);
 	//import the table structures
 	$.each(ttables, function(k,v) {
 		console.log('PROCESSING: ' + k);
 		tables[k] = new Table(v.name);
 		tables[k].fields = {};
+		tables[k].position = v.position;
+		//tables[k].position.x = v.position.x;
+		//tables[k].position.y = v.position.y;
+		console.log('round1',tables[k].position,tables[k].position.x, tables[k].position.y);
 		$.each(v.fields, function(kk,vv) {
 			tables[k].fields[kk] = new Field(vv);
 			tables[k].fields[kk].foreign = (vv.foreign ? vv.foreign : null);
@@ -374,6 +388,8 @@ function loadCanvasState(json) {
 			//now create the relations after all panels are done.
 			$.each(tables, function(k,v) {
 				console.log('Setting relations:',k);
+				console.log('round2',v.position.x, v.position.y);
+				//$('#tbl' + k).css({left:v.position.x,top:v.position.y});
 				window.oldrefs = {};
 				$.each(v.fields, function(kk,vv) {
 					if (vv.ref != null) {
