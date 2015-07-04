@@ -9,10 +9,13 @@
       <div class="modal-body form-inline">
         <input autofocus="true" id="fieldName" style="width:110px;" class="form-control" type="text" placeholder="Field name"></input>
         <select id="fieldType" class="form-control" type="text" onchange="if ($('#fieldType').val()!='String' && $('#fieldType').val()!='Text') $('#fieldSize').attr('disabled',''); else $('#fieldSize').removeAttr('disabled');">
-			<option value="String">String</option>
 			<option value="Text">Text</option>
+			<option value="LONGTEXT">mysql.LONGTEXT</option>
+			<option value="String">String</option>
 			<option value="Date">Date</option>
 			<option value="Integer">Integer</option>
+			<option value="BIGINT">mysql.BIGINT</option>
+			<option value="BIGINT(unsigned=True)">mysql.BIGINT(unsigned)</option>
 			<option value="Float">Float</option>
 		</select>
         <input id="fieldSize" style="width:70px;" class="form-control" type="number" min="0" placeholder="size" value=""></input>
@@ -106,6 +109,7 @@ function saveData() {
 		var defaultValue = $(this).find(".hfieldDefaultValue").text();
 		console.log($(this).find(".fieldName").text(), 'primary: ' + $(this).find(".hfieldPrimary").text());
 		console.log($(this).find(".fieldName").text(), 'unique: ' + $(this).find(".hfieldUnique").text());
+		console.log("DATA_TYPE",$(this).find(".fieldType").val());
 		
 		table.fields[$(this).find(".fieldName").text()] = new Field({ 
 			name: $(this).find(".fieldName").text(),

@@ -13,17 +13,20 @@ else {
 
 $(window).load(function() {
 	//if (!window.DEBUG) {
+		//$("#lnkHelp").click();
 		if (readCookie(".mainAlert.closed") != null) {
-			console.log("alert cookie already exists!");
-			$(".mainAlert").hide();
+			/*console.log("alert cookie already exists!");
+			$(".mainAlert").hide();*/
 		}
 		else {
-			$('.mainAlert').on('closed.bs.alert',  function(){
-				//alert('closed');
+				bsalert({title:'How to:',text:'Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!<br><br>To create relationships, drag the red dots (primary-keys) and connect them to green dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the green area on the foreign-keys and drag it outside the table panel.', type:'success', delay:0});
+			console.log("CALLED");
+			createCookie(".mainAlert.closed","true");
+			/*$('.mainAlert').on('closed.bs.alert',  function(){
 				createCookie(".mainAlert.closed", "true", 365);
 				console.log('alert cookie created');
 			})
-			console.log('alert event added');
+			console.log('alert event added');*/
 		}
 	//}
 	
@@ -34,7 +37,8 @@ $(window).load(function() {
 	jsPlumb.importDefaults({
 		Endpoint: ["Rectangle", {width:14, height:14}] ,
 		Endpoints : [ [ "Rectangle" ], [ "Rectangle" ] ],
-		Connector: "Bezier",
+		Connector: "Bezier",//Flowchart, Straight, Bezier
+		MaxConnections : 5,
 		PaintStyle: {strokeStyle: "rgba(0,0,0,100)", lineWidth:4},
 		/*HoverPaintStyle: { lineWidth:4,
 			strokeStyle: 'rgba(200,0,0,100)'
@@ -52,6 +56,9 @@ $(window).load(function() {
 	
 	
 	loadCanvasState(null);
+	
+
+	
 	//if (localStorage.tables) {
 		//console.log("LOCAL_STORAGE found!");
 		//tables = localStorage.tables;
@@ -73,7 +80,17 @@ $(window).load(function() {
 
 /* jsPlumb events */
 jsPlumb.bind("beforeDrop", function(info) {
-	var pkey = $(info.connection.source).attr('ffname').split(".");
+	//check if a connection already exists between these two points
+	console.log(info.sourceId, info.targetId);
+	var con=jsPlumb.getConnections({source:info.sourceId, target:info.targetId});
+	//console.log(con);
+	if (con.length>0) {
+		console.log("This Connection already exists, detaching old one.");
+		jsPlumb.detach(con[0]);
+		//return false;
+	}
+	//
+	var pkey = $(info.connection.source).attr('fpname').split(".");
 	var fkey = $(info.connection.target).attr('ffname').split(".");
 	console.log('BEFORE_DROP', pkey, fkey);
 	if (pkey[0] == fkey[0]) {
@@ -86,6 +103,7 @@ jsPlumb.bind("beforeDrop", function(info) {
 	bsalert({text: pkey[1] + '->' + fkey[1], title:"Established: "});
 	//window.tobj = info;
 	saveCanvasState();
+	
 	return true; //return false or just quit to drop the new connection.
 });
 
@@ -97,9 +115,9 @@ jsPlumb.bind("beforeDrop", function(info) {
 jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 	console.log(info.source, info.target);
 	//return;
-	if ($(info.source).attr('ffname') == undefined || $(info.target).attr('ffname')==undefined)
+	if ($(info.source).attr('fpname') == undefined || $(info.target).attr('ffname')==undefined)
 		return;
-	var pkey = $(info.source).attr('ffname').split(".");
+	var pkey = $(info.source).attr('fpname').split(".");
 	var fkey = $(info.target).attr('ffname').split(".");
 	console.log('DETACHED', pkey, fkey);
 	tables[pkey[0]].fields[pkey[1]].foreign = null;
@@ -163,22 +181,23 @@ function setThePanel(table, mode) {
 			}
 			html += "<tr>";
 			//if (mode=='add') 
-			html += "<td>" + (field.primaryKey ? '' : "<div ffname='" + table.name + "." + field.name +  "' class='field'></div>") + "</td>"; //virtual
+			/*html += "<td>" + (field.primaryKey ? '' : "<div ffname='" + table.name + "." + field.name +  "' class='field'></div>") + "</td>"; //virtual*/
+			html += "<td><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
 			
 			html += "<td>" + field.name + "</td>";
-			html += "<td>" + field.type + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
+			html += "<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
 			html += "<td>" + (field.primaryKey ? 'primary' : '') + (field.unique ? 'unique' : '') + "</td>";
 			//if (mode=='add') 
 			
-			html += "<td>" + (field.primaryKey ? "<div ffname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
+			html += "<td>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
 			html += "</tr>";
 			//
-			$('#tbl' + table.name + " .table").append(html);
+			$("#tbl" + table.name + " .table").append(html);
 			//
 			var ep;
 			if (field.primaryKey) {
 				//jsPlumb.addEndpoint($('#tbl' + table.name + " div.prima"), {
-				ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
+				ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
 					isSource: true,
 					paintStyle: {fillStyle:"red", outlineColor:"black", outlineWidth:1 },
 					//connectorPaintStyle:{ strokeStyle:"blue", lineWidth:10 },
@@ -188,13 +207,13 @@ function setThePanel(table, mode) {
 						],
 				});
 			}
-			else {
+			//else {
 				//jsPlumb.addEndpoint($('#tbl' + table.name + " div.field"), {isTarget: true,
 				ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
 						isTarget: true,
 						paintStyle: { fillStyle:"green", outlineColor:"black", outlineWidth:1 },
 					});
-			}
+			//}
 			jsPlumb.draggable('tbl' + table.name, {
 			   containment:true,
 			   stop: function(event, ui) {
@@ -225,7 +244,7 @@ function setThePanel(table, mode) {
 					tsa = val.foreign.split('.');
 					tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
 					elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
-					elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
+					elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " div[fpname='" + table.name + "." + key +  "']")});
 					//console.log(elist1.length, elist2.length);
 					var el1 = null;
 					var el2 = null;
@@ -239,8 +258,8 @@ function setThePanel(table, mode) {
 					table.fields[key].ref = val.ref; //restore the lost ref
 					tsa = val.ref.split('.');
 					tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-					console.log("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']");
-					elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
+					console.log("#tbl" + tsa[0] +  " div[fpname='" + tsa[0] + "." + tsa[1] +  "']");
+					elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " div[fpname='" + tsa[0] + "." + tsa[1] +  "']")});
 					elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
 					//console.log(elist1.length, elist2.length);
 					var el1 = null;
@@ -289,7 +308,7 @@ function setThePanel(table, mode) {
 				//jsPlumb.draggable('tbl' + k);
 				//console.log('repainted div ' + 'tbl' + k);
 			});
-			//jsPlumb.repaintEverything(); //all connections
+			jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
 			//console.log('repainted all connections');
 			bsalert({text:"Table updated!", type:'success'});
 		}
@@ -399,7 +418,7 @@ function loadCanvasState(json) {
 						tsa = vv.ref.split('.');
 						//tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
 						//console.log("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']");
-						elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
+						elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " div[fpname='" + tsa[0] + "." + tsa[1] +  "']")});
 						elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + v.name +  " div[ffname='" + v.name + "." + vv.name +  "']")});
 						//console.log(elist1.length, elist2.length);
 						var el1 = null;
@@ -410,10 +429,8 @@ function loadCanvasState(json) {
 					}
 				});
 			});
-
 		});
 	});
-	
 }
 
 
@@ -423,6 +440,8 @@ function generateCode(dbname) {
 from sqlalchemy import create_engine\n\
 from sqlalchemy.ext.declarative import declarative_base\n\
 from sqlalchemy import Column, Integer, Date, String, Text, Float, ForeignKey\n\
+from sqlalchemy.dialects.mysql import BIGINT\n\
+from sqlalchemy.dialects.mysql import LONGTEXT\n\
 from sqlalchemy.orm import sessionmaker, relationship, backref\n\n\
 Base = declarative_base()\n\n";
 	$.each(tables, function(key, val) {
@@ -436,9 +455,10 @@ Base = declarative_base()\n\n";
 				if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
 				if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
 			}
-			code += "\t" + fval.name + " = Column(" + fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')   
-			+ (fval.primaryKey ? ", primary_key=True" : "")
+			code += "\t" + fval.name + " = Column(" 
+			+ fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')
 			+ (fval.ref != null ? ", ForeignKey(" + fval.ref + ")" : "")
+			+ (fval.primaryKey ? ", primary_key=True" : "")
 			+ (fval.unique ? ", unique=True" : "")
 			+ (fval.defaultValue!=null ? ", default=" + fval.defaultValue : "")
 			+ ")\n";
@@ -656,7 +676,7 @@ function bsalert(obj) {
 	theWidth = "300px";
 	
 	//text, type, title
-	text = obj.text;
+	text = obj.text; //.replace("\n","<br>");
 	type = obj.type;
 	title = obj.title;
 	if (obj.delay!=undefined) delay = obj.delay;
@@ -681,7 +701,8 @@ function bsalert(obj) {
 	$('#bsalertPlugin').css( {'top': tval, 'left': lval} );
 		
 	$('#bsalertPlugin').addClass('alert-' + type);
-	$('#bsalertPlugin .bsaBody').text(text);
+	//$('#bsalertPlugin .bsaBody').text(text);
+	$('#bsalertPlugin .bsaBody').html(text);
 	$('#bsalertPlugin .bsaTitle').text(title);
 	//$('#bsalertPlugin').removeClass('hidden');
 	//$('#bsalertPlugin').addClass('in');
@@ -723,12 +744,12 @@ function createCookie(name, value, days)
 {
 	value = value.replace(';', COOKIE_ENCODER);
 	
-    if (days>=0) {
+    //if (days>=0) {
         var date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         var expires = "; expires=" + date.toGMTString();
-    }
-    else var expires = "";
+    //}
+    //else var expires = "";
 
 
     document.cookie = name + "=" + value + expires; // + "; path=/";
@@ -755,6 +776,25 @@ function readCookie(name)
 function eraseCookie(name) 
 {
     createCookie(name, "", -1);
+}
+
+//http://stackoverflow.com/questions/985272/selecting-text-in-an-element-akin-to-highlighting-with-your-mouse
+function selectText(element) {
+    var doc = document
+        , text = doc.getElementById(element)
+        , range, selection
+    ;    
+    if (doc.body.createTextRange) {
+        range = document.body.createTextRange();
+        range.moveToElementText(text);
+        range.select();
+    } else if (window.getSelection) {
+        selection = window.getSelection();        
+        range = document.createRange();
+        range.selectNodeContents(text);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
 }
 
 /*END UTILITY FUNCTIONS*/

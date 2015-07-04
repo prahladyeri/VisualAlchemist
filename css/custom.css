@@ -19,6 +19,12 @@ h2 {
 	border-radius: 0px;
 }
 
+@media (min-width: 768px) {
+	.modal-dialog {
+		width: 700px;
+	}
+}
+
 
 
 nav.header {
