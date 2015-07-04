@@ -12,7 +12,7 @@ import random
 import uuid
 
 __author__ = "Prahlad Yeri"
-__version__ = "1.1"
+__version__ = "1.2"
 
 #app = Flask(__name__, static_url_path='', static_folder='static')
 app = Flask(__name__,static_url_path='/img', static_folder='img')

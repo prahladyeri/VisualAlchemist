@@ -2,7 +2,7 @@
 
 **Visual Alchemist** is a web app to seamlessly create `sqlalchemy` models by dragging/dropping objects in a canvas.
 
-![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenComposite.png)
 
 Features:
 
