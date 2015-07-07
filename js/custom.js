@@ -457,7 +457,7 @@ Base = declarative_base()\n\n";
 			}
 			code += "\t" + fval.name + " = Column(" 
 			+ fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')
-			+ (fval.ref != null ? ", ForeignKey(" + fval.ref + ")" : "")
+			+ (fval.ref != null ? ", ForeignKey('" + fval.ref + "')" : "")
 			+ (fval.primaryKey ? ", primary_key=True" : "")
 			+ (fval.unique ? ", unique=True" : "")
 			+ (fval.defaultValue!=null ? ", default=" + fval.defaultValue : "")
