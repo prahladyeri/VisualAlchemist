@@ -12,6 +12,7 @@ Features:
 - Joins and table-movement on canvas by simple drag/drop.
 - Saves the canvas in local data-store (HTML5-enabled browsers only).
 - Ability to export/import the canvas to/from `JSON` files.
+- Support for composite primary keys.
 
 ### Demo
 
