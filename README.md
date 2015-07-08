@@ -1,5 +1,7 @@
 ## Visual Alchemist
 
+[![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.png)](https://gratipay.com/prahladyeri/)
+
 **Visual Alchemist** is a web app to seamlessly create `sqlalchemy` models by dragging/dropping objects in a canvas.
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenComposite.png)
