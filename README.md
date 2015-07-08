@@ -1,7 +1,5 @@
 ## Visual Alchemist
 
-[![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.png)](https://gratipay.com/prahladyeri/)
-
 **Visual Alchemist** is a web app to seamlessly create `sqlalchemy` models by dragging/dropping objects in a canvas.
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenComposite.png)
@@ -14,11 +12,11 @@ Features:
 - Ability to export/import the canvas to/from `JSON` files.
 - Support for composite primary keys.
 
-### Demo
+## Demo
 
 Visit [http://valchemist-inn.rhcloud.com](http://valchemist-inn.rhcloud.com) to see a live demo of how this app works.
 
-### Installation and Usage
+## Installation and Usage
 
 Visual Alchemist is presently a pure html app, so you can simply copy the github repo and host it. However, Flask support is also added as I intend to add more backend-specific features soon.
 
@@ -32,9 +30,14 @@ To run VA in Flask, you'll need to install the minimum requirements via the requ
 To run the app, go to the application root directory and type:
 
     venv/bin/python valchemist.py
-    	
+
+## Donating
+
+You can support this project via Gratipay.
+
+[![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.png)](https://gratipay.com/prahladyeri/)
 	
-### Contribution
+## Contribution
 
 I need contributions in the following areas:
 - **Front-end Testing:** To test the app across various Browser/OS environments to make sure it runs all-right.
