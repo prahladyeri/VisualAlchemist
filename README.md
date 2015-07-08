@@ -25,7 +25,7 @@ Visual Alchemist is presently a pure html app, so you can simply copy the github
 
 ## Donating
 
-You can support this project via Gratipay.
+Support this project via Gratipay.
 
 [![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.png)](https://gratipay.com/prahladyeri/)
 	
