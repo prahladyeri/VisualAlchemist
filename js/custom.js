@@ -358,6 +358,7 @@ function saveCanvasState() {
 		json = JSON.stringify(tables);
 		window.localStorage.setItem("strTables", json);
 	}
+	console.log('~saveCanvasState()');
 	return json;
 }
 
@@ -643,23 +644,38 @@ function importCanvas() {
 };
 
 function exportCanvas() {
+	if (Object.keys(tables).length == 0) {
+		bsalert({text:'No tables to export.'});
+		return;
+	}
 	downloadSomeText(saveCanvasState(), 'canvas.json');
 }
 
+/****************************/
 /* START UTILITY/CORE FUNCTIONS */
+/********************************/
 
 function downloadSomeText(text, filename) {
+	console.log("downloadSomeText");
 	var content = text;
 	var uriContent = "data:application/octet-stream," + encodeURIComponent(content);
 	var a = document.createElement('a');
 	
 	if (a.click != undefined) {
+		console.log(a.click);
 		//method-3
 		a.href = uriContent;
 		a.download  = filename;
-		a.click();
+		var myEvt = document.createEvent('MouseEvents');
+		myEvt.initEvent(
+		   'click'      // event type
+		   ,true      // can bubble?
+		   ,true      // cancelable?
+		);		
+		a.dispatchEvent(myEvt);
 	}
 	else {
+		console.log("a.click is undefined");
 		//method-2
 		location.href= uriContent;
 	}
@@ -683,36 +699,33 @@ function bsalert(obj) {
 	
 	if (type==undefined) type='info';
 	
-	if ($('#bsalertPlugin').length==0) 
-	{
-		html = '<div id="bsalertPlugin" style="z-index:2000;position:absolute;right:0;top:0;width:' + theWidth + ';" class="alert alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><strong class="bsaTitle"></strong>&nbsp;<span class="bsaBody"></span></div>';
-		$('body').append(html);
-		//$('#bsalertPlugin').css( {'top': $('.header').css('height'), "left": $('.header').offset().left + $('.header').width() } );
-		//} );
-	}
-	else {
+	/*if ($('#bsalertPlugin').length>0){
+		$('#bsalertPlugin').remove();
+	}*/
 	
-	}
+	var nid = $('.bsalert-plugin').length + 1;
+	
+	//if ($('#bsalertPlugin').length==0) 
+	//{
+		html = '<div id="bsalertPlugin' + nid + '" style="z-index:2000;position:absolute;right:0;top:0;width:' + theWidth + ';" class="bsalert-plugin alert alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><strong class="bsaTitle"></strong>&nbsp;<span class="bsaBody"></span></div>';
+		$('body').append(html);
+	//}
 
 	tval = cont.height();
 	lval = cont.offset().left + parseInt(cont.css('width')); //cont.width();
-	lval -= parseInt($('#bsalertPlugin').css('width'));
+	lval -= parseInt($('#bsalertPlugin' + nid).css('width'));
 	
-	$('#bsalertPlugin').css( {'top': tval, 'left': lval} );
+	$('#bsalertPlugin' + nid).css( {'top': tval, 'left': lval} );
 		
-	$('#bsalertPlugin').addClass('alert-' + type);
-	//$('#bsalertPlugin .bsaBody').text(text);
-	$('#bsalertPlugin .bsaBody').html(text);
-	$('#bsalertPlugin .bsaTitle').text(title);
-	//$('#bsalertPlugin').removeClass('hidden');
-	//$('#bsalertPlugin').addClass('in');
-	//var ba = $('#bsalertPlugin').alert();
+	$('#bsalertPlugin' + nid).addClass('alert-' + type);
+	$('#bsalertPlugin'  + nid + ' .bsaBody').html(text);
+	$('#bsalertPlugin' + nid + ' .bsaTitle').text(title);
 	//window.setTimeout(function() { ba.alert('close') }, delay);
 	if (delay==0) {
-		$('#bsalertPlugin').alert();
+		$('#bsalertPlugin'  + nid).alert();
 	}
 	else {
-		$('#bsalertPlugin').alert().hide().fadeIn(500).delay(delay).fadeOut(1000, function() {
+		$('#bsalertPlugin' + nid).alert().hide().fadeIn(500).delay(delay).fadeOut(1000, function() {
 			$(this).alert('close');
 		});
 	}
