@@ -57,6 +57,10 @@ $(window).load(function() {
 	
 	loadCanvasState(null);
 	
+	
+	/*$("#holderResults").load("assets/partials/resultsDialog.html?time=" + (new Date()).getTime(), function(){
+			});*/
+	
 
 	
 	//if (localStorage.tables) {
@@ -497,9 +501,6 @@ function showResultsDialog() {
 		console.log('not found in cache');
 		$("#holderResults").load("assets/partials/resultsDialog.html?time=" + (new Date()).getTime(), function(){
 			$('#resultsDialog').on('shown.bs.modal', function(e) {
-				//console.log('just highlighted');
-				//SyntaxHighlighter.highlight();
-				//SyntaxHighlighter.all('pre');
 				prettyPrint();
 			});
 			//SyntaxHighlighter.highlight();
@@ -520,7 +521,7 @@ function runResultsDialog() {
 	$("#resultsDialog #theCode").empty();
 	//add a pre tag
 	//$("#resultsDialog #theCode").append('<pre class="brush:python"></pre>');
-	$("#resultsDialog #theCode").append('<pre class="prettyprint"></pre>');
+	$("#resultsDialog #theCode").append('<pre style="max-height:240px;" class="prettyprint"></pre>');
 	//<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 	//prettyPrint();
 

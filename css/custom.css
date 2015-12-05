@@ -1,22 +1,27 @@
 body {
-	font-family: georgia;
+	font-family: arial;
 }
 h2 {
 	text-align: center;
 }
 
 .mainAlert {
-	font-family: georgia;
+	font-family: arial;
 }
 
 #theCanvas {
 	z-index: 255;
+	background-color: rgba(14, 63, 56, 0.56);
 }
 
 .panel.tableDesign, 
 .panel.tableDesign .panel-heading
  {
 	border-radius: 0px;
+}
+
+.panel.tableDesign .panel-heading {
+	padding: 5px 5px;
 }
 
 @media (min-width: 768px) {
