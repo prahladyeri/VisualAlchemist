@@ -1,9 +1,18 @@
 /**
-* @brief Classes to hold sqlalchemy Tables and Columns data
-* @author Prahlad Yeri
+* @brief Classes to hold sqlalchemy Tables and Columns data.
+* 
+* @author Prahlad Yeri <prahladyeri@yahoo.com>
 * @copyright MIT License
 * @date 2015/06/16
 */
+
+
+/**
+ * Table object to hold the structure of fields and relations.
+ * 
+ * @param name string Name of the table.
+ * @return The created table object.
+ * */
 var Table = function(name) 
 {
 	if (name != undefined) {
@@ -20,11 +29,12 @@ var Table = function(name)
 };
 
 /**
-* @brief Field object constructor.
+* Field object constructor.
+* 
 * @param name Name of the field.
 * @param type Data Type of the field.
-* @param unique Boolean, Indicates whether field is unique.
-* @param primary Boolean, Indicates whether this is a primary key
+* @param unique Boolean Indicates whether field is unique.
+* @param primary Boolean Indicates whether this is a primary key
 */
 var Field = function(obj) {
 	if (obj.unique==undefined) obj.unique=false;
