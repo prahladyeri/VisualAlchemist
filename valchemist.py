@@ -38,11 +38,9 @@ app.config['ALLOWED_EXTENSIONS'] = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif
 
 @app.route("/")
 def home():
-	f = open("index.html", 'r')
-	s = f.read()
-	f.close()
-	return s
-
+	with open("index.html", 'r') as f:
+		return f.read()
+		
 
 if __name__ == "__main__":
 	#print 'DEBUG: ' + str(models.DEBUG)
