@@ -23,13 +23,11 @@ Visit [http://valchemist-inn.rhcloud.com](http://valchemist-inn.rhcloud.com) to 
 
 Visual Alchemist is presently a pure html app, so you can simply copy the github repo and host it (with `index.html` as default). However, Flask support is also added as I intend to add more backend-specific features soon.
 
-## Donating
+## Contribution
 
 [![Flattr this!](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=prahladyeri&url=http%3A%2F%2Fvalchemist-inn.rhcloud.com&title=VisualAlchemist&tags=github&category=software)
 
-[![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.png)](https://gratipay.com/prahladyeri/)
-	
-## Contribution
+[comment]: # [![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.png)](https://gratipay.com/prahladyeri/)
 
 I need contributions in the following areas:
 - **Front-end Testing:** To test the app across various Browser/OS environments to make sure it runs all-right.
