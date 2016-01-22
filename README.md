@@ -2,6 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
+[![Flattr this!](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=prahladyeri&url=http%3A%2F%2Fvalchemist-inn.rhcloud.com&title=VisualAlchemist&tags=github&category=software)
 
 **Visual Alchemist** is a web app to seamlessly create `sqlalchemy` models by dragging/dropping objects in a canvas.
 
@@ -30,4 +31,4 @@ I need contributions in the following areas:
 - **Design:** My CSS/JavaScript skills aren't that great. So, if you can suggest any improvisation to the front-end workflow, it would be great!
 - **Suggestions:** Need more suggestions from Python Experts regarding how can I improvise this app, so its useful somewhere.
 
-[![Flattr this!](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=prahladyeri&url=http%3A%2F%2Fvalchemist-inn.rhcloud.com&title=VisualAlchemist&tags=github&category=software)
+
