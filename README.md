@@ -3,7 +3,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 
-**Visual Alchemist** is a web-based modelling tool to seamlessly create database models by dragging/dropping objects in a canvas.
+**Visual Alchemist** is a web-based modeling tool to seamlessly create database models by dragging/dropping objects in a canvas.
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenComposite.png)
 
@@ -27,6 +27,6 @@ Visual Alchemist is a pure html app, so you can simply [download](https://github
 
 I need contributions in the following areas:
 - **Front-end Testing:** To test the app across various Browser/OS environments to make sure it runs all-right.
-- **Design:** My CSS/JavaScript skills aren't that great. So, if you can suggest any improvisation to the front-end workflow, it would be great!
+- **Design:** My CSS/JavaScript skills aren't that great. So, if you can suggest any improvisation to the front-end work-flow, it would be great!
 - **Suggestions:** Need more suggestions from Database Experts regarding how can I improvise this app, so its useful somewhere.
 
