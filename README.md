@@ -3,7 +3,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 
-**Visual Alchemist** is a web app to seamlessly create `sqlalchemy` models by dragging/dropping objects in a canvas.
+**Visual Alchemist** is a web-based modelling tool to seamlessly create database models by dragging/dropping objects in a canvas.
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenComposite.png)
 
@@ -21,13 +21,12 @@ Visit [http://valchemist-inn.rhcloud.com](http://valchemist-inn.rhcloud.com) to 
 
 ## Installation and Usage
 
-Visual Alchemist is presently a pure html app, so you can simply copy the github repo and host it (with `index.html` as default). However, Flask support is also added as I intend to add more backend-specific features soon.
+Visual Alchemist is a pure html app, so you can simply [download](https://github.com/prahladyeri/VisualAlchemist/archive/master.zip) the source and host it (with `index.html` as default).
 
 ## Contribution
 
 I need contributions in the following areas:
 - **Front-end Testing:** To test the app across various Browser/OS environments to make sure it runs all-right.
 - **Design:** My CSS/JavaScript skills aren't that great. So, if you can suggest any improvisation to the front-end workflow, it would be great!
-- **Suggestions:** Need more suggestions from Python Experts regarding how can I improvise this app, so its useful somewhere.
-
+- **Suggestions:** Need more suggestions from Database Experts regarding how can I improvise this app, so its useful somewhere.
 
