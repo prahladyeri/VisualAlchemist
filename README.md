@@ -9,7 +9,8 @@
 
 Features:
 
-- Automatically builds the `models.py` code file to generate the models.
+- (Incomplete) Support to export tables in multiple formats like mysql, postgresql, etc.
+- Automatically builds the `models.py` code file to generate the models for `python-sqlalchemy`.
 - Joins and table-movement on canvas by simple drag/drop.
 - Saves the canvas in local data-store (HTML5-enabled browsers only).
 - Ability to export/import the canvas to/from `JSON` files.
