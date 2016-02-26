@@ -1,5 +1,5 @@
 body {
-	font-family: arial;
+	font-family: ubuntu;
 }
 h2 {
 	text-align: center;
@@ -11,7 +11,7 @@ h2 {
 
 #theCanvas {
 	z-index: 255;
-	background-color: rgba(14, 63, 56, 0.56);
+	/*background-color: rgba(14, 63, 56, 0.56);*/
 }
 
 .panel.tableDesign, 

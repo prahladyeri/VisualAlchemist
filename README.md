@@ -1,9 +1,9 @@
 # Visual Alchemist
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![License](https://img.shields.io/badge/license-GPL-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 
-**Visual Alchemist** is a web-based modeling tool to seamlessly create database models by dragging/dropping objects in a canvas.
+**Visual Alchemist** is an open source web-based database diagramming and automation tool.
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenComposite.png)
 

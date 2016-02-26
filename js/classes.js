@@ -1,8 +1,8 @@
 /**
-* @brief Classes to hold sqlalchemy Tables and Columns data.
+* Classes to hold sqlalchemy Tables and Columns data.
 * 
 * @author Prahlad Yeri <prahladyeri@yahoo.com>
-* @copyright MIT License
+* @copyright GPLv3
 * @date 2015/06/16
 */
 

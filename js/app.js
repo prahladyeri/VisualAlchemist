@@ -1,8 +1,8 @@
 /**
-* @brief Custom Javascript functions.
+* Custom Javascript functions.
 * 
 * @author Prahlad Yeri
-* @copyright MIT License
+* @copyright GPLv3
 * @date 2015/06/16
 */
 
@@ -62,6 +62,7 @@ $(window).load(function() {
 
 /* jsPlumb events */
 jsPlumb.bind("beforeDrop", function(info) {
+	console.log("jsPlumb.beforeDrop");
 	//check if a connection already exists between these two points
 	console.log(info.sourceId, info.targetId);
 	var con=jsPlumb.getConnections({source:info.sourceId, target:info.targetId});
@@ -84,6 +85,7 @@ jsPlumb.bind("beforeDrop", function(info) {
 	tables[fkey[0]].fields[fkey[1]].ref = pkey[0] + '.' + pkey[1];
 	bsalert({text: pkey[1] + '->' + fkey[1], title:"Established: "});
 	//window.tobj = info;
+	console.log("repainted");
 	saveCanvasState();
 	
 	return true; //return false or just quit to drop the new connection.
@@ -165,7 +167,6 @@ function setThePanel(table, mode) {
 			//if (mode=='add') 
 			/*html += "<td>" + (field.primaryKey ? '' : "<div ffname='" + table.name + "." + field.name +  "' class='field'></div>") + "</td>"; //virtual*/
 			html += "<td><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
-			
 			html += "<td>" + field.name + "</td>";
 			html += "<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
 			html += "<td>" + (field.primaryKey ? 'primary' : '') + (field.unique ? 'unique' : '') + "</td>";
@@ -173,14 +174,17 @@ function setThePanel(table, mode) {
 			
 			html += "<td>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
 			html += "</tr>";
+			console.log("HTML__", html);
 			//
 			$("#tbl" + table.name + " .table").append(html);
 			//
 			var ep;
+			console.log("The anchor will be LEFT");
 			if (field.primaryKey) {
 				//jsPlumb.addEndpoint($('#tbl' + table.name + " div.prima"), {
 				ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
 					isSource: true,
+					//anchor:["Left"],
 					paintStyle: {fillStyle:"red", outlineColor:"black", outlineWidth:1 },
 					//connectorPaintStyle:{ strokeStyle:"blue", lineWidth:10 },
 					connectorOverlays: [ 
@@ -203,6 +207,7 @@ function setThePanel(table, mode) {
 					tables[table.name].position.x = event.pos[0] + 'px';
 					tables[table.name].position.y = event.pos[1] + 'px';
 					saveCanvasState();
+					jsPlumb.repaintEverything();
 			   }
 			});
 			//field.ep  = ep; //TODO: [inprogress]This may no longer be required since we are not using ep anywhere.
@@ -226,7 +231,7 @@ function setThePanel(table, mode) {
 					tsa = val.foreign.split('.');
 					tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
 					elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
-					elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " div[fpname='" + table.name + "." + key +  "']")});
+					elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " [fpname='" + table.name + "." + key +  "']")});
 					//console.log(elist1.length, elist2.length);
 					var el1 = null;
 					var el2 = null;
@@ -240,8 +245,8 @@ function setThePanel(table, mode) {
 					table.fields[key].ref = val.ref; //restore the lost ref
 					tsa = val.ref.split('.');
 					tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-					console.log("#tbl" + tsa[0] +  " div[fpname='" + tsa[0] + "." + tsa[1] +  "']");
-					elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " div[fpname='" + tsa[0] + "." + tsa[1] +  "']")});
+					console.log("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']");
+					elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
 					elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
 					//console.log(elist1.length, elist2.length);
 					var el1 = null;
@@ -280,6 +285,7 @@ function setThePanel(table, mode) {
 			window.lastPos.y += $('#tbl' + table.name).position().top;
 			
 			jsPlumb.repaintEverything();
+			console.log("repaintedEverything");
 			bsalert({text:"Table added!", type:'success'});
 		}
 		else 
@@ -291,6 +297,7 @@ function setThePanel(table, mode) {
 				//console.log('repainted div ' + 'tbl' + k);
 			});
 			jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
+			console.log("repaintedEverything");
 			//console.log('repainted all connections');
 			bsalert({text:"Table updated!", type:'success'});
 		}
@@ -401,7 +408,7 @@ function loadCanvasState(json) {
 						tsa = vv.ref.split('.');
 						//tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
 						//console.log("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']");
-						elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " div[fpname='" + tsa[0] + "." + tsa[1] +  "']")});
+						elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
 						elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + v.name +  " div[ffname='" + v.name + "." + vv.name +  "']")});
 						//console.log(elist1.length, elist2.length);
 						var el1 = null;
