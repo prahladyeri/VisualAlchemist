@@ -3,8 +3,6 @@
 ![License](https://img.shields.io/badge/license-GPL-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 
-## Table of Contents
-
 - [Mission Statement](#mission)
 - [Project Details](#projdetails)
 - [Feature Roadmap for v1.1](#featroadmapv11)
@@ -14,6 +12,8 @@
 - [Installation](#installation)
 - [Documentation](#docs)
 - [Contribute](#contribute)
+
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 
 ## Mission<a name="mission"></a>
 
