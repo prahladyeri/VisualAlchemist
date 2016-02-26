@@ -21,7 +21,7 @@
 
 #### To create as a community, the best open source web-based database diagramming and automation tool.
 
-<a name="projdetails"></a>
+<a name="projdetails"/>
 ## Project Details
 
 - Project Co-ordinator: [Prahlad Yeri](https://github.com/prahladyeri)
@@ -30,7 +30,7 @@
 - Issue tracker: [https://github.com/prahladyeri/VisualAlchemist/issues](https://github.com/prahladyeri/VisualAlchemist/issues)
 - Discussion Room: [https://www.reddit.com/r/VisualAlchemist](https://www.reddit.com/r/VisualAlchemist)
 
-<a name="featroadmapv11"></a>
+<a name="featroadmapv11"/>
 ## Feature Roadmap for v1.1
 
 - Create tables structures and relationships and represent them as elements on canvas.
