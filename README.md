@@ -12,7 +12,8 @@
 - [Screenshots](#screenshots)
 - [Demo](#demo)
 - [Installation](#installation)
-- [Donation](#donation)
+- [Documentation](#docs)
+- [Contribute](#contribute)
 
 ## Mission<a name="mission"></a>
 
@@ -58,6 +59,17 @@ Visit [http://visualalchemist.prahladyeri.com](http://visualalchemist.prahladyer
 
 Visual Alchemist is a pure html app, so you can simply download the [source](https://github.com/prahladyeri/VisualAlchemist/archive/master.zip) and host it (with `index.html` as default).
 
-## Donation<a name="donation"></a>
+## Documentation<a name="docs"></a>
 
-To support the project, you can send me bitcoins at my wallet no. `1Av4rPGBz5rJVPwewSTDCpYac1rjvkaSzT`. You can also send me donation by paypal at `prahladyeri@yahoo.com`.
+Visual Alchemist is under active development, so there is no extensive documentation. However, a brief guide accompanies the app which should help most power users. If you don't understand anything, the best places to visit are the [issue tracker](https://github.com/prahladyeri/VisualAlchemist/issues) and the [VA subreddit](https://www.reddit.com/r/VisualAlchemist).
+
+## Contribute<a name="contribute"></a>
+
+I'm presently looking for people who can contribute to Visual Alchemist. Mainly in the areas of:
+
+1. Testing: Extensive alpha/beta testing, so our `v1.1` can be a big hit!
+2. Code review: There is no such thing as bug-free code and more the number of eyeballs, the better it is.
+3. Logo Design: Though a new logo is not immediately necessary, it is still a nice to have, though.
+4. Documentation: Docs are very critical at this early of the project, and we don't have any apart from the basic guide accompnied by the app itself.
+
+To support the project by providing financial support, you can send me bitcoins at my wallet no. `1Av4rPGBz5rJVPwewSTDCpYac1rjvkaSzT`. You can also send me donation by paypal at `prahladyeri@yahoo.com`.
