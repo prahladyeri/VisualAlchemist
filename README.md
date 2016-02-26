@@ -4,15 +4,15 @@
 # Visual Alchemist
 
 ##### Table of Contents
-- [Mission Statement](#missionstat)
-- [Project Details](#projdetails)
-- [Feature Roadmap for v1.1](#featroadmapv11)
-- [Feature Roadmap for v2.0](#featroadmapv2)
-- [Screenshots](#screenshots)
-- [Demo](#demo)
-- [Installation](#installation)
-- [Documentation](#docs)
-- [Contribution](#contribute)
+[Mission Statement](#missionstat)
+[Project Details](#projdetails)
+[Feature Roadmap for v1.1](#featroadmapv11)
+[Feature Roadmap for v2.0](#featroadmapv2)
+[Screenshots](#screenshots)
+[Demo](#demo)
+[Installation](#installation)
+[Documentation](#docs)
+[Contribution](#contribute)
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 
