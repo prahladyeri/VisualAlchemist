@@ -16,7 +16,7 @@
 
 ## Mission<a name="mission"></a>
 
-#### To create, as a community, the best open source web-based database diagramming and automation tool.
+#### To create as a community, the best open source web-based database diagramming and automation tool.
 
 ## Project Details<a name="projdetails"></a>
 
