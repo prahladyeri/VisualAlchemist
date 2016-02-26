@@ -52,11 +52,11 @@
 
 ## Demo<a name="demo"></a>
 
-Visit [http://valchemist-inn.rhcloud.com](http://valchemist-inn.rhcloud.com) to see a live demo of how this app works.
+Visit [http://visualalchemist.prahladyeri.com](http://visualalchemist.prahladyeri.com) to see a live demo of how this app works.
 
 ## Installation<a name="installation"></a>
 
-Visual Alchemist is a pure html app, so you can simply [download](https://github.com/prahladyeri/VisualAlchemist/archive/master.zip) the source and host it (with `index.html` as default).
+Visual Alchemist is a pure html app, so you can simply download the [source](https://github.com/prahladyeri/VisualAlchemist/archive/master.zip) and host it (with `index.html` as default).
 
 ## Donation<a name="donation"></a>
 
