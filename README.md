@@ -3,7 +3,7 @@
 ![License](https://img.shields.io/badge/license-GPL-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 
-- [Mission Statement](#mission)
+- [Mission Statement](#missionstat)
 - [Project Details](#projdetails)
 - [Feature Roadmap for v1.1](#featroadmapv11)
 - [Feature Roadmap for v2.0](#featroadmapv2)
@@ -15,7 +15,7 @@
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 
-## Mission<a name="mission"></a>
+## Mission<a name="missionstat"></a>
 
 #### To create as a community, the best open source web-based database diagramming and automation tool.
 
