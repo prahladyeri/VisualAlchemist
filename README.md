@@ -3,6 +3,7 @@
 
 # Visual Alchemist
 
+<a name="toc"/>
 ##### Table of Contents
 
 - [Mission Statement](#missionstat)
