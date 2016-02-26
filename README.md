@@ -1,7 +1,6 @@
-# Visual Alchemist
-
 ![License](https://img.shields.io/badge/license-GPL-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
+# Visual Alchemist
 
 - [Mission Statement](#missionstat)
 - [Project Details](#projdetails)
