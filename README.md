@@ -3,6 +3,7 @@
 
 # Visual Alchemist
 
+##### Table of Contents
 - [Mission Statement](#missionstat)
 - [Project Details](#projdetails)
 - [Feature Roadmap for v1.1](#featroadmapv11)
@@ -11,15 +12,17 @@
 - [Demo](#demo)
 - [Installation](#installation)
 - [Documentation](#docs)
-- [Contribute](#contribute)
+- [Contribution](#contribute)
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 
-## Mission<a name="missionstat"></a>
+<a name="missionstat" />
+## Mission
 
 #### To create as a community, the best open source web-based database diagramming and automation tool.
 
-## Project Details<a name="projdetails"></a>
+<a name="projdetails"></a>
+## Project Details
 
 - Project Co-ordinator: [Prahlad Yeri](https://github.com/prahladyeri)
 - Project Governance: Meritocracy.
@@ -27,7 +30,8 @@
 - Issue tracker: [https://github.com/prahladyeri/VisualAlchemist/issues](https://github.com/prahladyeri/VisualAlchemist/issues)
 - Discussion Room: [https://www.reddit.com/r/VisualAlchemist](https://www.reddit.com/r/VisualAlchemist)
 
-## Feature Roadmap for v1.1<a name="featroadmapv11"></a>
+<a name="featroadmapv11"></a>
+## Feature Roadmap for v1.1
 
 - Create tables structures and relationships and represent them as elements on canvas.
 - Drag/Drop the elements on canvas.
@@ -63,7 +67,7 @@ Visual Alchemist is a pure html app, so you can simply download the [source](htt
 
 Visual Alchemist is under active development, so there is no extensive documentation. However, a brief guide accompanies the app which should help most power users. If you don't understand anything, the best places to visit are the [issue tracker](https://github.com/prahladyeri/VisualAlchemist/issues) and the [VA subreddit](https://www.reddit.com/r/VisualAlchemist).
 
-## Contribute<a name="contribute"></a>
+## Contribution<a name="contribute"></a>
 
 I'm presently looking for people who can contribute to Visual Alchemist. Mainly in the areas of:
 
