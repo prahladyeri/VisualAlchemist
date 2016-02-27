@@ -115,9 +115,12 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 //Other misc functions
 
 /**
-* @brief: Creates a new panel from scratch for a table
+* Creates a new panel from scratch for a table
 * @param mode Should be 'add' or 'edit'
 */
+var version = "1.0.2"; //TODO: Remember to automate this.
+
+
 function createThePanel(table, mode, func) {
 	if (mode == "add") {
 		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data) {

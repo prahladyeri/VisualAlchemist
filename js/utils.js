@@ -1,14 +1,83 @@
 /**
-* @brief Some reusable javascript functions.
+* Some reusable javascript functions.
 * 
 * @author Prahlad Yeri
-* @copyright MIT License
+* @copyright GPLv3
 * @date 2015/12/15
 */
 
 /****************************/
 /* START UTILITY/CORE FUNCTIONS */
 /********************************/
+
+//http://stackoverflow.com/questions/2540969/remove-querystring-from-url 
+function getPathFromUrl(url) {
+  return url.split("?")[0];
+}
+
+/**
+ * Get the value of a querystring (http://gomakethings.com/how-to-get-the-value-of-a-querystring-with-native-javascript/)
+ * 
+ * @param  {String} field The field to get the value of
+ * @param  {String} url   The URL to get the value from (optional)
+ * @return {String}       The field value
+ */
+var getQueryString = function ( field, url ) {
+	if (url==undefined) {
+		url = window.location.href;
+	}
+    var href = url ? url : window.location.href;
+    var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+    var string = reg.exec(href);
+    return string ? string[1] : null;
+};
+
+/**
+ * Validates a date as per European format (yyyy-mm-dd).
+ * 
+ * @return Empty string if valid, error message otherwise.
+ * */
+function checkDate(theDate)
+{
+    //var re = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/; //British Format
+    var re = /^(\d{4})-(\d{1,2})-(\d{1,2})$/; //American Format
+    var errorMsg = "";
+    var allowBlank = true;
+    var minYear = 1000;
+    //var maxYear = (new Date()).getFullYear();
+    var maxYear = 9999;
+    
+    if(theDate.length > 0) {
+      if(regs = theDate.match(re)) {
+        if(regs[3] < 1 || regs[3] > 31) {
+          errorMsg = "Invalid value for day: " + regs[3];
+        } else if(regs[2] < 1 || regs[2] > 12) {
+          errorMsg = "Invalid value for month: " + regs[2];
+        } else if(regs[1] < minYear || regs[1] > maxYear) {
+          errorMsg = "Invalid value for year: " + regs[1] + " - must be between " + minYear + " and " + maxYear;
+        }
+      } else {
+        errorMsg = "Invalid date format: " + theDate;
+      }
+    } else if(!allowBlank) {
+      errorMsg = "Empty date not allowed!";
+    }
+    return errorMsg;
+}
+
+/**
+ * jQuery function to center screen
+ * */
+jQuery.fn.center = function () {
+    this.css("position","absolute");
+    this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + 
+                                                $(window).scrollTop()) + "px");
+    this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + 
+                                                $(window).scrollLeft()) + "px");
+    return this;
+}
+
+
 
 function downloadSomeText(text, filename) {
 	console.log("downloadSomeText");
@@ -120,8 +189,116 @@ function selectText(element) {
 
 /*END UTILITY FUNCTIONS*/
 
+function bsabout() {
+	bspopup({type:"about"});	
+}
+
+/**
+ * Shows a bootstrap popup dialog on the center of screen.
+ * Depends on jQuery and Bootstrap.
+ * */
+function bspopup(options, success) {
+	//TODO: Clean/Dispose the popup objects once done for memory efficiency.
+    if ($(".popupBox").length == 0) {
+        $.get("assets/partials/bootui.html?time=" + (new Date()).getTime(), function(data){
+            $('body').append(data);
+            bspopup(options, success);
+            return;
+        });
+    }
+    
+	//text, type, title
+	if (typeof(options)=='string')
+	{
+		text = options;
+        options = {type:"text", text:text};
+	}
+    if (options==undefined) options={};
+	if (options.type==undefined) options.type='text';
+	if (options.text==undefined) options.text='';
+    
+    var text = options.text;
+	var type = options.type;
+	var title = options.title;
+	//if (obj.delay!=undefined) delay = obj.delay;
+    var proto = '';
+    if (type=='text') {
+        proto = 'Generic';
+    }
+    else if (type=='input' || type=='radiolist') {
+        proto = 'Input';
+    }
+    else if (type=='about') {
+		proto = 'About';
+	}
+	console.log("proto: ", proto, ",type: ", type);
+    
+    var theBox = $("#popupBox" + proto).clone();
+    theBox.attr("id", "popupBox" + (Math.random() + "").replace(".","") )
+        .removeClass("hidden");
+    if (type=='radiolist') {
+		theBox.find(".messageText").text(text);
+        theBox.find("#txtInput").remove();
+        html = '<select class="form-control">';
+        for(var i=0;i<options.list.length;i++) {
+            html += '<option value="' + options.list[i] + '">' + options.list[i] +  '</option>';
+        }
+        html += '<select>';
+        theBox.find(".modal-body").append(html);
+    }
+    else if (type=='text') 
+    {
+		theBox.find(".messageText").text(text);
+        if (options.button1 != undefined) {
+            theBox.find("#btnClose").text(options.button1);
+            theBox.find("#btnClose").click(function(){
+                ev = {};
+                ev.button = "button1";
+                options.success(ev);
+            });
+        }
+        if (options.button2 != undefined) {
+            theBox.find(".modal-footer").append("<button id='button2' class='btn btn-default'  data-dismiss='modal'>" + options.button2 + "</button>")
+            theBox.find("#button2").click(function(){
+                ev = {};
+                ev.button = "button2";
+                options.success(ev);
+            });
+        }
+    }
+    else if (type=='about') {
+		theBox.find(".version").text(version);
+		theBox.find(".year").text((new Date()).getFullYear());
+	}
+    
+    if (options.success != undefined) {
+        theBox.find("#btnOK").click(function() {
+            var ev = {};
+            if (type=='input') {
+                ev.value = theBox.find("#txtInput").val(); 
+            }
+            else if (type=='radiolist') {
+                ev.value = theBox.find(".modal-body select").val(); 
+            }
+            options.success(ev);
+        });
+    }
+    
+    theBox.on("hidden.bs.modal", function(e) {
+        if (options.complete!=undefined) {
+            var ev = {};
+            //ev.id = theBox.attr("id");
+            options.complete(ev);
+        }
+        theBox.remove();
+    });
+    
+    theBox.modal('show');
+}
+
 
 //depends on bootstrap
+//Note: obsolete, use bspopup instead
 function bsalert(obj) {
 	//initial config:
 	cont = $('.header'); //container
