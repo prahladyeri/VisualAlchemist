@@ -52,6 +52,7 @@
 ## Screenshots
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenAddTable.png)
 
 ## Demo
 
