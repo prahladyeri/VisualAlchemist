@@ -48,6 +48,7 @@
 - Ability to change ordering of columns by drag-drop.
 - Interfacing with backends like php/mysql/etc. for complete automation.
 - Charting/data-analysis features.
+- Export to diagram/image formats like PDF/PNG/etc.
 
 ## Screenshots
 
