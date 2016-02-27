@@ -3,11 +3,10 @@
 
 # Visual Alchemist
 
-<a name="toc"/>
 ##### Table of Contents
 
-- [Mission Statement](#missionstat)
-- [Project Details](#projdetails)
+- [Mission Statement](#mission)
+- [Project Details](#projectdetails)
 - [Feature Roadmap for v1.1](#featroadmapv11)
 - [Feature Roadmap for v2.0](#featroadmapv2)
 - [Screenshots](#screenshots)
@@ -18,12 +17,10 @@
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 
-<a name="missionstat" />
 ## Mission
 
 #### To create as a community, the best open source web-based database diagramming and automation tool.
 
-<a name="projdetails"/>
 ## Project Details
 
 - Project Co-ordinator: [Prahlad Yeri](https://github.com/prahladyeri)
