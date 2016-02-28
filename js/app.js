@@ -59,6 +59,8 @@ $(window).load(function() {
 	});
 	
 	loadCanvasState(null);
+	
+	$(".footer #theyear").text((new Date()).getFullYear());
 });
 
 /* jsPlumb events */
@@ -510,7 +512,8 @@ function runResultsDialog() {
 	$("#resultsDialog #theCode").empty();
 	//add a pre tag
 	//$("#resultsDialog #theCode").append('<pre class="brush:python"></pre>');
-	$("#resultsDialog #theCode").append('<pre style="max-height:240px;" class="prettyprint"></pre>');
+	//$("#resultsDialog #theCode").append('<pre style="max-height:240px;" class="prettyprint"></pre>');
+	$("#resultsDialog #theCode").append('<pre class="prettyprint"></pre>');
 	//<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 	//prettyPrint();
 
@@ -529,30 +532,33 @@ function runResultsDialog() {
 
 function showAddTableDialog() {
 	console.log("showAddTableDialog()");
-	var tableName  = window.prompt("Enter table name:", tableName);
-	if (tableName==null || tableName.trim() == '') {
-		alert("Not a valid table name.");
-		return;
-	}
-	else if (tableName.indexOf(" ")>=0) {
-		alert("Special chars are not allowed in the table name.");
-		return;
-	}
-	else if (tables[tableName] != undefined) {
-		alert('This table already exists.');
-		return;
-	}
-	else {
-		tableName = escape(tableName);
-	}
-	if ($("#addTableDialog").length==0) {
-		$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
-			runAddTableDialog(tableName, "add");
-		});
-	}
-	else {
-			runAddTableDialog(tableName, "add");
-	}
+	//var tableName  = window.prompt("Enter table name:", tableName);
+	bspopup({type:'input', text:'Table name', success:function(data) {
+		var tableName = data.value;
+		if (tableName==null || tableName.trim() == '') {
+			bspopup("Not a valid table name.");
+			return;
+		}
+		else if (tableName.indexOf(" ")>=0) {
+			bspopup("Special chars are not allowed in the table name.");
+			return;
+		}
+		else if (tables[tableName] != undefined) {
+			bspopup('This table already exists.');
+			return;
+		}
+		else {
+			tableName = escape(tableName);
+		}
+		if ($("#addTableDialog").length==0) {
+			$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
+				runAddTableDialog(tableName, "add");
+			});
+		}
+		else {
+				runAddTableDialog(tableName, "add");
+		}
+	}});
 }
 
 function runAddTableDialog(tableName, mode) 

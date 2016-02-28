@@ -246,6 +246,9 @@ function bspopup(options, success) {
         html += '<select>';
         theBox.find(".modal-body").append(html);
     }
+    else if (type=='input') {
+		theBox.find(".messageText").text(text);
+	}
     else if (type=='text') 
     {
 		theBox.find(".messageText").text(text);
@@ -283,6 +286,13 @@ function bspopup(options, success) {
             options.success(ev);
         });
     }
+    
+    theBox.on('shown.bs.modal', function () {
+		if (type=='input') {
+			$(this).find('#txtInput').focus();
+			console.log('focussed!');
+		}
+	});
     
     theBox.on("hidden.bs.modal", function(e) {
         if (options.complete!=undefined) {
@@ -344,4 +354,3 @@ function bsalert(obj) {
 		});
 	}
 }
-

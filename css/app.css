@@ -15,6 +15,10 @@ h2 {
 	background-color: rgba(16, 38, 34, 0.6);
 }
 
+#resultsDialog #theCode pre {
+	max-height:340px;
+}
+
 .panel.tableDesign, 
 .panel.tableDesign .panel-heading
  {
