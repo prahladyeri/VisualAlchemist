@@ -303,7 +303,7 @@ function bsalert(obj) {
 	//initial config:
 	cont = $('.header'); //container
 	delay = 2000; //millis
-	theWidth = "300px";
+	theWidth = "310px";
 	
 	//text, type, title
 	text = obj.text; //.replace("\n","<br>");
@@ -332,7 +332,7 @@ function bsalert(obj) {
 	$('#bsalertPlugin' + nid).css( {'top': tval, 'left': lval} );
 		
 	$('#bsalertPlugin' + nid).addClass('alert-' + type);
-	$('#bsalertPlugin'  + nid + ' .bsaBody').html(text);
+	$('#bsalertPlugin'  + nid + ' .bsaBody').text(text);
 	$('#bsalertPlugin' + nid + ' .bsaTitle').text(title);
 	//window.setTimeout(function() { ba.alert('close') }, delay);
 	if (delay==0) {

@@ -5,6 +5,7 @@
 * @copyright GPLv3
 * @date 2015/06/16
 */
+var version = "1.0.3"; //TODO: Remember to automate this.
 
 
 if (window.location.href.indexOf('127.0.0.1:') >=0 ) {
@@ -22,7 +23,7 @@ $(window).load(function() {
 			$(".mainAlert").hide();*/
 		}
 		else {
-				bsalert({title:'How to:',text:'Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!<br><br>To create relationships, drag the red dots (primary-keys) and connect them to green dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the green area on the foreign-keys and drag it outside the table panel.', type:'success', delay:0});
+				bsalert({title:'How to:',text:'Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!<br><br>To create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.', type:'success', delay:0});
 			console.log("CALLED");
 			createCookie(".mainAlert.closed","true");
 			/*$('.mainAlert').on('closed.bs.alert',  function(){
@@ -106,7 +107,8 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 	console.log('DETACHED', pkey, fkey);
 	tables[pkey[0]].fields[pkey[1]].foreign = null;
 	tables[fkey[0]].fields[fkey[1]].ref = null;
-	bsalert({text: pkey[1] + '><' + fkey[1], title:"Detached: "});
+	bsalert({text: pkey[1] + '->' + fkey[1], title:"Detached: "});
+	//bspopup({type:"text", text: pkey[1] + '><' + fkey[1], title:"Detached: "});
 	saveCanvasState();
 	//window.tobj = info;
 })
@@ -118,7 +120,6 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 * Creates a new panel from scratch for a table
 * @param mode Should be 'add' or 'edit'
 */
-var version = "1.0.2"; //TODO: Remember to automate this.
 
 
 function createThePanel(table, mode, func) {
@@ -188,7 +189,7 @@ function setThePanel(table, mode) {
 				ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
 					isSource: true,
 					//anchor:["Left"],
-					paintStyle: {fillStyle:"red", outlineColor:"black", outlineWidth:1 },
+					paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
 					//connectorPaintStyle:{ strokeStyle:"blue", lineWidth:10 },
 					connectorOverlays: [ 
 						[ "Arrow", { width:10, length:15, location:1, id:"arrow" } ],
@@ -200,7 +201,7 @@ function setThePanel(table, mode) {
 				//jsPlumb.addEndpoint($('#tbl' + table.name + " div.field"), {isTarget: true,
 				ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
 						isTarget: true,
-						paintStyle: { fillStyle:"green", outlineColor:"black", outlineWidth:1 },
+						paintStyle: { fillStyle:"blue", outlineColor:"black", outlineWidth:1 },
 					});
 			//}
 			jsPlumb.draggable('tbl' + table.name, {
