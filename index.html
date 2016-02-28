@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<!-- 
+* @brief: App to create sqlalchemy models from scratch.
+* @author: Prahlad Yeri
+* @copyright: GPLv3
+* @date: 26-04-2015
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visual Alchemist</title>
+<!--
+<link rel='stylesheet' href='css/darkmatter.min.css' />
+-->
+<link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+<link rel='stylesheet' href='css/bootstrap.min-3.3.5.css'/>
+<link rel="icon" href="img/valchemist.png"/>
+<link rel='stylesheet' href='css/app.css'/>
+<!--link type="text/css" rel="stylesheet" href="css/shCore.css"/-->
+<!--link type="text/css" rel="stylesheet" href="css/shCoreDjango.css"/>
+<link type="text/css" rel="stylesheet" href="css/shThemeDjango.css"/>
+<script type="text/javascript" src="lib/sh/scripts/shCore.js"></script>
+<script type="text/javascript" src="lib/sh/scripts/shBrushPython.js"></script-->
+<!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script-->
+<link type="text/css" href="lib/prettify/prettify.css" rel="stylesheet" />
+
+<script type="text/javascript"  src="lib/prettify/prettify.js"></script>
+<script src='lib/jquery.min.js'></script>
+<script src='lib/bootstrap.min.js'></script>
+<script src="lib/dom.jsPlumb-1.7.5-min.js"></script>
+<!--script src='fullcalendar/lib/moment.min.js'></script>
+<script src='fullcalendar/fullcalendar.js'></script-->
+<script src='js/classes.js'></script>
+<script src="js/utils.js"></script>
+<script src='js/app.js'></script>
+</head>
+<body >
+<nav class="header navbar navbar-inverse" role="navigation" style="margin-bottom:2px;">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+	
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Visual Alchemist</a>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li ><a href="javascript:" onclick="javascript:showAddTableDialog();"><span class="glyphicon glyphicon-plus"></span>&nbsp;New Table</a></li>
+        <li class="hidden" ><a href="#" onclick="tables={}; jsPlumb.remove($('.tableDesign'))">Clear All</a></li>
+        <li><a href="javascript:" onclick="showResultsDialog();"><span class="glyphicon glyphicon-list"></span>&nbsp;Code</a></li>
+        <li><a href="javascript:" onclick="exportCanvas();"><span class="glyphicon glyphicon-export"></span>&nbsp;Export Canvas</a></li>
+		<li><a href="javascript:" class="btn-file"><form action="#" onchange="importCanvas();"><input id="inputCanvasFile" type="file"><span class="glyphicon glyphicon-import"></span>&nbsp;Import Canvas</input></form></a></li>
+        <!--li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li-->
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a id="lnkHelp" onclick="bsalert({title:'How to:',text:'Just click the New Table link above to start creating tables. Once done, simply click the Code button to get the code to build the models!<br><br>To create relationships, drag the red dots (primary-keys) and connect them to green dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the green area on the foreign-keys and drag it outside the table panel.', type:'danger', delay:0});" href="javascript:"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;Help</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Links <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="https://github.com/prahladyeri/valchemist">Github Project</a></li>
+            <li class="divider"></li>
+            <li><a href="https://github.com/prahladyeri/valchemist/issues">Bug Tracker</a></li>
+            <li><a href="https://www.reddit.com/r/VisualAlchemist">Discussion Room</a></li>
+            <li><a href="#" onclick="javascript:bsabout();">About VA</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+	
+
+	<div class="container-fluid">
+		<div class="row">
+				<div id="theCanvas" class="col-md-12 canvas" style="position:relative;height:530px;" >
+				<!-- ondragover="dragOver(event)" ondrop="drop(event)" -->
+				<div class="hidden mainAlert col-md-push-3 col-md-6 alert alert-success alert-dismissible" role="alert">
+				  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				  <strong>How to:</strong> Just click the <a class="alert-link" href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a> link above to start creating tables.
+				  Once done, simply click the <strong>Build</strong> button to get the python code for the sqlalchemy models!
+				  <br>
+				  <br>
+				  To create relationships, drag the red dots (primary-keys) and connect them to green dots (candidate foreign-keys).
+				</div>
+
+				<!--div hidden id="dragme" style="position:absolute" class="panel panel-primary tableDesign" draggable="true" ondragstart="drag(event)">
+						  <div style="cursor:move" class="panel-heading">dummy
+							<button title="Delete" style="margin-top: -4px; float:right; cursor:pointer;" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+							<button title="Edit" style="margin-top: -4px; float:right; cursor:pointer;" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-edit"></span></button>
+						  </div>
+						  <table class="table">
+							<tr>
+								<td>id</td>
+								<td>varchar2</td>
+								<td>primary</td>
+							</tr>
+							<tr>
+								<td>username</td>
+								<td>text</td>
+								<td>unique</td>
+							</tr>
+						  </table>
+						</div-->
+				</div>
+		</div>
+	</div>
+	<div id="holder"></div>
+	<div id="holderResults"></div>
+	
+<nav class="navbar navbar-inverse  navbar-fixed-bottom  footer" style="min-height:30px;max-height:30px;" role="navigation">
+  <div class="container">
+	<div class="row">
+		<div class="col-md-12" >
+				<p style="color:white;">&copy; Prahlad Yeri 2015. Code licensed under <a href="https://github.com/prahladyeri/valchemist/blob/master/LICENSE">GPLv3</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.
+				<a class="hidden" style="float:right" href="https://gratipay.com/prahladyeri/"><img alt="Support via Gratipay" src="https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.png"></img></a></p>
+
+		</div>
+	</div>
+  </div>
+</nav>
+	
+</body>
+	  <!--a href="https://github.com/prahladyeri/valchemist"><img style="position:absolute;right:0px;top:0px;margin-right:0px;" src="img/forkme1.png"></img></a-->
+</html>

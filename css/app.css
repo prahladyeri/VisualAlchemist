@@ -1,0 +1,65 @@
+body {
+	font-family: ubuntu;
+}
+h2 {
+	text-align: center;
+}
+
+.mainAlert {
+	font-family: ubuntu;
+}
+
+#theCanvas {
+	z-index: 255;
+	/*background-color: rgba(14, 63, 56, 0.56);*/
+	background-color: rgba(16, 38, 34, 0.6);
+}
+
+.panel.tableDesign, 
+.panel.tableDesign .panel-heading
+ {
+	border-radius: 0px;
+}
+
+.panel.tableDesign .panel-heading {
+	padding: 5px 5px;
+}
+
+@media (min-width: 768px) {
+	.modal-dialog {
+		width: 700px;
+	}
+}
+
+
+
+nav.header {
+	/*margin-left: 100px;
+	margin-right: 100px;*/
+}
+
+.mainAlert {
+	margin-top: 100px;
+  font-size: 18px;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
