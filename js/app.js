@@ -23,7 +23,9 @@ $(window).load(function() {
 			$(".mainAlert").hide();*/
 		}
 		else {
-				bsalert({title:'How to:',text:'Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!<br><br>To create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.', type:'success', delay:0});
+				bsalert({title:'How to:',text:"Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.", type:'success', delay:0});
+				//~ bspopup({title:'How to:',text:"Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).\n\nTo detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.", type:'text'});
+				
 			console.log("CALLED");
 			createCookie(".mainAlert.closed","true");
 			/*$('.mainAlert').on('closed.bs.alert',  function(){
