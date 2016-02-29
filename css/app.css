@@ -15,6 +15,10 @@ h2 {
 	background-color: rgba(16, 38, 34, 0.6);
 }
 
+#resultsDialog #theCode pre {
+	max-height:340px;
+}
+
 .panel.tableDesign, 
 .panel.tableDesign .panel-heading
  {
@@ -31,7 +35,11 @@ h2 {
 	}
 }
 
-
+/*for modal dialogs:*/
+.modal-content .modal-header.special-header {
+	border-radius: 5px;
+	background-color: rgb(195, 222, 187);
+}
 
 nav.header {
 	/*margin-left: 100px;

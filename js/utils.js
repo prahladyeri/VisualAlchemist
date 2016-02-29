@@ -111,17 +111,50 @@ function downloadSomeText(text, filename) {
 
 // source: http://stackoverflow.com/a/18405800/849365
 // example: "{0} is dead, but {1} is alive! {0} {2}".format("ASP", "ASP.NET")
-if (!String.prototype.format) {
-  String.prototype.format = function() {
-    var args = arguments;
-    return this.replace(/{(\d+)}/g, function(match, number) { 
-      return typeof args[number] != 'undefined'
-        ? args[number]
-        : match
-      ;
-    });
-  };
-}
+//~ if (!String.prototype.format) {
+  //~ String.prototype.format = function() {
+    //~ var args = arguments;
+    //~ return this.replace(/{(\d+)}/g, function(match, number) { 
+      //~ return typeof args[number] != 'undefined'
+        //~ ? args[number]
+        //~ : match
+      //~ ;
+    //~ });
+  //~ };
+//~ }
+
+//same as above, but with named placeholders.
+//~ String.prototype.format = function(placeholders) {
+    //~ var s = this;
+    //~ for(var propertyName in placeholders) {
+        //~ var re = new RegExp('{' + propertyName + '}', 'gm');
+        //~ s = s.replace(re, placeholders[propertyName]);
+    //~ }    
+    //~ return s;
+//~ };
+
+//Created by Prahlad Yeri after getting inspired by above two
+String.prototype.format = function(placeholders) {
+	if ($.isArray(placeholders)) {
+		var args = arguments;
+		return this.replace(/{(\d+)}/g, function(match, number) { 
+		  return typeof args[number] != 'undefined'
+			? args[number]
+			: match
+		  ;
+		});
+	}
+	else { //Object
+		var s = this;
+		for(var propertyName in placeholders) {
+			var re = new RegExp('{' + propertyName + '}', 'gm');
+			s = s.replace(re, placeholders[propertyName]);
+		}    
+		return s;
+	}
+};
+
+
 
 if (!String.prototype.capitalize) {
 	String.prototype.capitalize =  function() { 
@@ -246,6 +279,9 @@ function bspopup(options, success) {
         html += '<select>';
         theBox.find(".modal-body").append(html);
     }
+    else if (type=='input') {
+		theBox.find(".messageText").text(text);
+	}
     else if (type=='text') 
     {
 		theBox.find(".messageText").text(text);
@@ -284,6 +320,13 @@ function bspopup(options, success) {
         });
     }
     
+    theBox.on('shown.bs.modal', function () {
+		if (type=='input') {
+			$(this).find('#txtInput').focus();
+			console.log('focussed!');
+		}
+	});
+    
     theBox.on("hidden.bs.modal", function(e) {
         if (options.complete!=undefined) {
             var ev = {};
@@ -303,7 +346,7 @@ function bsalert(obj) {
 	//initial config:
 	cont = $('.header'); //container
 	delay = 2000; //millis
-	theWidth = "300px";
+	theWidth = "310px";
 	
 	//text, type, title
 	text = obj.text; //.replace("\n","<br>");
@@ -332,7 +375,7 @@ function bsalert(obj) {
 	$('#bsalertPlugin' + nid).css( {'top': tval, 'left': lval} );
 		
 	$('#bsalertPlugin' + nid).addClass('alert-' + type);
-	$('#bsalertPlugin'  + nid + ' .bsaBody').html(text);
+	$('#bsalertPlugin'  + nid + ' .bsaBody').text(text);
 	$('#bsalertPlugin' + nid + ' .bsaTitle').text(title);
 	//window.setTimeout(function() { ba.alert('close') }, delay);
 	if (delay==0) {
@@ -344,4 +387,3 @@ function bsalert(obj) {
 		});
 	}
 }
-
