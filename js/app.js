@@ -440,6 +440,7 @@ function generateCode(outputType) {
 	else if (outputType=="mysql") {
 		template = "mysql.sql";
 	}
+	console.log("template::",template);
 	
 
 	$.get("/assets/templates/" + template, function(data) {

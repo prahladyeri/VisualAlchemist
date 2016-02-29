@@ -35,7 +35,11 @@ h2 {
 	}
 }
 
-
+/*for modal dialogs:*/
+.modal-content .modal-header.special-header {
+	border-radius: 5px;
+	background-color: rgb(190, 194, 126);
+}
 
 nav.header {
 	/*margin-left: 100px;
