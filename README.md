@@ -5,15 +5,15 @@
 
 ##### Table of Contents
 
-- [Mission Statement](#mission)
-- [Project Details](#project-details)
-- [Feature Roadmap for v1.1](#feature-roadmap-for-v11)
-- [Feature Roadmap for v2.0](#feature-roadmap-for-v20)
-- [Screenshots](#screenshots)
-- [Demo](#demo)
-- [Installation](#installation)
-- [Documentation](#documentation)
-- [Contribution](#contribution)
+1. [Mission Statement](#mission)
+2. [Project Details](#project-details)
+3. [Feature Roadmap for v1.1](#feature-roadmap-for-v11)
+4. [Feature Roadmap for v2.0](#feature-roadmap-for-v20)
+5. [Screenshots](#screenshots)
+6. [Demo](#demo)
+7. [Installation](#installation)
+8. [Documentation](#documentation)
+9. [Contribution](#contribution)
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 
@@ -23,8 +23,8 @@
 
 ## Project Details
 
-- Project Co-ordinator: [Prahlad Yeri](https://github.com/prahladyeri)
-- Project Governance: Meritocracy.
+- Lead Developer: [Prahlad Yeri](https://github.com/prahladyeri)
+- Governance: Meritocracy.
 - License: GNU GPLv3.
 - Issue tracker: [https://github.com/prahladyeri/VisualAlchemist/issues](https://github.com/prahladyeri/VisualAlchemist/issues)
 - Discussion Room: [https://www.reddit.com/r/VisualAlchemist](https://www.reddit.com/r/VisualAlchemist)
@@ -46,7 +46,9 @@
 ## Feature Roadmap for v2.0
 
 - Ability to change ordering of columns by drag-drop.
+- Ability to Save the output code rather than just copying it.
 - Interfacing with backends like php/mysql/etc. for complete automation.
+- Multiple sessions in different tabs with ability to save them on backend.
 - Charting/data-analysis features.
 - Export to diagram/image formats like PDF/PNG/etc.
 

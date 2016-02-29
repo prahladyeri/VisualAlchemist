@@ -6,7 +6,7 @@
 * @date 2015/06/16
 */
 var version = "1.0.3"; //TODO: Remember to automate this.
-
+var stringTypes = ["Text"];
 
 if (window.location.href.indexOf('127.0.0.1:') >=0 ) {
 	window.DEBUG = true;
@@ -127,7 +127,8 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 function createThePanel(table, mode, func) {
 	if (mode == "add") {
 		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data) {
-			$('.canvas').append(data.format(table.name));
+			//console.log("DATA::",data);
+			$('.canvas').append(data.format({table: table.name}));
 			setThePanel(table, mode);
 			if (func) func();
 		});
@@ -430,56 +431,106 @@ function loadCanvasState(json) {
 }
 
 
-function generateCode(dbname) {
-	var code = 
-"import sqlalchemy\n\
-from sqlalchemy import create_engine\n\
-from sqlalchemy.ext.declarative import declarative_base\n\
-from sqlalchemy import Column, Integer, Date, String, Text, Float, ForeignKey\n\
-from sqlalchemy.dialects.mysql import BIGINT\n\
-from sqlalchemy.dialects.mysql import LONGTEXT\n\
-from sqlalchemy.orm import sessionmaker, relationship, backref\n\n\
-Base = declarative_base()\n\n";
-	$.each(tables, function(key, val) {
-		//console.log(val.name);
-		code += "class " + val.name + "(Base):\n";
-		code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
-		$.each(val.fields, function(fkey, fval){
-			//embed quotes if they don't already exist
-			if ((fval.type=='Text' || fval.type=='String') && fval.defaultValue!=null) {
-				var sdef = fval.defaultValue;
-				if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
-				if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
-			}
-			code += "\t" + fval.name + " = Column(" 
-			+ fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')
-			+ (fval.ref != null ? ", ForeignKey('" + fval.ref + "')" : "")
-			+ (fval.primaryKey ? ", primary_key=True" : "")
-			+ (fval.unique ? ", unique=True" : "")
-			+ (fval.defaultValue!=null ? ", default=" + fval.defaultValue : "")
-			+ ")\n";
-		});
-		code += "\n\n";
-	});
-	//alert(code);
-	//console.log(code);
+function generateCode(outputType) {
+	var template = "";
+	var code = "";
+	if (outputType=="ORM/SQLAlchemy") {
+		template = "sqlalchemy.py";
+	}
+	else if (outputType=="mysql") {
+		template = "mysql.sql";
+	}
 	
-	code += 
-"if __name__ == '__main__':\n\
-\tprint('running sqlalchemy ' + sqlalchemy.__version__)\n\
-\tengine = create_engine(r'sqlite:///" + dbname + ".db', echo=True) #connect to database\n\
-\tBase.metadata.create_all(engine) #Lets create the actual sqlite database and schema!\n\
-\tprint('database created: " + dbname  + ".db')";
 
-/*\t\n\
-\tSession = sessionmaker(bind=engine) #create a session class. (alternatively, Session.configure(bind=engine)\n\
-\tsession = Session() #lets create an object of this Session() class\n\
-\t#ed = Student(name='Ed Jones', email='edjones@yahoo.com') #lets add some data!\n\
-\t#ed = Student(name='Harry Potter', email='harrypotter@yahoo.com') #lets add some data!\n\
-\t#session.add(ed)\n\
-\t#session.commit()"*/
-	
-	return code;
+	$.get("/assets/templates/" + template, function(data) {
+		//console.log("data::", data);
+		var constraints = [];
+
+		$.each(tables, function(key, val) {
+			if (outputType == "ORM/SQLAlchemy") {
+				code += "class " + val.name + "(Base):\n";
+				code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
+				$.each(val.fields, function(fkey, fval){
+					//embed quotes if they don't already exist
+					if ((fval.type=='Text' || fval.type=='String') && fval.defaultValue!=null) {
+						var sdef = fval.defaultValue;
+						if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
+						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
+					}
+					code += "\t" + fval.name + " = Column(" 
+					+ fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')
+					+ (fval.ref != null ? ", ForeignKey('" + fval.ref + "')" : "")
+					+ (fval.primaryKey ? ", primary_key=True" : "")
+					+ (fval.unique ? ", unique=True" : "")
+					+ (fval.defaultValue!=null ? ", default=" + fval.defaultValue : "")
+					+ ")\n";
+				});
+				code += "\n";
+			}
+			else if (outputType == "mysql") {
+				code += "create table " + val.name + "\n(";
+				//TODO: Make sure that the tables are ordered such that referenced tables are executed first.
+				//TODO: Treat text/varchar with 0 size appropriately.
+				$.each(val.fields, function(fkey, fval)
+				{
+					//embed quotes if they don't already exist
+					console.log("processing::",val.name,fval.name,fval.ref);
+					if ((fval.type=='Text' || fval.type=='String') && fval.defaultValue!=null) {
+						var sdef = fval.defaultValue;
+						if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
+						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
+					}
+					if ((fval.type=='Text' || fval.type=='String') && fval.size==0) {
+						fval.size = 255;
+					}
+					
+					code += "\t" + fval.name + " " + getRawType('mysql', fval.type) + (fval.size==0 ? '' : '(' + fval.size + ')')
+					+ (fval.primaryKey ? " primary key" : "")
+					//~ + (fval.ref != null ? ",\n\t constraint fk_" + val.name +  "_" + fval.name 
+					//~ +  " foreign key (" + fval.name +  ") references " + fval.ref.split(".")[0] +  "(" + fval.ref.split(".")[1]  + ")" : "")
+					+ (fval.unique ? " unique" : "")
+					+ (fval.defaultValue!=null ? " default " + fval.defaultValue  : "")
+					+ ",\n";
+					
+					if (fval.ref!=null) 
+					{
+						constraints.push("\nalter table " + val.name + " add constraint fk_" + val.name +  "_" + fval.name 
+						+  " foreign key (" + fval.name +  ") references " + fval.ref.split(".")[0] +  "(" + fval.ref.split(".")[1]  + ");");
+					}
+				});
+				
+				code = code.slice(0, -2) + "\n"; //trim off that last nagging comma.
+				code += ");\n";
+			}
+		});
+
+		//add any constraints placed by raw formats like mysql and postgres.
+		$.each(constraints, function(index, item) {
+			console.log("constraint::", index, item);
+			code += item;
+		});
+		
+		code = data.format({body: code, version: version});
+		showResults(code);
+	});
+}
+
+function getRawType(engine, type) {
+	if (type=="Text") {
+		if (engine=='mysql') {
+			return 'varchar';
+		}
+	}
+	else if (type=="Integer") {
+		if (engine=='mysql') {
+			return 'int';
+		}
+	}
+	else if (type=="Float") {
+		if (engine=='mysql') {
+			return 'float';
+		}
+	}
 }
 
 function showResultsDialog() {
@@ -495,7 +546,6 @@ function showResultsDialog() {
 				prettyPrint();
 			});
 			//SyntaxHighlighter.highlight();
-
 			runResultsDialog();
 		});
 	}
@@ -506,29 +556,21 @@ function showResultsDialog() {
 }
 
 function runResultsDialog() {
-	dbname = 'sql00' + parseInt(Math.random() * 4000 + 9999);
-	var code = generateCode(dbname);
-	//remove all child elements of #theCode
-	$("#resultsDialog #theCode").empty();
-	//add a pre tag
-	//$("#resultsDialog #theCode").append('<pre class="brush:python"></pre>');
-	//$("#resultsDialog #theCode").append('<pre style="max-height:240px;" class="prettyprint"></pre>');
-	$("#resultsDialog #theCode").append('<pre class="prettyprint"></pre>');
-	//<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
-	//prettyPrint();
-
-	//set code
-	$("#resultsDialog #theCode pre").text(code);
-  	  //
-	//syntax highlight
-	//SyntaxHighlighter.defaults['gutter'] = false;
-	//SyntaxHighlighter.defaults['smart-tabs'] = false;	
-	//SyntaxHighlighter.highlight('pre');
-	//console.log('code' + code);
-	//$("#resultsDialog #theCode").text("def index():\n\n    print 'foo'");
-	$("#resultsDialog").modal();
+	bspopup({
+		type:"radiolist", text:"Select output format", list:["ORM/SQLAlchemy", "mysql"],
+		success: function(ev){
+			var outputType = ev.value;
+			generateCode(outputType);
+		}
+	});
 }
 
+function showResults(code) {
+	$("#resultsDialog #theCode").empty();
+	$("#resultsDialog #theCode").append('<pre class="prettyprint"></pre>');
+	$("#resultsDialog #theCode pre").text(code);
+	$("#resultsDialog").modal();
+}
 
 function showAddTableDialog() {
 	console.log("showAddTableDialog()");

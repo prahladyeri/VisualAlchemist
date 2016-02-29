@@ -111,17 +111,50 @@ function downloadSomeText(text, filename) {
 
 // source: http://stackoverflow.com/a/18405800/849365
 // example: "{0} is dead, but {1} is alive! {0} {2}".format("ASP", "ASP.NET")
-if (!String.prototype.format) {
-  String.prototype.format = function() {
-    var args = arguments;
-    return this.replace(/{(\d+)}/g, function(match, number) { 
-      return typeof args[number] != 'undefined'
-        ? args[number]
-        : match
-      ;
-    });
-  };
-}
+//~ if (!String.prototype.format) {
+  //~ String.prototype.format = function() {
+    //~ var args = arguments;
+    //~ return this.replace(/{(\d+)}/g, function(match, number) { 
+      //~ return typeof args[number] != 'undefined'
+        //~ ? args[number]
+        //~ : match
+      //~ ;
+    //~ });
+  //~ };
+//~ }
+
+//same as above, but with named placeholders.
+//~ String.prototype.format = function(placeholders) {
+    //~ var s = this;
+    //~ for(var propertyName in placeholders) {
+        //~ var re = new RegExp('{' + propertyName + '}', 'gm');
+        //~ s = s.replace(re, placeholders[propertyName]);
+    //~ }    
+    //~ return s;
+//~ };
+
+//Created by Prahlad Yeri after getting inspired by above two
+String.prototype.format = function(placeholders) {
+	if ($.isArray(placeholders)) {
+		var args = arguments;
+		return this.replace(/{(\d+)}/g, function(match, number) { 
+		  return typeof args[number] != 'undefined'
+			? args[number]
+			: match
+		  ;
+		});
+	}
+	else { //Object
+		var s = this;
+		for(var propertyName in placeholders) {
+			var re = new RegExp('{' + propertyName + '}', 'gm');
+			s = s.replace(re, placeholders[propertyName]);
+		}    
+		return s;
+	}
+};
+
+
 
 if (!String.prototype.capitalize) {
 	String.prototype.capitalize =  function() { 
