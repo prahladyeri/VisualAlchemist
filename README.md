@@ -37,7 +37,7 @@
 - Export the canvas as a `json` file.
 - Import the canvas from existing `json` file.
 - Export the database as `python-sqlalchemy` ORM code.
-- (Pending) Export the database as raw sql code (`mysql` dialect).
+- Export the database as raw sql code (`mysql` dialect).
 - (Pending) Export the database as raw sql code (`postgresql` dialect).
 - (Pending) Export the database as raw sql code (`sqlite` dialect).
 - (Pending) Export the database as `php-doctrine` ORM code.
