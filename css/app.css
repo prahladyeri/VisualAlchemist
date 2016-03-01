@@ -1,5 +1,6 @@
 body {
 	font-family: ubuntu;
+	background: red;
 }
 h2 {
 	text-align: center;
@@ -50,7 +51,7 @@ nav.navbar.navbar-inverse  .navbar-nav .dropdown-menu li a:hover
 #theCanvas {
 	z-index: 255;
 	/*background-color: rgba(14, 63, 56, 0.56);*/
-	background-color: rgba(16, 38, 34, 0.6);
+	background-color: rgba(16, 38, 34, 1);
 }
 
 #resultsDialog #theCode pre {
