@@ -13,7 +13,9 @@ nav.navbar.navbar-inverse {
 	border-radius: 0px;
 }
 
-nav.navbar.navbar-inverse .navbar-nav .active a {
+nav.navbar.navbar-inverse .navbar-nav .active a,
+nav.navbar.navbar-inverse .navbar-nav .open a
+{
 	background-color: #09396B;
 }
 
@@ -21,12 +23,20 @@ nav.navbar.navbar-inverse a {
 	color: white;
 }
 
-nav.navbar.navbar-inverse .dropdown-menu li a {
+
+nav.navbar.navbar-inverse .navbar-nav li a {
+	color: white;
+}
+
+nav.navbar.navbar-inverse .navbar-nav .dropdown-menu li a
+{
+	background-color: white;
 	color: black;
 }
 
-nav.navbar.navbar-inverse .dropdown-menu li a:hover {
-	background: #3572b0;
+nav.navbar.navbar-inverse  .navbar-nav .dropdown-menu li a:hover 
+{
+	background-color: #3572b0;
 	color: #fff;
 }
 
