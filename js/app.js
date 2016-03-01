@@ -5,7 +5,7 @@
 * @copyright GPLv3
 * @date 2015/06/16
 */
-var version = "1.0.4"; //TODO: Remember to automate this.
+var version = "1.0.5"; //TODO: Remember to automate this.
 var stringTypes = ["Text"];
 
 if (window.location.href.indexOf('127.0.0.1:') >=0 ) {

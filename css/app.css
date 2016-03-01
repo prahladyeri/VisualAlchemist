@@ -71,12 +71,15 @@ nav.navbar.navbar-inverse  .navbar-nav .dropdown-menu li a:hover
 	.modal-dialog {
 		width: 700px;
 	}
+	.modal-about .modal-dialog {
+		width: 550px;
+	}
 }
 
 /*for modal dialogs:*/
 .modal-content .modal-header.special-header {
 	border-radius: 5px;
-	background-color: rgb(195, 222, 187);
+	background-color: rgb(239, 202, 139);
 }
 
 nav.header {
