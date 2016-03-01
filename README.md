@@ -47,9 +47,9 @@
 ## Feature Roadmap for v2.0
 
 - Ability to change ordering of columns by drag-drop.
-- Ability to Save the output code rather than just copying it.
-- Interfacing with backends like php/mysql/etc. for complete automation.
+- Ability to save the session for future use and `database versioning`.
 - Multiple sessions in different tabs with ability to save them on backend.
+- Interfacing with backends like php/mysql/etc. for complete automation.
 - Charting/data-analysis features.
 - Export to diagram/image formats like PDF/PNG/etc.
 
