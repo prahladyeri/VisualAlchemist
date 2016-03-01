@@ -5,6 +5,34 @@ h2 {
 	text-align: center;
 }
 
+/*************Bootstrap Wrapper*****************/
+
+nav.navbar.navbar-inverse {
+	background-color: #205081;
+	border-color: #2e3D54;
+	border-radius: 0px;
+}
+
+nav.navbar.navbar-inverse .navbar-nav .active a {
+	background-color: #09396B;
+}
+
+nav.navbar.navbar-inverse a {
+	color: white;
+}
+
+nav.navbar.navbar-inverse .dropdown-menu li a {
+	color: black;
+}
+
+nav.navbar.navbar-inverse .dropdown-menu li a:hover {
+	background: #3572b0;
+	color: #fff;
+}
+
+
+/**** End Bootstrap Wrapper *****/
+
 .mainAlert {
 	font-family: ubuntu;
 }
