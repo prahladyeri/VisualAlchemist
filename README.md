@@ -48,6 +48,7 @@
 
 - Ability to change ordering of columns by drag-drop.
 - Ability to save the session for future use and `database versioning`.
+- Ability to share sessions through URL.
 - Multiple sessions in different tabs with ability to save them on backend.
 - Interfacing with backends like php/mysql/etc. for complete automation.
 - Charting/data-analysis features.
