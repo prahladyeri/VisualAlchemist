@@ -1,7 +1,7 @@
 ![License](https://img.shields.io/badge/license-GPL-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
 
-[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JM8FUXNFUK6EU)
+[![](https://www.paypalobjects.com/en_US/i/btn/x-click-but04.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JM8FUXNFUK6EU)
 
 # Visual Alchemist
 
@@ -16,6 +16,7 @@
 7. [Installation](#installation)
 8. [Documentation](#documentation)
 9. [Contribution](#contribution)
+10. [Donation](#donation)
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenTablet.jpg)
@@ -82,4 +83,8 @@ I'm presently looking for people who can contribute to Visual Alchemist. Mainly 
 3. Logo Design: Though a new logo is not immediately necessary, it is still a nice to have, though.
 4. Documentation: Docs are very critical at this early of the project, and we don't have any apart from the basic guide accompnied by the app itself.
 
-To support the project by providing financial support, you can send me bitcoins at my wallet no. `1Av4rPGBz5rJVPwewSTDCpYac1rjvkaSzT`. You can also send me donation by paypal at `prahladyeri@yahoo.com`.
+## Donation
+
+| Paypal | Bitcoin |
+| ------ | ------- |
+| [![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JM8FUXNFUK6EU) |  <center> ![1Av4rPGBz5rJVPwewSTDCpYac1rjvkaSzT](https://www.prahladyeri.com/assets/btc_address.png)<br />1Av4rPGBz5rJVPwewSTDCpYac1rjvkaSzT</center> |
