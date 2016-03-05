@@ -16,6 +16,7 @@
 8. [Documentation](#documentation)
 9. [Contribution](#contribution)
 10. [Donation](#donation)
+11. [License](#license)
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenTablet.jpg)
@@ -28,7 +29,6 @@
 
 - Lead Developer: [Prahlad Yeri](https://github.com/prahladyeri)
 - Governance: Meritocracy.
-- License: GNU GPLv3.
 - Issue tracker: [https://github.com/prahladyeri/VisualAlchemist/issues](https://github.com/prahladyeri/VisualAlchemist/issues)
 - Discussion Room: [https://www.reddit.com/r/VisualAlchemist](https://www.reddit.com/r/VisualAlchemist)
 
@@ -87,3 +87,7 @@ I'm presently looking for people who can contribute to Visual Alchemist. Mainly 
 | Paypal | Bitcoin |
 | ------ | ------- |
 | [![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JM8FUXNFUK6EU) |  <center> ![1Av4rPGBz5rJVPwewSTDCpYac1rjvkaSzT](https://www.prahladyeri.com/assets/btc_address.png)<br />1Av4rPGBz5rJVPwewSTDCpYac1rjvkaSzT</center> |
+
+## License
+
+`Visual Alchemist` is free and open source and it always will be! It is licensed under the [GPLv3](https://opensource.org/licenses/GPL-3.0).
