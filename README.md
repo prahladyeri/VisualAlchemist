@@ -1,5 +1,21 @@
 ![License](https://img.shields.io/badge/license-GPL-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="JM8FUXNFUK6EU">
+<table>
+<tr><td><input type="hidden" name="on0" value="Options">Options</td></tr><tr><td><select name="os0">
+	<option value="Buy me a coffee">Buy me a coffee $5.00 USD</option>
+	<option value="Fund my coding and unit-testing">Fund my coding and unit-testing $50.00 USD</option>
+	<option value="Fund my Integration testing">Fund my Integration testing $75.00 USD</option>
+	<option value="Become my fan!">Become my fan! $100.00 USD</option>
+</select> </td></tr>
+</table>
+<input type="hidden" name="currency_code" value="USD">
+<input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online.">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+</form>
+
 
 # Visual Alchemist
 
