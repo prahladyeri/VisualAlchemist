@@ -1,6 +1,5 @@
 ![License](https://img.shields.io/badge/license-GPL-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
-
 [![](https://www.paypalobjects.com/en_US/i/btn/x-click-but04.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JM8FUXNFUK6EU)
 
 # Visual Alchemist
