@@ -95,4 +95,4 @@ I'm presently looking for people who can contribute to Visual Alchemist. Mainly 
 
 ## Contribution Guidelines
 
-This is a GPLv3 project, so please make sure that contributed code complies accordingly. Also refer to the Github [CLA](https://cla.github.com/)(Contributor License Agreement) that applies to all pull-requests that you submit.
+This is a GPLv3 project, so please make sure that contributed code complies accordingly. If it doesn't, then don't contribute.
