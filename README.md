@@ -17,7 +17,7 @@
 9. [Contribution](#contribution)
 10. [Donation](#donation)
 11. [License](#license)
-12. [Contribution Guidelines](#contributionguidelines)
+12. [Contribution Guidelines](#contribution-guidelines)
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenTablet.jpg)
