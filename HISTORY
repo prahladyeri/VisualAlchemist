@@ -9,3 +9,4 @@
 1. Fixed bootstrap navbar hovers.
 2. Changed the logo.
 3. Improved modal css.
+4. Store first use boolean setting in localStorage instead of cookies (pending).

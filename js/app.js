@@ -31,23 +31,14 @@ else {
 $(window).load(function() {
 	//if (!window.DEBUG) {
 		//$("#lnkHelp").click();
-		if (readCookie(".mainAlert.closed") != null) {
-			/*console.log("alert cookie already exists!");
-			$(".mainAlert").hide();*/
-		}
-		else {
-				bsalert({title:'How to:',text:"Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.", type:'success', delay:0});
-				//~ bspopup({title:'How to:',text:"Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).\n\nTo detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.", type:'text'});
-				
+		//if (readCookie(".mainAlert.closed") != null) {
+		console.log("readCookie::", readCookie(".mainAlert.closed"));
+		if (readCookie(".mainAlert.closed") != "true") 
+		{
+			bsalert({title:'How to:',text:"Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.", type:'success', delay:0});
 			console.log("CALLED");
-			createCookie(".mainAlert.closed","true");
-			/*$('.mainAlert').on('closed.bs.alert',  function(){
-				createCookie(".mainAlert.closed", "true", 365);
-				console.log('alert cookie created');
-			})
-			console.log('alert event added');*/
+			createCookie(".mainAlert.closed", "true");
 		}
-	//}
 	
 	//Objects Initialization
 	tables = {}; //dict of String:Table objects
@@ -551,7 +542,7 @@ function getRawType(engine, type) {
 
 function showResultsDialog() {
 	if (!window.DEBUG && Object.keys(tables).length==0) {
-		alert("There should be at least one table");
+		bspopup("There should be at least one table");
 		return;
 	}
 	

@@ -17,6 +17,7 @@
 9. [Contribution](#contribution)
 10. [Donation](#donation)
 11. [License](#license)
+12. [Contribution Guidelines](#contributionguidelines)
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenTablet.jpg)
@@ -91,3 +92,7 @@ I'm presently looking for people who can contribute to Visual Alchemist. Mainly 
 ## License
 
 `Visual Alchemist` is free and open source and it always will be! It is licensed under the [GPLv3](https://opensource.org/licenses/GPL-3.0).
+
+## Contribution Guidelines
+
+This is a GPLv3 project, so please make sure that contributed code complies accordingly. Also refer to the Github [CLA](https://cla.github.com/)(Contributor License Agreement) that applies to all pull-requests that you submit.
