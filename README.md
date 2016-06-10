@@ -1,5 +1,6 @@
 ![License](https://img.shields.io/badge/license-GPL-blue.svg)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
+[![](https://www.paypalobjects.com/en_US/i/btn/x-click-but04.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JM8FUXNFUK6EU)
 
 # Visual Alchemist
 
@@ -14,8 +15,12 @@
 7. [Installation](#installation)
 8. [Documentation](#documentation)
 9. [Contribution](#contribution)
+10. [Donation](#donation)
+11. [License](#license)
+12. [Contribution Guidelines](#contribution-guidelines)
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenTablet.jpg)
 
 ## Mission
 
@@ -25,7 +30,6 @@
 
 - Lead Developer: [Prahlad Yeri](https://github.com/prahladyeri)
 - Governance: Meritocracy.
-- License: GNU GPLv3.
 - Issue tracker: [https://github.com/prahladyeri/VisualAlchemist/issues](https://github.com/prahladyeri/VisualAlchemist/issues)
 - Discussion Room: [https://www.reddit.com/r/VisualAlchemist](https://www.reddit.com/r/VisualAlchemist)
 
@@ -36,7 +40,7 @@
 - Export the canvas as a `json` file.
 - Import the canvas from existing `json` file.
 - Export the database as `python-sqlalchemy` ORM code.
-- (Pending) Export the database as raw sql code (`mysql` dialect).
+- Export the database as raw sql code (`mysql` dialect).
 - (Pending) Export the database as raw sql code (`postgresql` dialect).
 - (Pending) Export the database as raw sql code (`sqlite` dialect).
 - (Pending) Export the database as `php-doctrine` ORM code.
@@ -46,9 +50,10 @@
 ## Feature Roadmap for v2.0
 
 - Ability to change ordering of columns by drag-drop.
-- Ability to Save the output code rather than just copying it.
-- Interfacing with backends like php/mysql/etc. for complete automation.
+- Ability to save the session for future use and `database versioning`.
+- Ability to share sessions through URL.
 - Multiple sessions in different tabs with ability to save them on backend.
+- Interfacing with backends like php/mysql/etc. for complete automation.
 - Charting/data-analysis features.
 - Export to diagram/image formats like PDF/PNG/etc.
 
@@ -78,4 +83,16 @@ I'm presently looking for people who can contribute to Visual Alchemist. Mainly 
 3. Logo Design: Though a new logo is not immediately necessary, it is still a nice to have, though.
 4. Documentation: Docs are very critical at this early of the project, and we don't have any apart from the basic guide accompnied by the app itself.
 
-To support the project by providing financial support, you can send me bitcoins at my wallet no. `1Av4rPGBz5rJVPwewSTDCpYac1rjvkaSzT`. You can also send me donation by paypal at `prahladyeri@yahoo.com`.
+## Donation
+
+| Paypal | Bitcoin |
+| ------ | ------- |
+| [![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JM8FUXNFUK6EU) |  <center> ![1Av4rPGBz5rJVPwewSTDCpYac1rjvkaSzT](https://www.prahladyeri.com/assets/btc_address.png)<br />1Av4rPGBz5rJVPwewSTDCpYac1rjvkaSzT</center> |
+
+## License
+
+`Visual Alchemist` is free and open source and it always will be! It is licensed under the [GPLv3](https://opensource.org/licenses/GPL-3.0).
+
+## Contribution Guidelines
+
+This is a GPLv3 project, so please make sure that contributed code complies accordingly. If it doesn't, then don't contribute.
