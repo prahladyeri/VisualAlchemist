@@ -235,6 +235,13 @@ function selectText(element) {
 
 /*END UTILITY FUNCTIONS*/
 
+function bshelp() {
+	//bsalert({title:'How to:',text:"Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.", type:'success', delay:0});
+	bspopup({
+		text: "Just click the New Table link to start creating tables. \n\nOnce done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).\n\nTo detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel."
+	});
+}
+
 function bsabout() {
 	bspopup({type:"about"});	
 }
@@ -258,7 +265,7 @@ function bsoptions(options) {
 
 
 /**
- * Shows a bootstrap popup dialog on the center of screen.
+ * Shows a bootstrap popup dialog (NEW) on the center of screen.
  * Depends on jQuery and Bootstrap.
  * */
 function bspopup(options, success) {
@@ -288,6 +295,10 @@ function bspopup(options, success) {
     else if (type=='about') {
 		proto = 'About';
 	}
+    else if (type=='stack') {
+        proto = 'Stack'
+    }
+        
     
 	// Create a new box cloned from prototype and give it a random ID
     var theBox = $("#popupBox" + proto).clone();
@@ -311,9 +322,11 @@ function bspopup(options, success) {
 	}
     else if (type=='text') 
     {
-		theBox.find(".messageText").text(text);
+		var tobj = theBox.find(".messageText").text(text);
+		tobj.html(tobj.html().replace(/\n/g,'<br/>'));
         if (options.button1 != undefined) {
             theBox.find("#btnClose").text(options.button1);
+            
             theBox.find("#btnClose").click(function(){
                 ev = {};
                 ev.button = "button1";
