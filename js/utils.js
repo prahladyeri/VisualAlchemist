@@ -240,6 +240,24 @@ function bsabout() {
 }
 
 /**
+ * Returns an options object that has type, text, and title properties. 
+ */
+function bsoptions(options) {
+
+	if (typeof(options)=='string')
+	{
+		text = options;
+        options = {type:"text", text:text};
+	}
+    if (options==undefined) options={};
+	if (options.type==undefined) options.type='text';
+	if (options.text==undefined) options.text='';
+	
+	return options;
+}
+
+
+/**
  * Shows a bootstrap popup dialog on the center of screen.
  * Depends on jQuery and Bootstrap.
  * */
@@ -253,20 +271,13 @@ function bspopup(options, success) {
         });
     }
     
-	//text, type, title
-	if (typeof(options)=='string')
-	{
-		text = options;
-        options = {type:"text", text:text};
-	}
-    if (options==undefined) options={};
-	if (options.type==undefined) options.type='text';
-	if (options.text==undefined) options.text='';
+	// Make sure options is a valid object with text, type, and title properties
+	options = bsoptions(options);
     
     var text = options.text;
 	var type = options.type;
 	var title = options.title;
-	//if (obj.delay!=undefined) delay = obj.delay;
+	
     var proto = '';
     if (type=='text') {
         proto = 'Generic';
@@ -277,11 +288,13 @@ function bspopup(options, success) {
     else if (type=='about') {
 		proto = 'About';
 	}
-	console.log("proto: ", proto, ",type: ", type);
     
+	// Create a new box cloned from prototype and give it a random ID
     var theBox = $("#popupBox" + proto).clone();
     theBox.attr("id", "popupBox" + (Math.random() + "").replace(".","") )
         .removeClass("hidden");
+		
+	// Insert HTML in to the box based on popup box type
     if (type=='radiolist') {
 		theBox.find(".messageText").text(text);
         theBox.find("#txtInput").remove();
@@ -293,6 +306,7 @@ function bspopup(options, success) {
         theBox.find(".modal-body").append(html);
     }
     else if (type=='input') {
+		theBox.find('#txtInput').get(0).placeholder = text;
 		theBox.find(".messageText").text(text);
 	}
     else if (type=='text') 
@@ -332,18 +346,17 @@ function bspopup(options, success) {
             options.success(ev);
         });
     }
-    
-    theBox.on('shown.bs.modal', function () {
-		if (type=='input') {
+	
+	if (type=='text' || type=='input') {
+		// Focus the text box when it is first shown
+		theBox.on('shown.bs.modal', function () {
 			$(this).find('#txtInput').focus();
-			console.log('focussed!');
-		}
-	});
-    
+		});
+	}
+
     theBox.on("hidden.bs.modal", function(e) {
         if (options.complete!=undefined) {
             var ev = {};
-            //ev.id = theBox.attr("id");
             options.complete(ev);
         }
         theBox.remove();
