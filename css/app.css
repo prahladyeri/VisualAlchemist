@@ -114,7 +114,9 @@ nav.header {
     display: block;
 }
 
-/*.tableDesign .table div.prima  {
-    padding-left: 50px;
-    padding-right: 50px;
-}*/
+#fields td,
+#fields th
+ {
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
