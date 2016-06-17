@@ -18,6 +18,7 @@
 10. [Donation](#donation)
 11. [License](#license)
 12. [Contribution Guidelines](#contribution-guidelines)
+13. [Stack](#stack)
 
 ![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/screenRelation.png)
 
@@ -42,7 +43,8 @@
 - Export the database as raw sql code (`mysql` dialect).
 - (Pending) Export the database as raw sql code (`postgresql` dialect).
 - (Pending) Export the database as raw sql code (`sqlite` dialect).
-- (Pending) Export the database as `php-doctrine` ORM code.
+- (Pending) Export the database as `PHP Doctrine` ORM code.
+- (Pending) Export the database as `Laravel Eloquent` ORM code.
 - (Pending) Support for composite primary keys.
 - (Nice to have) A better looking logo for the tool.
 
@@ -95,3 +97,11 @@ I'm presently looking for people who can contribute to Visual Alchemist. Mainly 
 ## Contribution Guidelines
 
 This is a GPLv3 project, so please make sure that contributed code complies accordingly. If it doesn't, then don't contribute.
+
+## Stack
+
+`Visual Alchemist` is entirely composed of Open source stack:
+
+- [jQuery](http://www.jquery.com) - The most popular JavaScript library in vogue. A must-know for any web-developer.
+- [Twitter Bootstrap](https://github.com/twbs/bootstrap) - A popular `CSS/JavaScript` framework by Twitter Inc., again an "off-the-shelf" reusable component for backend & front-end developers alike.
+- [jsPlumb](https://jsplumbtoolkit.com/) - Useful JavaScript library for plugging-in "drag-drop" elements in your web-page.
