@@ -344,33 +344,9 @@ function setThePanel(table, mode) {
     //jsPlumb.addEndpoint('tbl' + table.name, {  });
 }
 
-
-/*function drag(ev){
-	var ss  = (parseInt($(ev.target.parentNode).position().left,10) - ev.clientX) + ',' + (parseInt($(ev.target.parentNode).position().top,10) - ev.clientY);
-	ev.dataTransfer.setData("text/plain", ss + ',' + $(ev.target.parentNode).attr('id'));
-	//ev.dataTransfer.setDragImage(document.getElementById("draggit"), 10, 10); //NOT WORKING
-}
-
-function drop(ev) {
-	var offset = ev.dataTransfer.getData("text/plain");
-	var npos = offset.split(",");
-	var ctrl = npos[2];
-	document.getElementById(ctrl).style.left = (ev.clientX + parseInt(npos[0])) + "px";
-	document.getElementById(ctrl).style.top = (ev.clientY + parseInt(npos[1])) + "px";
-	console.log(ctrl);
-	ev.preventDefault();
-	return false;
-}
-
-function dragOver(ev) {
-	ev.preventDefault();
-	return false;
-}*/
-
 /**
 * @brief Save current canvas state to local store
 */
-
 function saveCanvasState() {
 	console.log('saveCanvasState()');
 	var json = null;
@@ -505,13 +481,22 @@ var MySQL = function(templateDir) {
 		var constraints = [];
 		$.each(tables, function(key, val) {
 			code += "create table " + val.name + "\n(";
+			
+			var primaryFields = [];
+			var primaryCount = 0;
+			
+			// Collect number and names of primary key fields
+			$.each(val.fields, function(fkey, fval) {
+				if (fval.primaryKey) {
+					primaryFields.push(fval.name);
+					primaryCount += 1;
+				}
+			});
 		
-			//TODO: Treat text/varchar with 0 size appropriately.
 			$.each(val.fields, function(fkey, fval)
 			{
-				//embed quotes if they don't already exist
-				console.log("processing::",val.name,fval.name,fval.ref);
 				if (fval.type=='Text' || fval.type=='String') {
+					//embed quotes if they don't already exist
 					if (fval.defaultValue!=null) {
 						var sdef = fval.defaultValue;
 						if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
@@ -525,7 +510,7 @@ var MySQL = function(templateDir) {
 				}
 				
 				code += "\t" + fval.name + " " + rawTypes[fval.type] + (fval.size==0 ? '' : '(' + fval.size + ')')
-				+ (fval.primaryKey ? " primary key" : "")
+				+ (fval.primaryKey && primaryCount == 1 ? " primary key" : "")
 				+ (fval.unique ? " unique" : "")
 				+ (fval.defaultValue!=null ? " default " + fval.defaultValue  : "")
 				+ ",\n";
@@ -539,7 +524,13 @@ var MySQL = function(templateDir) {
 				}
 			});
 			
-			code = code.slice(0, -2) + "\n"; //trim off that last nagging comma.
+			// Add multi-field primary key if needed
+			if (primaryCount > 1) {
+				code += "\tprimary key (" + primaryFields.join(',') + ")";
+			} else {
+				code = code.slice(0, -2) + "\n"; //trim off that last nagging comma.
+			}
+			
 			code += ");\n";
 		});
 
@@ -685,7 +676,7 @@ function deleteTable(tableName) {
 function importCanvas() {
 	console.log('IMPORT_CANVAS');
 	var file = $('#inputCanvasFile')[0].files[0];
-	//console.log(file);
+
 	fr = new FileReader();
 	fr.readAsText(file);
 	fr.onload = function(ev) {
@@ -697,7 +688,6 @@ function importCanvas() {
         console.log("error reading file");
     }
 	$("#inputCanvasFile").val("");
-	//console.log(fr.result);
 };
 
 function exportCanvas() {
