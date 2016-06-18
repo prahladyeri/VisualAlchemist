@@ -145,35 +145,14 @@ function createThePanel(table, mode, func) {
 
 function setThePanel(table, mode) {
     if (mode=='edit') {
-            /*jsPlumb.detachAllConnections($('#tbl' + table.name + " .table"));
-            $.each(window.oldTable.fields, function(k,v) {
-                    console.log(v.ep);
-                    jsPlumb.deleteEndpoint(v.ep);
-                    console.log('deleted ep for',v.name);
-            });*/
-
-            //jsPlumb.deleteEveryEndpoint();
-            //jsPlumb.removeAllEndpoints($('#tbl' + table.name + " .table"));
-            //jsPlumb.remove($('#tbl' + table.name + " .table tr"));
-            //jsPlumb.removeAL
-
-            //jsPlumb.empty($('#tbl' + table.name + " .table tbody"));
-            /*while ($('#tbl' + table.name +  ' .table tr').length>0) 
-            {
-                    jsPlumb.deleteEndpoint($('#tbl' + table.name +  ' .table tr'));
-            }*/
-            $('#tbl' + table.name + " .table tr").remove();
-
-            //jsPlumb.repaintEverything();
+        $('#tbl' + table.name + " .table tr").remove();
     }
 
     //Now lets build the new panel
     $.each(table.fields, function(key, field) {
 		var html = '';
 		var sprim = "";
-		if (field.primaryKey) {
-				//sprim+= " style='cursor:move' ";
-		}
+
 		html += "<tr>";
 		html += "<td><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
 		html += "<td>" + field.name + "</td>";
@@ -211,10 +190,10 @@ function setThePanel(table, mode) {
 		}
 		
 		ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
-						isTarget: true,
-						anchor: "Left",
-						endpoint: ["Rectangle", {width:15, height:15}], //Rectangle
-						paintStyle: {  fillStyle:"blue", outlineColor:"black", outlineWidth:1},
+			isTarget: true,
+			anchor: "Left",
+			endpoint: ["Rectangle", {width:15, height:15}], //Rectangle
+			paintStyle: {  fillStyle:"blue", outlineColor:"black", outlineWidth:1},
 		});
 				
 		jsPlumb.draggable('tbl' + table.name, {
@@ -226,85 +205,80 @@ function setThePanel(table, mode) {
 				jsPlumb.repaintEverything();
 			},
 		   stop: function(event, ui) {
-						console.log(event.pos[0], event.pos[1]);
-						tables[table.name].position.x = event.pos[0] + 'px';
-						tables[table.name].position.y = event.pos[1] + 'px';
-						saveCanvasState();
-						jsPlumb.repaintEverything();
+				console.log(event.pos[0], event.pos[1]);
+				tables[table.name].position.x = event.pos[0] + 'px';
+				tables[table.name].position.y = event.pos[1] + 'px';
+				saveCanvasState();
+				jsPlumb.repaintEverything();
 		   }
 		});
     });
 
-    //jsPlumb.draggable($('#tbl' + table.name + " tr.prima"),{}); //containment:true
-    console.log('#tbl' + table.name + " td.prima",'#tbl' + table.name + " td:not(.prima)");
-
     //TODO: [STABLE]Rebuild connections to/from this table by looping thru tables collection.
     if (mode=='edit') {
 		$.each(window.oldrefs, function(key, val) {
-				console.log('rebuilding ',key,val);
-				if (val.foreign != null) {
-					//check outgoing
-					console.log('primary key found:',key, val.foreign);
-					table.fields[key].foreign = val.foreign; //restore the lost foreign
-					tsa = val.foreign.split('.');
-					tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
-					elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
-					elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " [fpname='" + table.name + "." + key +  "']")});
-					//console.log(elist1.length, elist2.length);
-					var el1 = null;
-					var el2 = null;
-					elist1.each(function(key){el1=key});
-					elist2.each(function(key){el2=key});
-					jsPlumb.connect({target:el1, source:el2});
-				}
-				else if (val.ref != null) {
-					//check incoming
-					console.log('foreign key found:',key, val.ref);
-					table.fields[key].ref = val.ref; //restore the lost ref
-					tsa = val.ref.split('.');
-					tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-					console.log("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']");
-					elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
-					elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
-					//console.log(elist1.length, elist2.length);
-					var el1 = null;
-					var el2 = null;
-					elist1.each(function(key){el1=key});
-					elist2.each(function(key){el2=key});
-					jsPlumb.connect({source:el1, target:el2});
-				}
+			console.log('rebuilding ',key,val);
+			if (val.foreign != null) {
+				//check outgoing
+				console.log('primary key found:',key, val.foreign);
+				table.fields[key].foreign = val.foreign; //restore the lost foreign
+				tsa = val.foreign.split('.');
+				tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
+				elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
+				elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " [fpname='" + table.name + "." + key +  "']")});
+
+				var el1 = null;
+				var el2 = null;
+				elist1.each(function(key){el1=key});
+				elist2.each(function(key){el2=key});
+				jsPlumb.connect({target:el1, source:el2});
+			}
+			else if (val.ref != null) {
+				//check incoming
+				console.log('foreign key found:',key, val.ref);
+				table.fields[key].ref = val.ref; //restore the lost ref
+				tsa = val.ref.split('.');
+				tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
+				console.log("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']");
+				elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
+				elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
+
+				var el1 = null;
+				var el2 = null;
+				elist1.each(function(key){el1=key});
+				elist2.each(function(key){el2=key});
+				jsPlumb.connect({source:el1, target:el2});
+			}
 		});
     }
 
     if (mode=='add') {
-            if (window.lastPos == undefined) {
-                    window.lastPos = {'x':0, 'y':0};
-            }
+		if (window.lastPos == undefined) {
+				window.lastPos = {'x':0, 'y':0};
+		}
 
-            var maxX = $(".canvas").width() - $('#tbl' + table.name).width() ;
-            var maxY = $(".canvas").height() - $('#tbl' + table.name).height();
-            if (table.position.x==0 && table.position.y==0) {
-                    table.position.x = (Math.random() * maxX) + 'px';
-                    table.position.y = (Math.random() * maxY) + 'px';
-            }
-            $('#tbl' + table.name).css({
-                    //'left': window.lastPos.x + "px",
-                    //'top': window.lastPos.y + "px"
-                    left: table.position.x,
-                    top: table.position.y
-            });
+		var maxX = $(".canvas").width() - $('#tbl' + table.name).width() ;
+		var maxY = $(".canvas").height() - $('#tbl' + table.name).height();
+		if (table.position.x==0 && table.position.y==0) {
+				table.position.x = (Math.random() * maxX) + 'px';
+				table.position.y = (Math.random() * maxY) + 'px';
+		}
+		$('#tbl' + table.name).css({
+			left: table.position.x,
+			top: table.position.y
+		});
 
-            if (window.lastPos.x >= $('.container').offset().left + $('.container').offset().width) {
-                    window.lastPos.x = 0;
-            }
-            else {
-                    window.lastPos.x += $('#tbl' + table.name).width() + 20;
-            }
-            window.lastPos.y += $('#tbl' + table.name).position().top;
+		if (window.lastPos.x >= $('.container').offset().left + $('.container').offset().width) {
+			window.lastPos.x = 0;
+		}
+		else {
+			window.lastPos.x += $('#tbl' + table.name).width() + 20;
+		}
+		window.lastPos.y += $('#tbl' + table.name).position().top;
 
-            jsPlumb.repaintEverything();
-            console.log("repaintedEverything");
-            bsalert({text:"Table added!", type:'success'});
+		jsPlumb.repaintEverything();
+		console.log("repaintedEverything");
+		bsalert({text:"Table added!", type:'success'});
     }
     else 
     {
@@ -315,20 +289,10 @@ function setThePanel(table, mode) {
 				//console.log('repainted div ' + 'tbl' + k);
 		});
 		jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
-		console.log("repaintedEverything");
-		//console.log('repainted all connections');
 		bsalert({text:"Table updated!", type:'success'});
     }
 
     saveCanvasState(); 
-    //jsPlumb.addEndpoint($('#tbl' + table.name), {  });
-    //jsPlumb.setContainer('theCanvas');
-    //console.log(
-    //);
-    //jsPlumb.repaint('#theCanvas');
-    //console.log('repaint done');
-    //console.log('made draggable ;' + 'tbl' + table.name);
-    //jsPlumb.addEndpoint('tbl' + table.name, {  });
 }
 
 /**
@@ -356,10 +320,6 @@ function loadCanvasState(json) {
 		json = localStorage.getItem("strTables");
 	}
 	else {
-		/*$.each(tables, function(k,v){
-			deleteTable(k);	
-		});*/
-		//jsPlumb.empty(".canvas");
 		console.log('json arg:',json);
 		jsPlumb.detachEveryConnection();
 		jsPlumb.empty($(".canvas"));
@@ -372,8 +332,6 @@ function loadCanvasState(json) {
 		tables[k] = new Table(v.name);
 		tables[k].fields = {};
 		tables[k].position = v.position;
-		//tables[k].position.x = v.position.x;
-		//tables[k].position.y = v.position.y;
 		console.log('round1',tables[k].position,tables[k].position.x, tables[k].position.y);
 		$.each(v.fields, function(kk,vv) {
 			tables[k].fields[kk] = new Field(vv);
@@ -390,9 +348,6 @@ function loadCanvasState(json) {
 			if ($("[id^='tbl']").length < Object.keys(tables).length) return;
 			//now create the relations after all panels are done.
 			$.each(tables, function(k,v) {
-				console.log('Setting relations:',k);
-				console.log('round2',v.position.x, v.position.y);
-				//$('#tbl' + k).css({left:v.position.x,top:v.position.y});
 				window.oldrefs = {};
 				$.each(v.fields, function(kk,vv) {
 					if (vv.ref != null) {
