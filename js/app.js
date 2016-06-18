@@ -454,79 +454,93 @@ function loadCanvasState(json) {
 	});
 }
 
+var ORMSQLAlchemy = function(templateDir) {
 
-function generateCode(outputType) {
-	var template = "";
-	var code = "";
-	if (outputType=="ORM/SQLAlchemy") {
-		template = "sqlalchemy.py";
-	}
-	else if (outputType=="mysql") {
-		template = "mysql.sql";
-	}
-	console.log("template::",template);
-	
-
-	$.get("/assets/templates/" + template, function(data) {
-		//console.log("data::", data);
-		var constraints = [];
-
-		$.each(tables, function(key, val) {
-			if (outputType == "ORM/SQLAlchemy") {
-				code += "class " + val.name + "(Base):\n";
-				code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
-				$.each(val.fields, function(fkey, fval){
-					//embed quotes if they don't already exist
-					if ((fval.type=='Text' || fval.type=='String') && fval.defaultValue!=null) {
+	 this.template = templateDir+"sqlalchemy.py";
+	 
+	 this.generateCode = function(tables) {
+		var code = '';
+		
+		 $.each(tables, function(key, val) {
+			code += "class " + val.name + "(Base):\n";
+			code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
+			$.each(val.fields, function(fkey, fval){
+				//embed quotes if they don't already exist
+				if (fval.type=='Text' || fval.type=='String') {
+					if (fval.defaultValue!=null) {
 						var sdef = fval.defaultValue;
 						if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
 						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
 					}
-					code += "\t" + fval.name + " = Column(" 
-					+ fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')
-					+ (fval.ref != null ? ", ForeignKey('" + fval.ref + "')" : "")
-					+ (fval.primaryKey ? ", primary_key=True" : "")
-					+ (fval.unique ? ", unique=True" : "")
-					+ (fval.defaultValue!=null ? ", default=" + fval.defaultValue : "")
-					+ ")\n";
-				});
-				code += "\n";
-			}
-			else if (outputType == "mysql") {
-				code += "create table " + val.name + "\n(";
-				//TODO: Make sure that the tables are ordered such that referenced tables are executed first.
-				//TODO: Treat text/varchar with 0 size appropriately.
-				$.each(val.fields, function(fkey, fval)
-				{
-					//embed quotes if they don't already exist
-					console.log("processing::",val.name,fval.name,fval.ref);
-					if ((fval.type=='Text' || fval.type=='String') && fval.defaultValue!=null) {
-						var sdef = fval.defaultValue;
-						if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
-						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
-					}
-					if ((fval.type=='Text' || fval.type=='String') && fval.size==0) {
+					// Default text size is 255 if user didn't specify a size
+					if (fval.size==0) {
 						fval.size = 255;
 					}
-					
-					code += "\t" + fval.name + " " + getRawType('mysql', fval.type) + (fval.size==0 ? '' : '(' + fval.size + ')')
-					+ (fval.primaryKey ? " primary key" : "")
-					//~ + (fval.ref != null ? ",\n\t constraint fk_" + val.name +  "_" + fval.name 
-					//~ +  " foreign key (" + fval.name +  ") references " + fval.ref.split(".")[0] +  "(" + fval.ref.split(".")[1]  + ")" : "")
-					+ (fval.unique ? " unique" : "")
-					+ (fval.defaultValue!=null ? " default " + fval.defaultValue  : "")
-					+ ",\n";
-					
-					if (fval.ref!=null) 
-					{
-						constraints.push("\nalter table " + val.name + " add constraint fk_" + val.name +  "_" + fval.name 
-						+  " foreign key (" + fval.name +  ") references " + fval.ref.split(".")[0] +  "(" + fval.ref.split(".")[1]  + ");");
-					}
-				});
+				}
 				
-				code = code.slice(0, -2) + "\n"; //trim off that last nagging comma.
-				code += ");\n";
-			}
+				code += "\t" + fval.name + " = Column(" 
+				+ fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')
+				+ (fval.ref != null ? ", ForeignKey('" + fval.ref + "')" : "")
+				+ (fval.primaryKey ? ", primary_key=True" : "")
+				+ (fval.unique ? ", unique=True" : "")
+				+ (fval.defaultValue!=null ? ", default=" + fval.defaultValue : "")
+				+ ")\n";
+			});
+			code += "\n";
+		});
+
+		return code;
+	}
+}
+
+var MySQL = function(templateDir) {
+	var rawTypes = 
+	{'Text': 'varchar',
+	 'Integer': 'int',
+	 'Float': 'float'};
+	this.template = templateDir+"mysql.sql";
+	
+	this.generateCode = function(tables) {
+		var code = '';
+		var constraints = [];
+		$.each(tables, function(key, val) {
+			code += "create table " + val.name + "\n(";
+		
+			//TODO: Treat text/varchar with 0 size appropriately.
+			$.each(val.fields, function(fkey, fval)
+			{
+				//embed quotes if they don't already exist
+				console.log("processing::",val.name,fval.name,fval.ref);
+				if (fval.type=='Text' || fval.type=='String') {
+					if (fval.defaultValue!=null) {
+						var sdef = fval.defaultValue;
+						if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
+						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
+					}
+					
+					// Default text size is 255 if user didn't specify a size
+					if (fval.size==0) {
+						fval.size = 255;
+					}
+				}
+				
+				code += "\t" + fval.name + " " + rawTypes[fval.type] + (fval.size==0 ? '' : '(' + fval.size + ')')
+				+ (fval.primaryKey ? " primary key" : "")
+				+ (fval.unique ? " unique" : "")
+				+ (fval.defaultValue!=null ? " default " + fval.defaultValue  : "")
+				+ ",\n";
+				
+				// If this field has any references to other fields 
+				if (fval.ref!=null) 
+				{
+					// save constraints in an array (they are added after all tables have been created)
+					constraints.push("\nalter table " + val.name + " add constraint fk_" + val.name +  "_" + fval.name 
+					+  " foreign key (" + fval.name +  ") references " + fval.ref.split(".")[0] +  "(" + fval.ref.split(".")[1]  + ");");
+				}
+			});
+			
+			code = code.slice(0, -2) + "\n"; //trim off that last nagging comma.
+			code += ");\n";
 		});
 
 		//add any constraints placed by raw formats like mysql and postgres.
@@ -534,28 +548,30 @@ function generateCode(outputType) {
 			console.log("constraint::", index, item);
 			code += item;
 		});
-		
+	
+		return code;
+	}
+}
+
+function generateCode(outputType) {
+
+	var codeGenerator;
+	var templateDir = "/assets/templates/";
+	
+	// Pick code generator based on desired output format
+	if (outputType=="ORM/SQLAlchemy") {
+		codeGenerator = new ORMSQLAlchemy(templateDir);
+	}
+	else if (outputType=="mysql") {
+		codeGenerator = new MySQL(templateDir);
+	}
+	
+	// Combine template with generated code then show the output
+	$.get(codeGenerator.template, function(data) {
+		var code = codeGenerator.generateCode(tables);
 		code = data.format({body: code, version: version});
 		showResults(code);
 	});
-}
-
-function getRawType(engine, type) {
-	if (type=="Text") {
-		if (engine=='mysql') {
-			return 'varchar';
-		}
-	}
-	else if (type=="Integer") {
-		if (engine=='mysql') {
-			return 'int';
-		}
-	}
-	else if (type=="Float") {
-		if (engine=='mysql') {
-			return 'float';
-		}
-	}
 }
 
 function showResultsDialog() {
@@ -570,14 +586,10 @@ function showResultsDialog() {
 			$('#resultsDialog').on('shown.bs.modal', function(e) {
 				prettyPrint();
 			});
-			//SyntaxHighlighter.highlight();
-			runResultsDialog();
 		});
 	}
-	else {
-			console.log('found in cache');
-			runResultsDialog();
-	}
+	
+	runResultsDialog();
 }
 
 function runResultsDialog() {
