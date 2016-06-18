@@ -401,6 +401,7 @@ var ORMSQLAlchemy = function(templateDir) {
 				+ (fval.ref != null ? ", ForeignKey('" + fval.ref + "')" : "")
 				+ (fval.primaryKey ? ", primary_key=True" : "")
 				+ (fval.unique ? ", unique=True" : "")
+				+ (fval.notNull ? ", nullable=False" : "")
 				+ (fval.defaultValue!=null ? ", default=" + fval.defaultValue : "")
 				+ ")\n";
 			});
@@ -452,6 +453,7 @@ var MySQL = function(templateDir) {
 				}
 				
 				code += "\t" + fval.name + " " + rawTypes[fval.type] + (fval.size==0 ? '' : '(' + fval.size + ')')
+				+ (fval.notNull ? " not null" : "")
 				+ (fval.primaryKey && primaryCount == 1 ? " primary key" : "")
 				+ (fval.unique ? " unique" : "")
 				+ (fval.defaultValue!=null ? " default " + fval.defaultValue  : "")
@@ -468,7 +470,7 @@ var MySQL = function(templateDir) {
 			
 			// Add multi-field primary key if needed
 			if (primaryCount > 1) {
-				code += "\tprimary key (" + primaryFields.join(',') + ")";
+				code += "\tprimary key (" + primaryFields.join(', ') + ")";
 			} else {
 				code = code.slice(0, -2) + "\n"; //trim off that last nagging comma.
 			}
@@ -478,7 +480,6 @@ var MySQL = function(templateDir) {
 
 		//add any constraints placed by raw formats like mysql and postgres.
 		$.each(constraints, function(index, item) {
-			console.log("constraint::", index, item);
 			code += item;
 		});
 	
