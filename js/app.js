@@ -178,7 +178,11 @@ function setThePanel(table, mode) {
 		html += "<td><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
 		html += "<td>" + field.name + "</td>";
 		html += "<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
-		var tattr = (field.primaryKey ? 'primary' : '') + (field.primaryKey && field.unique ? ', ' : '') + (field.unique ? 'unique' : '');
+		var details = [];
+		if (field.primaryKey) details.push('primary');
+		if (field.unique) details.push('unique');
+		if (field.notNull) details.push('not null');
+		var tattr = details.join(',');
 		html += "<td>" + (tattr == "" ? "---" : tattr)  + "</td>";
 		html += "<td>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
 		html += "</tr>";
@@ -631,6 +635,7 @@ function runAddTableDialog(tableName, mode)
 			$("#fieldDefault").val(val.defaultValue);
 			$("#fieldPrimary").prop("checked", val.primaryKey);
 			$("#fieldUnique").prop("checked", val.unique);
+			$("#fieldNotNull").prop("checked", val.notNull);
 
 			// Add row to the table inside the addTableDialog.html
 			addField();

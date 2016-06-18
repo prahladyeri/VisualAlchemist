@@ -1,5 +1,5 @@
 <div id="addTableDialog" class="modal fade">
-	<input id="editMode" type="hidden" value=""></input>
+  <input id="editMode" type="hidden" value=""></input>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -26,6 +26,7 @@
         <input id="fieldDefault" style="width:100px;" class="form-control" type="text" placeholder="Default" value=""></input>
         <div class="checkbox"><label><input id="fieldPrimary" type="checkbox" value="primary">Primary</label></div>
         <div class="checkbox"><label><input id="fieldUnique" type="checkbox" value="unique">Unique</label></div>
+		<div class="checkbox"><label><input id="fieldNotNull" type="checkbox" value="notnull">Not Null</label></div>
 		
 		<p></p>
         <button style="text-align:right;" type="button" class="btn btn-success" onclick="addField();">Add Field</button>
@@ -106,7 +107,8 @@ function saveData() {
 	//First update the data model!
 	$('.fieldRow').each(function(index) {
 		var isPrimary = Boolean($(this).find(".hfieldPrimary").text());
-		var isUnique = 	Boolean($(this).find(".hfieldUnique").text());
+		var isUnique  = Boolean($(this).find(".hfieldUnique").text());
+		var isNotNull = Boolean($(this).find(".hfieldNotNull").text());
 		var defaultValue = $(this).find(".hfieldDefaultValue").text();
 		console.log($(this).find(".fieldName").text(), 'primary: ' + $(this).find(".hfieldPrimary").text());
 		console.log($(this).find(".fieldName").text(), 'unique: ' + $(this).find(".hfieldUnique").text());
@@ -118,6 +120,7 @@ function saveData() {
 			size: $(this).find(".hfieldSize").text(),
 			primaryKey: isPrimary,
 			unique: isUnique,
+			notNull: isNotNull,
 			defaultValue:  (defaultValue=="" ? null : defaultValue)
 			});
 	});
@@ -169,11 +172,13 @@ function addField()
 	
 	var isPrimary = $("#fieldPrimary").is(':checked');
 	var isUnique = $("#fieldUnique").is(':checked');
+	var isNotNull = $("#fieldNotNull").is(':checked');
 	var fieldDefault = $("#fieldDefault").val();
 	
 	// Set details column value
 	var details  = (isPrimary ? "primary" : "");
 	if (isUnique) details = joinWithSep(details,"unique",",");
+	if (isNotNull) details = joinWithSep(details,"not null",",");
 	if (fieldDefault != "") {
 		details = joinWithSep(details, fieldDefault, ',');
 	}
@@ -183,6 +188,7 @@ function addField()
 	html += "<td class='hidden hfieldDefaultValue'>" + $("#fieldDefault").val()  + "</td>";
 	html += "<td class='hidden hfieldPrimary'>" + (isPrimary ? 'true' : '')  + "</td>";
 	html += "<td class='hidden hfieldUnique'>" + (isUnique ? 'true' : '')  + "</td>";
+	html += "<td class='hidden hfieldNotNull'>" + (isNotNull ? 'true' : '')  + "</td>";
 	html += "<td class='delete'><button onclick='tryToDelete(\"" + $("#fieldName").val() + "\")' title='Delete Field' class='btn btn-xs btn-danger'><span class='glyphicon glyphicon-remove'></span></button></td>";
 	html += "</tr>";
 	
@@ -194,6 +200,7 @@ function addField()
 	$('#fieldDefault').val('');
 	$('#fieldPrimary').removeAttr("checked");
 	$('#fieldUnique').removeAttr("checked");
+	$('#fieldNotNull').removeAttr("checked");
 
 	$("#fieldName").focus();
 }

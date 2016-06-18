@@ -60,6 +60,7 @@ var Field = function(obj) {
 	this.size = obj.size;
 	this.unique = obj.unique;
 	this.primaryKey = obj.primaryKey;
+	this.notNull = obj.notNull;
 	//c.references = obj.references;
 	this.defaultValue = obj.defaultValue;
 	//console.log(name);
@@ -76,11 +77,7 @@ Field.prototype.type = "";
 Field.prototype.size = 0;
 Field.prototype.unique = false;
 Field.prototype.primaryKey = false;
-//Field.prototype.references = "";
+Field.prototype.notNull = false;
 Field.prototype.defaultValue = null;
 Field.prototype.foreign = null; //for primary only: the name[s] of fields that refer to this primary key.
 Field.prototype.ref = null; //for non-primary only: the name[s] of primary key field in another table that this refers to.
-
-
-/*Table.prototype.addField = function(obj) {
-}*/
