@@ -169,124 +169,107 @@ function setThePanel(table, mode) {
 
     //Now lets build the new panel
     $.each(table.fields, function(key, field) {
-            var html = '';
-            var sprim = "";
-            if (field.primaryKey) {
-                    //sprim+= " style='cursor:move' ";
-            }
-            html += "<tr>";
-            //if (mode=='add') 
-            /*html += "<td>" + (field.primaryKey ? '' : "<div ffname='" + table.name + "." + field.name +  "' class='field'></div>") + "</td>"; //virtual*/
-            html += "<td><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
-            html += "<td>" + field.name + "</td>";
-            html += "<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
-            var tattr = (field.primaryKey ? 'primary' : '') + (field.unique ? 'unique' : '');
-            html += "<td>" + (tattr == "" ? "---" : tattr)  + "</td>";
-            //if (mode=='add') 
+		var html = '';
+		var sprim = "";
+		if (field.primaryKey) {
+				//sprim+= " style='cursor:move' ";
+		}
+		html += "<tr>";
+		html += "<td><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
+		html += "<td>" + field.name + "</td>";
+		html += "<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
+		var tattr = (field.primaryKey ? 'primary' : '') + (field.primaryKey && field.unique ? ', ' : '') + (field.unique ? 'unique' : '');
+		html += "<td>" + (tattr == "" ? "---" : tattr)  + "</td>";
+		html += "<td>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
+		html += "</tr>";
 
-            html += "<td>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
-            //html += "<td><div " + (field.primaryKey ? "fpname='"  + table.name + "." + field.name +   "' class='prima'" : '') + "></div></td>"; //virtual
-            html += "</tr>";
-            //bspopup(html);
-            console.log("HTML__", html);
-            //
-            $("#tbl" + table.name + " .table").append(html);
-            //
-            var ep;
-            console.log("The anchor will be LEFT");
-            if (field.primaryKey) {
-                    //jsPlumb.addEndpoint($('#tbl' + table.name + " div.prima"), {
-                    ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
-                            isSource: true,
-                            //anchor:["Left"],
-                            maxConnections:1,
-                            anchor: "Right",
-                            endpoint: ["Rectangle",{width:15, height:15}], //Dot
-                            paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
-                            //connectorPaintStyle:{ strokeStyle:"blue", lineWidth:10 },
-                            connectorOverlays: [ 
-                                    [ "Arrow", { width:10, height:10, location:1, id:"arrow",
-                                            events:{
-                                                click: function(){
-                                                    //bspopup("Don't click on the connecting arrows. Click on the dots (endpoints) instead to drag.");
-                                                },
-                                            }
-                                } ],
-                                    //[ "Label", { label:"Relationship", id:"lblPrimary_" + table.name } ]
-                                    ],
-                    });
-            }
-            //else {
-                    //jsPlumb.addEndpoint($('#tbl' + table.name + " div.field"), {isTarget: true,
-                    ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
-                                    isTarget: true,
-                                    anchor: "Left",
-                                    endpoint: ["Rectangle", {width:15, height:15}], //Rectangle
-                                    paintStyle: {  fillStyle:"blue", outlineColor:"black", outlineWidth:1},
-                            });
-            //}
-            jsPlumb.draggable('tbl' + table.name, {
-               containment:true,
-                step: function () {
-                    jsPlumb.repaintEverything();
-                },
-                drag:function(){
-                    jsPlumb.repaintEverything();
-                },
-               stop: function(event, ui) {
-                            console.log(event.pos[0], event.pos[1]);
-                            tables[table.name].position.x = event.pos[0] + 'px';
-                            tables[table.name].position.y = event.pos[1] + 'px';
-                            saveCanvasState();
-                            jsPlumb.repaintEverything();
-               }
-            });
-            //field.ep  = ep; //TODO: [inprogress]This may no longer be required since we are not using ep anywhere.
-            //
-            //console.log('added field', field.name);
+		$("#tbl" + table.name + " .table").append(html);
+
+		var ep;
+		console.log("The anchor will be LEFT");
+		if (field.primaryKey) {
+			ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
+				isSource: true,
+				maxConnections:1,
+				anchor: "Right",
+				endpoint: ["Rectangle",{width:15, height:15}], //Dot
+				paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
+				connectorOverlays: [ 
+					[ "Arrow", { width:10, height:10, location:1, id:"arrow",
+								events:{
+									click: function(){
+										//bspopup("Don't click on the connecting arrows. Click on the dots (endpoints) instead to drag.");
+									},
+								}
+					}],
+				],
+			});
+		}
+		
+		ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
+						isTarget: true,
+						anchor: "Left",
+						endpoint: ["Rectangle", {width:15, height:15}], //Rectangle
+						paintStyle: {  fillStyle:"blue", outlineColor:"black", outlineWidth:1},
+		});
+				
+		jsPlumb.draggable('tbl' + table.name, {
+		   containment:true,
+			step: function () {
+				jsPlumb.repaintEverything();
+			},
+			drag:function(){
+				jsPlumb.repaintEverything();
+			},
+		   stop: function(event, ui) {
+						console.log(event.pos[0], event.pos[1]);
+						tables[table.name].position.x = event.pos[0] + 'px';
+						tables[table.name].position.y = event.pos[1] + 'px';
+						saveCanvasState();
+						jsPlumb.repaintEverything();
+		   }
+		});
     });
 
     //jsPlumb.draggable($('#tbl' + table.name + " tr.prima"),{}); //containment:true
     console.log('#tbl' + table.name + " td.prima",'#tbl' + table.name + " td:not(.prima)");
-     //if (mode=='add') 
-    //if (mode=='add') 
 
     //TODO: [STABLE]Rebuild connections to/from this table by looping thru tables collection.
     if (mode=='edit') {
-            $.each(window.oldrefs, function(key, val) {
-                    console.log('rebuilding ',key,val);
-                    if (val.foreign != null) {
-                            //check outgoing
-                            console.log('primary key found:',key, val.foreign);
-                            table.fields[key].foreign = val.foreign; //restore the lost foreign
-                            tsa = val.foreign.split('.');
-                            tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
-                            elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
-                            elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " [fpname='" + table.name + "." + key +  "']")});
-                            //console.log(elist1.length, elist2.length);
-                            var el1 = null;
-                            var el2 = null;
-                            elist1.each(function(key){el1=key});
-                            elist2.each(function(key){el2=key});
-                            jsPlumb.connect({target:el1, source:el2});
-                    }
-                    else if (val.ref != null) {
-                            //check incoming
-                            console.log('foreign key found:',key, val.ref);
-                            table.fields[key].ref = val.ref; //restore the lost ref
-                            tsa = val.ref.split('.');
-                            tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-                            console.log("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']");
-                            elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
-                            elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
-                            //console.log(elist1.length, elist2.length);
-                            var el1 = null;
-                            var el2 = null;
-                            elist1.each(function(key){el1=key});
-                            elist2.each(function(key){el2=key});
-                            jsPlumb.connect({source:el1, target:el2});
-                    }
-            });
+		$.each(window.oldrefs, function(key, val) {
+				console.log('rebuilding ',key,val);
+				if (val.foreign != null) {
+					//check outgoing
+					console.log('primary key found:',key, val.foreign);
+					table.fields[key].foreign = val.foreign; //restore the lost foreign
+					tsa = val.foreign.split('.');
+					tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
+					elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
+					elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " [fpname='" + table.name + "." + key +  "']")});
+					//console.log(elist1.length, elist2.length);
+					var el1 = null;
+					var el2 = null;
+					elist1.each(function(key){el1=key});
+					elist2.each(function(key){el2=key});
+					jsPlumb.connect({target:el1, source:el2});
+				}
+				else if (val.ref != null) {
+					//check incoming
+					console.log('foreign key found:',key, val.ref);
+					table.fields[key].ref = val.ref; //restore the lost ref
+					tsa = val.ref.split('.');
+					tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
+					console.log("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']");
+					elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
+					elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
+					//console.log(elist1.length, elist2.length);
+					var el1 = null;
+					var el2 = null;
+					elist1.each(function(key){el1=key});
+					elist2.each(function(key){el2=key});
+					jsPlumb.connect({source:el1, target:el2});
+				}
+		});
     }
 
     if (mode=='add') {
@@ -321,16 +304,16 @@ function setThePanel(table, mode) {
     }
     else 
     {
-            //EDIT
-            $.each(tables, function(k,v) {
-                    //jsPlumb.repaint(['tbl' + k]);
-                    //jsPlumb.draggable('tbl' + k);
-                    //console.log('repainted div ' + 'tbl' + k);
-            });
-            jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
-            console.log("repaintedEverything");
-            //console.log('repainted all connections');
-            bsalert({text:"Table updated!", type:'success'});
+		//EDIT
+		$.each(tables, function(k,v) {
+				//jsPlumb.repaint(['tbl' + k]);
+				//jsPlumb.draggable('tbl' + k);
+				//console.log('repainted div ' + 'tbl' + k);
+		});
+		jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
+		console.log("repaintedEverything");
+		//console.log('repainted all connections');
+		bsalert({text:"Table updated!", type:'success'});
     }
 
     saveCanvasState(); 
