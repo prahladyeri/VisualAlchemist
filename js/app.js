@@ -419,7 +419,11 @@ var MySQL = function(templateDir) {
 	 'Float': 'float'};
 	this.template = templateDir+"mysql.sql";
 	
+	// Add foreign key constraint after running CREATE TABLE statement?
+	this.deferForeignKeys = true;
+	
 	this.generateCode = function(tables) {
+	
 		var code = '';
 		var constraints = [];
 		$.each(tables, function(key, val) {
@@ -462,21 +466,24 @@ var MySQL = function(templateDir) {
 				// If this field has any references to other fields 
 				if (fval.ref!=null) 
 				{
-					// save constraints in an array (they are added after all tables have been created)
-					constraints.push("\nalter table " + val.name + " add constraint fk_" + val.name +  "_" + fval.name 
-					+  " foreign key (" + fval.name +  ") references " + fval.ref.split(".")[0] +  "(" + fval.ref.split(".")[1]  + ");");
+					if (this.deferForeignKeys) {
+						// save constraints in an array (they are added after all tables have been created)
+						constraints.push(this.generateFKConstraint(val.name, fval.name, fval.ref.split(".")[0], fval.ref.split(".")[1]));
+					} else {
+						code += this.generateFKConstraint(val.name, fval.name, fval.ref.split(".")[0], fval.ref.split(".")[1]);
+					}
 				}
-			});
+			}.bind(this));
 			
 			// Add multi-field primary key if needed
 			if (primaryCount > 1) {
-				code += "\tprimary key (" + primaryFields.join(', ') + ")";
+				code += "\tprimary key (" + primaryFields.join(', ') + ")\n";
 			} else {
 				code = code.slice(0, -2) + "\n"; //trim off that last nagging comma.
 			}
 			
 			code += ");\n";
-		});
+		}.bind(this));
 
 		//add any constraints placed by raw formats like mysql and postgres.
 		$.each(constraints, function(index, item) {
@@ -487,18 +494,38 @@ var MySQL = function(templateDir) {
 	}
 }
 
+MySQL.prototype.generateFKConstraint = function(firstTableName, firstTableFields, secondTableName, secondTableFields) {
+	return "\nalter table " + firstTableName + " add constraint fk_" + firstTableName +  "_" + firstTableFields 
+			+  " foreign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ");"
+}
+
+// SQLite inherits from MySQL. It's mostly the same syntax, the only difference is that
+// MySQL doesn't support ALTER TABLE ADD CONSTRAINT FOREIGN KEY, so FKs have to be added
+// as part of the CREATE TABLE statement.
+var SQLite = function(templateDir) {
+	MySQL.call(this, templateDir);
+	
+	this.template = templateDir+"sqlite.sql";
+	
+	// Add foreign key constraint after running CREATE TABLE statement?
+	this.deferForeignKeys = false;
+}
+
+SQLite.prototype = Object.create(MySQL.prototype);
+SQLite.prototype.constructor = SQLite;
+
+SQLite.prototype.generateFKConstraint = function(firstTableName, firstTableFields, secondTableName, secondTableFields) {
+	return "\tforeign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ") \n"
+}
+
+var codeGenerators = {"ORM/SQLAlchemy": ORMSQLAlchemy, "mysql": MySQL, "sqlite": SQLite};
 function generateCode(outputType) {
 
 	var codeGenerator;
 	var templateDir = "/assets/templates/";
 	
 	// Pick code generator based on desired output format
-	if (outputType=="ORM/SQLAlchemy") {
-		codeGenerator = new ORMSQLAlchemy(templateDir);
-	}
-	else if (outputType=="mysql") {
-		codeGenerator = new MySQL(templateDir);
-	}
+	var codeGenerator = new codeGenerators[outputType](templateDir);
 	
 	// Combine template with generated code then show the output
 	$.get(codeGenerator.template, function(data) {
@@ -528,7 +555,7 @@ function showResultsDialog() {
 
 function runResultsDialog() {
 	bspopup({
-		type:"radiolist", text:"Select output format", list:["ORM/SQLAlchemy", "mysql"],
+		type:"radiolist", text:"Select output format", list:["ORM/SQLAlchemy", "mysql", "sqlite"],
 		success: function(ev){
 			var outputType = ev.value;
 			generateCode(outputType);
