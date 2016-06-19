@@ -154,7 +154,7 @@ function setThePanel(table, mode) {
 		var sprim = "";
 
 		html += "<tr>";
-		html += "<td><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
+		html += "<td style='vertical-align: middle'><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
 		html += "<td>" + field.name + "</td>";
 		html += "<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
 		var details = [];
@@ -163,7 +163,7 @@ function setThePanel(table, mode) {
 		if (field.notNull) details.push('not null');
 		var tattr = details.join(',');
 		html += "<td>" + (tattr == "" ? "---" : tattr)  + "</td>";
-		html += "<td>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
+		html += "<td style='vertical-align: middle'>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
 		html += "</tr>";
 
 		$("#tbl" + table.name + " .table").append(html);
