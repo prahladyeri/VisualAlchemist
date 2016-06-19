@@ -4,7 +4,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h3 class="modal-title"><span id="tableName"></span></h4>
+        <h4 class="modal-title"><label>Table Name<input id="tableName" class="form-control" type="text"  placeholder="Table Name"></input></label><input id="originalTableName" type="hidden" value=""></input></h4>
       </div>
       <div class="modal-body form-inline">
         <input autofocus="true" id="fieldName" style="width:110px;" class="form-control" type="text" placeholder="Field name"></input>
@@ -59,28 +59,34 @@ $("#addTableDialog").on('hidden.bs.modal', function(e){
 });
 
 function saveData() {
+
+	var tableName = $('#tableName').val();
+	if (!validateTableName(tableName)) {
+		return;
+	}
+
 	if ($('.fieldRow').length==0) {
-		alert('You must add at least one field.');
+		bsalert('You must add at least one field.');
 		return;
 	}
 
 	var table;
 	if ($('#editMode').val() == "add") {
-		if (tables[$('#tableName').text()] != undefined){
-			alert('This table already exists.');
+		if (tables[tableName] != undefined){
+			bsalert('This table already exists.');
 			return;
 		}
 		table = new Table();
 	}
 	else if ($('#editMode').val() == "edit") {
-		table = tables[$('#tableName').text()];
+		table = tables[tableName];
 	}
 	else {
 		alert("Unexpected value!");
 		return;
 	}
 	
-	table.name = $('#tableName').text();
+	table.name = tableName;
 	
 	//remove old endpoints
 	window.oldrefs = {};

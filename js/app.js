@@ -572,40 +572,36 @@ function showResults(code) {
 
 function showAddTableDialog() {
 
-	bspopup({type:'input', text:'Table name', success:function(data) {
-	
-		// Validate table name
-		var tableName = data.value;
-		if (tableName==null || tableName.trim() == '') {
-			bspopup("You must enter a table name.");
-			return;
-		}
-		else if (tableName.indexOf(" ")>=0) {
-			bspopup("Spaces are not allowed in the table name.");
-			return;
-		}
-		else if (tables[tableName] != undefined) {
-			bspopup('This table already exists.');
-			return;
-		}
-		else {
-			tableName = escape(tableName);
-		}
-		
-		if ($("#addTableDialog").length==0) {
-			$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
-				runAddTableDialog(tableName, "add");
-			});
-		}
-		else {
-			runAddTableDialog(tableName, "add");
-		}
-	}});
+	if ($("#addTableDialog").length==0) {
+		$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
+			runAddTableDialog("", "add");
+		});
+	}
+	else {
+		runAddTableDialog("", "add");
+	}
+}
+
+function validateTableName(tableName) {
+	if (tableName==null || tableName.trim() == '') {
+		bspopup("You must enter a table name.");
+		return false;
+	}
+	else if (tableName.indexOf(" ")>=0) {
+		bspopup("Spaces are not allowed in the table name.");
+		return false;
+	}
+	else if (tables[tableName] != undefined) {
+		bspopup('This table already exists.');
+		return false;
+	} else {
+		return true;
+	}
 }
 
 function runAddTableDialog(tableName, mode) 
 {
-	$("#addTableDialog #tableName").text(tableName);
+	$("#addTableDialog #tableName").val(tableName);
 	$("#addTableDialog #editMode").val(mode);
 	$("#addTableDialog .fieldRow").remove();
 	if (mode=='edit') {
