@@ -48,14 +48,14 @@ function saveData() {
 	}
 
 	if ($('.fieldRow').length==0) {
-		bsalert('You must add at least one field.');
+		bspopup('You must add at least one field.');
 		return;
 	}
 	
 	var table;
 	if (editMode == "add") {
 		if (tables[tableName] != undefined){
-			bsalert('This table already exists.');
+			bspopup('This table already exists.');
 			return;
 		}
 		table = new Table();
@@ -64,7 +64,7 @@ function saveData() {
 	else if (editMode == "edit") {
 		if (tableName != originalName) {
 			if (tables[tableName] != undefined) {
-				bsalert('This table already exists.');
+				bspopup('This table already exists.');
 				return;
 			} else {
 				renameTable(tableName,originalName);
