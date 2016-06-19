@@ -582,26 +582,10 @@ function showAddTableDialog() {
 	}
 }
 
-function validateTableName(tableName) {
-	if (tableName==null || tableName.trim() == '') {
-		bspopup("You must enter a table name.");
-		return false;
-	}
-	else if (tableName.indexOf(" ")>=0) {
-		bspopup("Spaces are not allowed in the table name.");
-		return false;
-	}
-	else if (tables[tableName] != undefined) {
-		bspopup('This table already exists.');
-		return false;
-	} else {
-		return true;
-	}
-}
-
 function runAddTableDialog(tableName, mode) 
 {
 	$("#addTableDialog #tableName").val(tableName);
+	$("#addTableDialog #originalTableName").val(tableName);
 	$("#addTableDialog #editMode").val(mode);
 	$("#addTableDialog .fieldRow").remove();
 	if (mode=='edit') {
