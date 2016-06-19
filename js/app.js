@@ -598,16 +598,17 @@ function showResults(code) {
 }
 
 function showAddTableDialog() {
-	console.log("showAddTableDialog()");
-	//var tableName  = window.prompt("Enter table name:", tableName);
+
 	bspopup({type:'input', text:'Table name', success:function(data) {
+	
+		// Validate table name
 		var tableName = data.value;
 		if (tableName==null || tableName.trim() == '') {
-			bspopup("Not a valid table name.");
+			bspopup("You must enter a table name.");
 			return;
 		}
 		else if (tableName.indexOf(" ")>=0) {
-			bspopup("Special chars are not allowed in the table name.");
+			bspopup("Spaces are not allowed in the table name.");
 			return;
 		}
 		else if (tables[tableName] != undefined) {
@@ -617,13 +618,14 @@ function showAddTableDialog() {
 		else {
 			tableName = escape(tableName);
 		}
+		
 		if ($("#addTableDialog").length==0) {
 			$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
 				runAddTableDialog(tableName, "add");
 			});
 		}
 		else {
-				runAddTableDialog(tableName, "add");
+			runAddTableDialog(tableName, "add");
 		}
 	}});
 }
@@ -635,42 +637,26 @@ function runAddTableDialog(tableName, mode)
 	$("#addTableDialog .fieldRow").remove();
 	if (mode=='edit') {
 		$.each(tables[tableName].fields, function(key, val){
-			console.log(tableName);
-			console.log(val.name);
+			
+			// Load the field values into the dialog
 			$("#fieldName").val(val.name);
 			$("#fieldType").val(val.type);
 			$("#fieldSize").val(val.size);
 			$("#fieldDefault").val(val.defaultValue);
-			if (val.primaryKey) {
-				console.log(val.name, 'primary');
-				//$("#fieldPrimary").attr("checked", "checked"); //MAGIC: Somehow prop() is working but attr() is not: Chrome 41.0 windows.
-				$("#fieldPrimary").prop("checked", true);
-			}
-			else {
-				$("#fieldPrimary").prop("checked", false);
-			}
-			if (val.unique) {
-				console.log(val.name, 'unique');
-				//$("#fieldUnique").attr("checked", "checked");
-				$("#fieldUnique").prop("checked", true);
-			}
-			else {
-				//$("#fieldUnique").removeAttr("checked");
-				$("#fieldUnique").prop("checked", false);
-			}
-			
-			addField(); //inside the addTableDialog.html
+			$("#fieldPrimary").prop("checked", val.primaryKey);
+			$("#fieldUnique").prop("checked", val.unique);
+
+			// Add row to the table inside the addTableDialog.html
+			addField();
 		});
 	}
 	//TODO: [LATER]This routine should be written each time before showing a bootstrap modal:
 	$(".modal").on('shown.bs.modal', function() {
-		//console.log('.modal:shown');
 		$(this).find("[autofocus]:first").focus();
 	});
 	
 	$("#addTableDialog").modal();
 }
-
 
 function editTable(tableName) {
 	runAddTableDialog(tableName, "edit");
@@ -678,16 +664,12 @@ function editTable(tableName) {
 
 function deleteTable(tableName) {
 	if (confirm("Sure you want to delete this table along with all it's relations?")) {
-		//TODO: [NOT-REQUIRED]Check relations of this table
 		delete tables[tableName];
-		//$("#tbl" + tableName).remove();
 		jsPlumb.empty("tbl" + tableName);
 		saveCanvasState();
-		//jsPlumb.repaintEverything();
 	}
 }
 
-//console.log('DEFINED_ImportCanvas');
 function importCanvas() {
 	console.log('IMPORT_CANVAS');
 	var file = $('#inputCanvasFile')[0].files[0];

@@ -1,6 +1,6 @@
 body {
 	font-family: ubuntu;
-	/*background: red;*/
+	height: 100vh;
 }
 h2 {
 	text-align: center;
@@ -52,7 +52,11 @@ nav.navbar.navbar-inverse  .navbar-nav .dropdown-menu li a:hover
 {
 	z-index: 255;
 	background-color: rgba(14, 63, 56, 0.56);
-	/*background-color: rgba(16, 38, 34, 0.56);*/
+	position:relative;
+	 /* 100vh height and auto overflow let the canvas grouw if users 
+	 need more tables than can fit on the screen at one time. */
+	height:100vh;
+	overflow:auto;
 }
 
 #resultsDialog #theCode pre {
@@ -114,7 +118,9 @@ nav.header {
     display: block;
 }
 
-/*.tableDesign .table div.prima  {
-    padding-left: 50px;
-    padding-right: 50px;
-}*/
+#fields td,
+#fields th
+ {
+	padding-top: 4px;
+	padding-bottom: 4px;
+}

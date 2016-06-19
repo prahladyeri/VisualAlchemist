@@ -4,7 +4,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title">Table Name: <span id="tableName"></span></h4>
+        <h3 class="modal-title"><span id="tableName"></span></h4>
       </div>
       <div class="modal-body form-inline">
         <input autofocus="true" id="fieldName" style="width:110px;" class="form-control" type="text" placeholder="Field name"></input>
@@ -52,9 +52,6 @@
 </div><!-- /.modal -->
 
 <script>
-//$("#fieldName").focus();
-document.getElementById("fieldName").focus();
-//console.log("Focussed");
 
 $("#addTableDialog").on('hidden.bs.modal', function(e){
 	console.log(this.data);
@@ -62,10 +59,10 @@ $("#addTableDialog").on('hidden.bs.modal', function(e){
 
 function saveData() {
 	if ($('.fieldRow').length==0) {
-		alert('There must be at least one field.');
+		alert('You must add at least one field.');
 		return;
 	}
-	//alert($('#editMode').val());
+
 	var table;
 	if ($('#editMode').val() == "add") {
 		if (tables[$('#tableName').text()] != undefined){
@@ -125,15 +122,21 @@ function saveData() {
 			});
 	});
 	
-	
 	tables[table.name] = table;
 	$("#addTableDialog").modal('hide');
-	
 	
 	//Now Build the new panel!
 	createThePanel(table, $('#editMode').val(), null);
 }
 
+// Join two strings with a separator in between
+function joinWithSep(a, b, separator) {
+	if (a.length == 0) {
+		return b;
+	} else {
+		return a + separator + b;
+	}
+}
 
 /**
 * Creates a new field from the input boxes and adds to the display.
@@ -143,19 +146,19 @@ function addField()
 	if ($("#fieldSize").val() =="" || $("#fieldSize").attr('disabled')) $("#fieldSize").val(0);
 	var sizeValid = parseInt($("#fieldSize").val()) >= 0;
 	if ($("#fieldName").val().trim() == "") {
-		alert("Field name cannot be blank.");
+		bspopup("Field name cannot be blank.");
 		return;
 	}
 	else if ($('#fieldName').val().indexOf(" ")>=0) {
-		alert("Field cannot contain a special character or space.");
+		bspopup("Field name cannot contain a special character or space.");
 		return;
 	}
 	else if (!sizeValid) {
-		alert("Not a valid size.");
+		bspopup("Not a valid size.");
 		return;
 	}
 	else if ($("#" + $("#fieldName").val()).length >0) {
-		alert("This element already exists.");
+		bspopup("A field with this name already exists.");
 		return;
 	}
 	var html = "<tr class='fieldRow' id='" + $("#fieldName").val() + "'>";
@@ -163,15 +166,18 @@ function addField()
 	html += "<td class='fieldType'>" + $("#fieldType").val() + "</td>";
 	var size = $("#fieldSize").val();
 	html += "<td class='fieldSize'>" + (size==0 ? "-" : size)  + "</td>";
-	var details;
-	//details  =($("#fieldPrimary:checked").length==0 ? "" : "primary ");
-	//details  += ($("#fieldUnique:checked").length==0 ? "" : "unique");
+	
 	var isPrimary = $("#fieldPrimary").is(':checked');
 	var isUnique = $("#fieldUnique").is(':checked');
-	details  =(isPrimary ? "primary," : "");
-	details  += (isUnique ? "unique," : "");
+	var fieldDefault = $("#fieldDefault").val();
 	
-	details  += ($("#fieldDefault").val() == "" ? "" : "," + $("#fieldDefault").val());
+	// Set details column value
+	var details  = (isPrimary ? "primary" : "");
+	if (isUnique) details = joinWithSep(details,"unique",",");
+	if (fieldDefault != "") {
+		details = joinWithSep(details, fieldDefault, ',');
+	}
+	
 	html += "<td class='fieldDetails'>" + details  + "</td>";
 	html += "<td class='hidden hfieldSize'>" + size  + "</td>";
 	html += "<td class='hidden hfieldDefaultValue'>" + $("#fieldDefault").val()  + "</td>";
@@ -187,38 +193,25 @@ function addField()
 	$('#fieldType').val("Text");
 	$('#fieldDefault').val('');
 	$('#fieldPrimary').removeAttr("checked");
-	$('#fieldUnique').removeAttr("checked");	
+	$('#fieldUnique').removeAttr("checked");
 
 	$("#fieldName").focus();
 }
 
 function tryToDelete(fieldName) {
-	//TODO: Check this is not working
-	for (conn in jsPlumb.getAllConnections()) {
-		var tname = $('#tableName').text();
-		var existing = tables[tname].fields[fieldName];
-		//if ($(conn.source).attr('ffname') == $("#tableName").text() + '.' + fieldName) {
-		if (existing!=undefined && existing.foreign != null) {
-			alert("This key is acting as a primary key in a relation. Please delete that relation first.");
-			return;
-		}
-		//else if ($(conn.target).attr('ffname') == $("#tableName").text() + '.' + fieldName) {
-		else if (existing!=undefined && existing.ref != null) {
-			alert("This key is acting as a foreign key in a relation. Please delete that relation first.");
-			return;
-		}
+
+	var tname = $('#tableName').text();
+	var existing = tables[tname].fields[fieldName];
+
+	if (existing!=undefined && existing.foreign != null) {
+		bspopup("This key is acting as a primary key in a relation. Please delete that relation first.");
+		return;
 	}
-	//jsPlumb.remove($('#' + fieldName));
-	//jsPlumb.remove('#' + fieldName);
+	else if (existing!=undefined && existing.ref != null) {
+		bspopup("This key is acting as a foreign key in a relation. Please delete that relation first.");
+		return;
+	}
+
 	$('#' + fieldName).remove();
 }
 </script>
-
-<style>
-#fields td,
-#fields th
- {
-	padding-top: 4px;
-	padding-bottom: 4px;
-}
-</style>
