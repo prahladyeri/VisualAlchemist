@@ -48,7 +48,7 @@ $(window).load(function() {
 		Endpoint: ["Rectangle", {width:14, height:14}] ,
 		Endpoints : [ [ "Rectangle" ], [ "Rectangle" ] ],
 		Connector: "Bezier",//Flowchart, Straight, Bezier
-		MaxConnections : 5,
+		MaxConnections : -1,
 		PaintStyle: {strokeStyle: "rgba(50,50,50,1)", lineWidth:2.5},
 		HoverPaintStyle: { lineWidth:4,
 			//strokeStyle: 'rgba(255,255,255,1)'
@@ -173,7 +173,6 @@ function setThePanel(table, mode) {
 		if (field.primaryKey) {
 			ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
 				isSource: true,
-				maxConnections:1,
 				anchor: "Right",
 				endpoint: ["Rectangle",{width:15, height:15}], //Dot
 				paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
