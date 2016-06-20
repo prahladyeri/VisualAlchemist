@@ -29,9 +29,7 @@ else {
 }
 
 $(window).load(function() {
-	//if (!window.DEBUG) {
-		//$("#lnkHelp").click();
-		//if (readCookie(".mainAlert.closed") != null) {
+
 		console.log("readCookie::", readCookie(".mainAlert.closed"));
 		if (readCookie(".mainAlert.closed") != "true") 
 		{
@@ -43,26 +41,21 @@ $(window).load(function() {
 	//Objects Initialization
 	tables = {}; //dict of String:Table objects
 	
-	//EndpointHoverStyle: {color: "blue"},
 	jsPlumb.importDefaults({
 		Endpoint: ["Rectangle", {width:14, height:14}] ,
 		Endpoints : [ [ "Rectangle" ], [ "Rectangle" ] ],
 		Connector: "Bezier",//Flowchart, Straight, Bezier
 		MaxConnections : -1,
 		PaintStyle: {strokeStyle: "rgba(50,50,50,1)", lineWidth:2.5},
-		HoverPaintStyle: { lineWidth:4,
-			//strokeStyle: 'rgba(255,255,255,1)'
-		},
-            EndpointHoverStyle: { fillStyle:"red" }, 
+		HoverPaintStyle: { lineWidth:4},
+        EndpointHoverStyle: { fillStyle:"red" }, 
     });
 	
 	jsPlumb.setContainer("theCanvas");
 	console.log('jsPlumb.getContainer():', jsPlumb.getContainer());
 	
-	
 	//check local storage, if any build the tables.
 	$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
-		//runAddTableDialog(tableName, "add");
 	});
 	
 	loadCanvasState(null);
@@ -72,17 +65,15 @@ $(window).load(function() {
 
 /* jsPlumb events */
 jsPlumb.bind("beforeDrop", function(info) {
-	console.log("jsPlumb.beforeDrop");
+
 	//check if a connection already exists between these two points
-	console.log(info.sourceId, info.targetId);
 	var con=jsPlumb.getConnections({source:info.sourceId, target:info.targetId});
-	//console.log(con);
+
 	if (con.length>0) {
 		console.log("This Connection already exists, detaching old one.");
 		jsPlumb.detach(con[0]);
-		//return false;
 	}
-	//
+
 	var pkey = $(info.connection.source).attr('fpname').split(".");
 	var fkey = $(info.connection.target).attr('ffname').split(".");
 	console.log('BEFORE_DROP', pkey, fkey);
@@ -90,36 +81,29 @@ jsPlumb.bind("beforeDrop", function(info) {
 		alert("Source and Target table cannot be the same");
 		return false;
 	}
-	//console.log(pkey, fkey);
+
 	tables[pkey[0]].fields[pkey[1]].foreign = fkey[0] + '.' + fkey[1];
 	tables[fkey[0]].fields[fkey[1]].ref = pkey[0] + '.' + pkey[1];
 	bsalert({text: pkey[1] + '->' + fkey[1], title:"Established: "});
-	//window.tobj = info;
-	console.log("repainted");
+
 	saveCanvasState();
 	
 	return true; //return false or just quit to drop the new connection.
 });
 
-/*jsPlumb.bind("connection", function(info) {
-	//console.log(info);
-	//window.tobj = info;
-});*/
-
 jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 	console.log(info.source, info.target);
-	//return;
+
 	if ($(info.source).attr('fpname') == undefined || $(info.target).attr('ffname')==undefined)
 		return;
 	var pkey = $(info.source).attr('fpname').split(".");
 	var fkey = $(info.target).attr('ffname').split(".");
-	console.log('DETACHED', pkey, fkey);
+
 	tables[pkey[0]].fields[pkey[1]].foreign = null;
 	tables[fkey[0]].fields[fkey[1]].ref = null;
 	bsalert({text: pkey[1] + '->' + fkey[1], title:"Detached: "});
-	//bspopup({type:"text", text: pkey[1] + '><' + fkey[1], title:"Detached: "});
+
 	saveCanvasState();
-	//window.tobj = info;
 })
 
 //Other misc functions
@@ -131,7 +115,6 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 function createThePanel(table, mode, func) {
 	if (mode == "add") {
 		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data) {
-			//console.log("DATA::",data);
 			$('.canvas').append(data.format({table: table.name}));
 			setThePanel(table, mode);
 			if (func) func();
@@ -169,7 +152,6 @@ function setThePanel(table, mode) {
 		$("#tbl" + table.name + " .table").append(html);
 
 		var ep;
-		console.log("The anchor will be LEFT");
 		if (field.primaryKey) {
 			ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
 				isSource: true,
@@ -281,12 +263,6 @@ function setThePanel(table, mode) {
     }
     else 
     {
-		//EDIT
-		$.each(tables, function(k,v) {
-				//jsPlumb.repaint(['tbl' + k]);
-				//jsPlumb.draggable('tbl' + k);
-				//console.log('repainted div ' + 'tbl' + k);
-		});
 		jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
 		bsalert({text:"Table updated!", type:'success'});
     }
@@ -298,21 +274,21 @@ function setThePanel(table, mode) {
 * @brief Save current canvas state to local store
 */
 function saveCanvasState() {
-	console.log('saveCanvasState()');
+
 	var json = null;
 	if (window.localStorage) {
 		json = JSON.stringify(tables);
 		window.localStorage.setItem("strTables", json);
 	}
-	console.log('~saveCanvasState()');
+
 	return json;
 }
 
 function loadCanvasState(json) {
-	console.log('loadCanvasState()');
+
 	tables  = new Object();
 	if (!window.localStorage) return;
-	console.log("Loading tables");
+
 	if (localStorage.getItem("strTables") == null) return;
 	
 	if (!json) {
@@ -323,8 +299,9 @@ function loadCanvasState(json) {
 		jsPlumb.detachEveryConnection();
 		jsPlumb.empty($(".canvas"));
 	}
+	
 	ttables = JSON.parse(json);
-	console.log(ttables);
+
 	//import the table structures
 	$.each(ttables, function(k,v) {
 		console.log('PROCESSING: ' + k);
@@ -351,14 +328,9 @@ function loadCanvasState(json) {
 				$.each(v.fields, function(kk,vv) {
 					if (vv.ref != null) {
 						//check incoming
-						console.log('foreign key found:',vv.name, vv.ref);
-						//k.fields[key].ref = val.ref; //restore the lost ref
 						tsa = vv.ref.split('.');
-						//tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-						//console.log("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']");
 						elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
 						elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + v.name +  " div[ffname='" + v.name + "." + vv.name +  "']")});
-						//console.log(elist1.length, elist2.length);
 						var el1 = null;
 						var el2 = null;
 						elist1.each(function(key){el1=key});
