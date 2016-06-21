@@ -398,7 +398,7 @@ var MySQL = function(templateDir) {
 		var code = '';
 		var constraints = [];
 		$.each(tables, function(key, val) {
-			code += "create table " + val.name + "\n(";
+			code += "create table " + val.name + "\n(\n";
 			
 			var primaryFields = [];
 			var primaryCount = 0;
@@ -410,7 +410,9 @@ var MySQL = function(templateDir) {
 					primaryCount += 1;
 				}
 			});
-		
+			
+			var fieldCode = [];
+			
 			$.each(val.fields, function(fkey, fval)
 			{
 				if (fval.type=='Text' || fval.type=='String') {
@@ -427,46 +429,49 @@ var MySQL = function(templateDir) {
 					}
 				}
 				
-				code += "\t" + fval.name + " " + rawTypes[fval.type] + (fval.size==0 ? '' : '(' + fval.size + ')')
+				fieldCode.push("\t" + fval.name + " " + rawTypes[fval.type] + (fval.size==0 ? '' : '(' + fval.size + ')')
 				+ (fval.notNull ? " not null" : "")
 				+ (fval.primaryKey && primaryCount == 1 ? " primary key" : "")
 				+ (fval.unique ? " unique" : "")
-				+ (fval.defaultValue!=null ? " default " + fval.defaultValue  : "")
-				+ ",\n";
+				+ (fval.defaultValue!=null ? " default " + fval.defaultValue  : ""));
 				
 				// If this field has any references to other fields 
 				if (fval.ref!=null) 
 				{
-					if (this.deferForeignKeys) {
-						// save constraints in an array (they are added after all tables have been created)
-						constraints.push(this.generateFKConstraint(val.name, fval.name, fval.ref.split(".")[0], fval.ref.split(".")[1]));
-					} else {
-						code += this.generateFKConstraint(val.name, fval.name, fval.ref.split(".")[0], fval.ref.split(".")[1]);
-					}
+					// add any constraints placed by raw formats like mysql and postgres.
+					// save constraints in an array (they are added after all tables have been created)
+					constraints.push(this.generateFKConstraint(val.name, fval.name, fval.ref.split(".")[0], fval.ref.split(".")[1]));
 				}
 			}.bind(this));
 			
+			
 			// Add multi-field primary key if needed
 			if (primaryCount > 1) {
-				code += "\tprimary key (" + primaryFields.join(', ') + ")\n";
-			} else {
-				code = code.slice(0, -2) + "\n"; //trim off that last nagging comma.
+				fieldCode.push("\tprimary key (" + primaryFields.join(', ') + ")");
 			}
 			
-			code += ");\n";
+			// Add foreign key lines now if needed
+			if (!this.deferForeignKeys) {
+				fieldCode = fieldCode.concat(constraints);
+				constraints = [];
+			}
+			
+			// Add all the lines for declaring fields, primary keys, and FKs (if needed)
+			code += fieldCode.join(",\n")+"\n);\n";
+			
 		}.bind(this));
 
-		//add any constraints placed by raw formats like mysql and postgres.
-		$.each(constraints, function(index, item) {
-			code += item;
-		});
+		// If foreign keys have to come after everything else, add them here
+		if (this.deferForeignKeys) {
+			code += constraints.join("\n");
+		}
 	
 		return code;
 	}
 }
 
 MySQL.prototype.generateFKConstraint = function(firstTableName, firstTableFields, secondTableName, secondTableFields) {
-	return "\nalter table " + firstTableName + " add constraint fk_" + firstTableName +  "_" + firstTableFields 
+	return "alter table " + firstTableName + " add constraint fk_" + firstTableName +  "_" + firstTableFields 
 			+  " foreign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ");"
 }
 
@@ -486,7 +491,7 @@ SQLite.prototype = Object.create(MySQL.prototype);
 SQLite.prototype.constructor = SQLite;
 
 SQLite.prototype.generateFKConstraint = function(firstTableName, firstTableFields, secondTableName, secondTableFields) {
-	return "\tforeign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ") \n"
+	return "\tforeign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ")"
 }
 
 var codeGenerators = {"ORM/SQLAlchemy": ORMSQLAlchemy, "mysql": MySQL, "sqlite": SQLite};
