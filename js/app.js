@@ -350,30 +350,30 @@ var ORMSQLAlchemy = function(templateDir) {
 	 this.generateCode = function(tables) {
 		var code = '';
 		
-		 $.each(tables, function(key, val) {
-			code += "class " + val.name + "(Base):\n";
-			code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
-			$.each(val.fields, function(fkey, fval){
+		 $.each(tables, function(tableName, table) {
+			code += "class " + table.name + "(Base):\n";
+			code += "\t" + "__tablename__ = \"" + table.name + "\"\n";
+			$.each(table.fields, function(fieldName, field){
 				//embed quotes if they don't already exist
-				if (fval.type=='Text' || fval.type=='String') {
-					if (fval.defaultValue!=null) {
-						var sdef = fval.defaultValue;
-						if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
-						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
+				if (field.type=='Text' || field.type=='String') {
+					if (field.defaultValue!=null) {
+						var sdef = field.defaultValue;
+						if (sdef.indexOf('"') !=0) field.defaultValue = '"' + sdef;
+						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) field.defaultValue += '"';
 					}
 					// Default text size is 255 if user didn't specify a size
-					if (fval.size==0) {
-						fval.size = 255;
+					if (field.size==0) {
+						field.size = 255;
 					}
 				}
 				
-				code += "\t" + fval.name + " = Column(" 
-				+ fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')
-				+ (fval.ref != null ? ", ForeignKey('" + fval.ref + "')" : "")
-				+ (fval.primaryKey ? ", primary_key=True" : "")
-				+ (fval.unique ? ", unique=True" : "")
-				+ (fval.notNull ? ", nullable=False" : "")
-				+ (fval.defaultValue!=null ? ", default=" + fval.defaultValue : "")
+				code += "\t" + field.name + " = Column(" 
+				+ field.type + (field.size==0 ? '' : '(' + field.size + ')')
+				+ (field.ref != null ? ", ForeignKey('" + field.ref + "')" : "")
+				+ (field.primaryKey ? ", primary_key=True" : "")
+				+ (field.unique ? ", unique=True" : "")
+				+ (field.notNull ? ", nullable=False" : "")
+				+ (field.defaultValue!=null ? ", default=" + field.defaultValue : "")
 				+ ")\n";
 			});
 			code += "\n";
@@ -397,50 +397,50 @@ var MySQL = function(templateDir) {
 	
 		var code = '';
 		var constraints = [];
-		$.each(tables, function(key, val) {
-			code += "create table " + val.name + "\n(\n";
+		$.each(tables, function(tableName, table) {
+			code += "create table " + table.name + "\n(\n";
 			
 			var primaryFields = [];
 			var primaryCount = 0;
 			
 			// Collect number and names of primary key fields
-			$.each(val.fields, function(fkey, fval) {
-				if (fval.primaryKey) {
-					primaryFields.push(fval.name);
+			$.each(table.fields, function(fieldName, field) {
+				if (field.primaryKey) {
+					primaryFields.push(field.name);
 					primaryCount += 1;
 				}
 			});
 			
 			var fieldCode = [];
 			
-			$.each(val.fields, function(fkey, fval)
+			$.each(table.fields, function(fieldName, field)
 			{
-				if (fval.type=='Text' || fval.type=='String') {
+				if (field.type=='Text' || field.type=='String') {
 					//embed quotes if they don't already exist
-					if (fval.defaultValue!=null) {
-						var sdef = fval.defaultValue;
-						if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
-						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
+					if (field.defaultValue!=null) {
+						var sdef = field.defaultValue;
+						if (sdef.indexOf('"') !=0) field.defaultValue = '"' + sdef;
+						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) field.defaultValue += '"';
 					}
 					
 					// Default text size is 255 if user didn't specify a size
-					if (fval.size==0) {
-						fval.size = 255;
+					if (field.size==0) {
+						field.size = 255;
 					}
 				}
 				
-				fieldCode.push("\t" + fval.name + " " + rawTypes[fval.type] + (fval.size==0 ? '' : '(' + fval.size + ')')
-				+ (fval.notNull ? " not null" : "")
-				+ (fval.primaryKey && primaryCount == 1 ? " primary key" : "")
-				+ (fval.unique ? " unique" : "")
-				+ (fval.defaultValue!=null ? " default " + fval.defaultValue  : ""));
+				fieldCode.push("\t" + field.name + " " + rawTypes[field.type] + (field.size==0 ? '' : '(' + field.size + ')')
+				+ (field.notNull ? " not null" : "")
+				+ (field.primaryKey && primaryCount == 1 ? " primary key" : "")
+				+ (field.unique ? " unique" : "")
+				+ (field.defaultValue!=null ? " default " + field.defaultValue  : ""));
 				
 				// If this field has any references to other fields 
-				if (fval.ref!=null) 
+				if (field.ref!=null) 
 				{
 					// add any constraints placed by raw formats like mysql and postgres.
 					// save constraints in an array (they are added after all tables have been created)
-					constraints.push(this.generateFKConstraint(val.name, fval.name, fval.ref.split(".")[0], fval.ref.split(".")[1]));
+					constraints.push(this.generateFKConstraint(table.name, field.name, field.ref.split(".")[0], field.ref.split(".")[1]));
 				}
 			}.bind(this));
 			
