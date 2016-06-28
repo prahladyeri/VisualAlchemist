@@ -29,60 +29,49 @@ else {
 }
 
 $(window).load(function() {
-	//if (!window.DEBUG) {
-		//$("#lnkHelp").click();
-		//if (readCookie(".mainAlert.closed") != null) {
-		console.log("readCookie::", readCookie(".mainAlert.closed"));
-		if (readCookie(".mainAlert.closed") != "true") 
-		{
-			bshelp();
-			console.log("CALLED");
-			createCookie(".mainAlert.closed", "true");
-		}
 	
 	//Objects Initialization
 	tables = {}; //dict of String:Table objects
 	
-	//EndpointHoverStyle: {color: "blue"},
 	jsPlumb.importDefaults({
 		Endpoint: ["Rectangle", {width:14, height:14}] ,
 		Endpoints : [ [ "Rectangle" ], [ "Rectangle" ] ],
 		Connector: "Bezier",//Flowchart, Straight, Bezier
-		MaxConnections : 5,
+		MaxConnections : -1,
 		PaintStyle: {strokeStyle: "rgba(50,50,50,1)", lineWidth:2.5},
-		HoverPaintStyle: { lineWidth:4,
-			//strokeStyle: 'rgba(255,255,255,1)'
-		},
-            EndpointHoverStyle: { fillStyle:"red" }, 
+		HoverPaintStyle: { lineWidth:4},
+        EndpointHoverStyle: { fillStyle:"red" }, 
     });
 	
 	jsPlumb.setContainer("theCanvas");
-	console.log('jsPlumb.getContainer():', jsPlumb.getContainer());
-	
 	
 	//check local storage, if any build the tables.
 	$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
-		//runAddTableDialog(tableName, "add");
 	});
 	
 	loadCanvasState(null);
 	
 	$(".footer #theyear").text((new Date()).getFullYear());
+	
+	// Display an initial popup with helpful information the first time the user loads this page
+	if (readCookie(".mainAlert.closed") != "true") 
+	{
+		bshelp();;
+		createCookie(".mainAlert.closed", "true");
+	}
 });
 
 /* jsPlumb events */
 jsPlumb.bind("beforeDrop", function(info) {
-	console.log("jsPlumb.beforeDrop");
+
 	//check if a connection already exists between these two points
-	console.log(info.sourceId, info.targetId);
 	var con=jsPlumb.getConnections({source:info.sourceId, target:info.targetId});
-	//console.log(con);
+
 	if (con.length>0) {
 		console.log("This Connection already exists, detaching old one.");
 		jsPlumb.detach(con[0]);
-		//return false;
 	}
-	//
+
 	var pkey = $(info.connection.source).attr('fpname').split(".");
 	var fkey = $(info.connection.target).attr('ffname').split(".");
 	console.log('BEFORE_DROP', pkey, fkey);
@@ -90,39 +79,30 @@ jsPlumb.bind("beforeDrop", function(info) {
 		alert("Source and Target table cannot be the same");
 		return false;
 	}
-	//console.log(pkey, fkey);
+
 	tables[pkey[0]].fields[pkey[1]].foreign = fkey[0] + '.' + fkey[1];
 	tables[fkey[0]].fields[fkey[1]].ref = pkey[0] + '.' + pkey[1];
 	bsalert({text: pkey[1] + '->' + fkey[1], title:"Established: "});
-	//window.tobj = info;
-	console.log("repainted");
+
 	saveCanvasState();
 	
 	return true; //return false or just quit to drop the new connection.
 });
 
-/*jsPlumb.bind("connection", function(info) {
-	//console.log(info);
-	//window.tobj = info;
-});*/
-
 jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 	console.log(info.source, info.target);
-	//return;
+
 	if ($(info.source).attr('fpname') == undefined || $(info.target).attr('ffname')==undefined)
 		return;
 	var pkey = $(info.source).attr('fpname').split(".");
 	var fkey = $(info.target).attr('ffname').split(".");
-	console.log('DETACHED', pkey, fkey);
+
 	tables[pkey[0]].fields[pkey[1]].foreign = null;
 	tables[fkey[0]].fields[fkey[1]].ref = null;
 	bsalert({text: pkey[1] + '->' + fkey[1], title:"Detached: "});
-	//bspopup({type:"text", text: pkey[1] + '><' + fkey[1], title:"Detached: "});
-	saveCanvasState();
-	//window.tobj = info;
-})
 
-//Other misc functions
+	saveCanvasState();
+})
 
 /**
 * Creates a new panel from scratch for a table
@@ -131,7 +111,6 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 function createThePanel(table, mode, func) {
 	if (mode == "add") {
 		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data) {
-			//console.log("DATA::",data);
 			$('.canvas').append(data.format({table: table.name}));
 			setThePanel(table, mode);
 			if (func) func();
@@ -169,11 +148,9 @@ function setThePanel(table, mode) {
 		$("#tbl" + table.name + " .table").append(html);
 
 		var ep;
-		console.log("The anchor will be LEFT");
 		if (field.primaryKey) {
 			ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
 				isSource: true,
-				maxConnections:1,
 				anchor: "Right",
 				endpoint: ["Rectangle",{width:15, height:15}], //Dot
 				paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
@@ -282,12 +259,6 @@ function setThePanel(table, mode) {
     }
     else 
     {
-		//EDIT
-		$.each(tables, function(k,v) {
-				//jsPlumb.repaint(['tbl' + k]);
-				//jsPlumb.draggable('tbl' + k);
-				//console.log('repainted div ' + 'tbl' + k);
-		});
 		jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
 		bsalert({text:"Table updated!", type:'success'});
     }
@@ -299,33 +270,35 @@ function setThePanel(table, mode) {
 * @brief Save current canvas state to local store
 */
 function saveCanvasState() {
-	console.log('saveCanvasState()');
+
 	var json = null;
 	if (window.localStorage) {
 		json = JSON.stringify(tables);
 		window.localStorage.setItem("strTables", json);
 	}
-	console.log('~saveCanvasState()');
+
 	return json;
 }
 
 function loadCanvasState(json) {
-	console.log('loadCanvasState()');
+
 	tables  = new Object();
-	if (!window.localStorage) return;
-	console.log("Loading tables");
-	if (localStorage.getItem("strTables") == null) return;
-	
+
 	if (!json) {
+		// If no json data provided, use local storage (if it exists)
+		if (!window.localStorage) return;
+		if (localStorage.getItem("strTables") == null) return;
+		
 		json = localStorage.getItem("strTables");
 	}
 	else {
 		console.log('json arg:',json);
-		jsPlumb.detachEveryConnection();
-		jsPlumb.empty($(".canvas"));
 	}
+	
+	clearCanvas();
+	
 	ttables = JSON.parse(json);
-	console.log(ttables);
+
 	//import the table structures
 	$.each(ttables, function(k,v) {
 		console.log('PROCESSING: ' + k);
@@ -352,14 +325,9 @@ function loadCanvasState(json) {
 				$.each(v.fields, function(kk,vv) {
 					if (vv.ref != null) {
 						//check incoming
-						console.log('foreign key found:',vv.name, vv.ref);
-						//k.fields[key].ref = val.ref; //restore the lost ref
 						tsa = vv.ref.split('.');
-						//tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-						//console.log("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']");
 						elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
 						elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + v.name +  " div[ffname='" + v.name + "." + vv.name +  "']")});
-						//console.log(elist1.length, elist2.length);
 						var el1 = null;
 						var el2 = null;
 						elist1.each(function(key){el1=key});
@@ -372,6 +340,29 @@ function loadCanvasState(json) {
 	});
 }
 
+function clearCanvas() {
+	jsPlumb.detachEveryConnection();
+	jsPlumb.remove($(".tableDesign"));
+	jsPlumb.empty($(".canvas"));
+}
+
+function eraseCanvasState() {
+	
+	if (confirm("All your tables will be erased so you can start over. Is this OK?")) {
+
+		// Clear out the copy stored in local storage
+		if (window.localStorage) {
+			window.localStorage.removeItem("strTables");
+		}
+		
+		// Erase tables from the canvas
+		clearCanvas();
+		
+		// Clear local tables object
+		tables={}; 
+	}
+}
+
 var ORMSQLAlchemy = function(templateDir) {
 
 	 this.template = templateDir+"sqlalchemy.py";
@@ -379,30 +370,30 @@ var ORMSQLAlchemy = function(templateDir) {
 	 this.generateCode = function(tables) {
 		var code = '';
 		
-		 $.each(tables, function(key, val) {
-			code += "class " + val.name + "(Base):\n";
-			code += "\t" + "__tablename__ = \"" + val.name + "\"\n";
-			$.each(val.fields, function(fkey, fval){
+		 $.each(tables, function(tableName, table) {
+			code += "class " + table.name + "(Base):\n";
+			code += "\t" + "__tablename__ = \"" + table.name + "\"\n";
+			$.each(table.fields, function(fieldName, field){
 				//embed quotes if they don't already exist
-				if (fval.type=='Text' || fval.type=='String') {
-					if (fval.defaultValue!=null) {
-						var sdef = fval.defaultValue;
-						if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
-						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
+				if (field.type=='Text' || field.type=='String') {
+					if (field.defaultValue!=null) {
+						var sdef = field.defaultValue;
+						if (sdef.indexOf('"') !=0) field.defaultValue = '"' + sdef;
+						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) field.defaultValue += '"';
 					}
 					// Default text size is 255 if user didn't specify a size
-					if (fval.size==0) {
-						fval.size = 255;
+					if (field.size==0) {
+						field.size = 255;
 					}
 				}
 				
-				code += "\t" + fval.name + " = Column(" 
-				+ fval.type + (fval.size==0 ? '' : '(' + fval.size + ')')
-				+ (fval.ref != null ? ", ForeignKey('" + fval.ref + "')" : "")
-				+ (fval.primaryKey ? ", primary_key=True" : "")
-				+ (fval.unique ? ", unique=True" : "")
-				+ (fval.notNull ? ", nullable=False" : "")
-				+ (fval.defaultValue!=null ? ", default=" + fval.defaultValue : "")
+				code += "\t" + field.name + " = Column(" 
+				+ field.type + (field.size==0 ? '' : '(' + field.size + ')')
+				+ (field.ref != null ? ", ForeignKey('" + field.ref + "')" : "")
+				+ (field.primaryKey ? ", primary_key=True" : "")
+				+ (field.unique ? ", unique=True" : "")
+				+ (field.notNull ? ", nullable=False" : "")
+				+ (field.defaultValue!=null ? ", default=" + field.defaultValue : "")
 				+ ")\n";
 			});
 			code += "\n";
@@ -426,76 +417,87 @@ var MySQL = function(templateDir) {
 	
 		var code = '';
 		var constraints = [];
-		$.each(tables, function(key, val) {
-			code += "create table " + val.name + "\n(";
+		$.each(tables, function(tableName, table) {
+			code += "create table " + table.name + "\n(\n";
 			
 			var primaryFields = [];
 			var primaryCount = 0;
 			
 			// Collect number and names of primary key fields
-			$.each(val.fields, function(fkey, fval) {
-				if (fval.primaryKey) {
-					primaryFields.push(fval.name);
+			$.each(table.fields, function(fieldName, field) {
+				if (field.primaryKey) {
+					primaryFields.push(field.name);
 					primaryCount += 1;
 				}
 			});
-		
-			$.each(val.fields, function(fkey, fval)
+			
+			var fieldCode = [];
+			
+			$.each(table.fields, function(fieldName, field)
 			{
-				if (fval.type=='Text' || fval.type=='String') {
+				if (field.type=='Text' || field.type=='String') {
 					//embed quotes if they don't already exist
-					if (fval.defaultValue!=null) {
-						var sdef = fval.defaultValue;
-						if (sdef.indexOf('"') !=0) fval.defaultValue = '"' + sdef;
-						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) fval.defaultValue += '"';
+					if (field.defaultValue!=null) {
+						var sdef = field.defaultValue;
+						if (sdef.indexOf('"') !=0) field.defaultValue = '"' + sdef;
+						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) field.defaultValue += '"';
 					}
 					
 					// Default text size is 255 if user didn't specify a size
-					if (fval.size==0) {
-						fval.size = 255;
+					if (field.size==0) {
+						field.size = 255;
 					}
 				}
 				
-				code += "\t" + fval.name + " " + rawTypes[fval.type] + (fval.size==0 ? '' : '(' + fval.size + ')')
-				+ (fval.notNull ? " not null" : "")
-				+ (fval.primaryKey && primaryCount == 1 ? " primary key" : "")
-				+ (fval.unique ? " unique" : "")
-				+ (fval.defaultValue!=null ? " default " + fval.defaultValue  : "")
-				+ ",\n";
+				fieldCode.push("\t" + field.name + " " + rawTypes[field.type] + (field.size==0 ? '' : '(' + field.size + ')')
+				+ (field.notNull ? " not null" : "")
+				+ (field.primaryKey && primaryCount == 1 ? " primary key" : "")
+				+ (field.unique ? " unique" : "")
+				+ (field.defaultValue!=null ? " default " + field.defaultValue  : ""));
 				
 				// If this field has any references to other fields 
-				if (fval.ref!=null) 
+				if (field.ref!=null) 
 				{
-					if (this.deferForeignKeys) {
-						// save constraints in an array (they are added after all tables have been created)
-						constraints.push(this.generateFKConstraint(val.name, fval.name, fval.ref.split(".")[0], fval.ref.split(".")[1]));
-					} else {
-						code += this.generateFKConstraint(val.name, fval.name, fval.ref.split(".")[0], fval.ref.split(".")[1]);
-					}
+					// add any constraints placed by raw formats like mysql and postgres.
+					// save constraints in an array (they are added after all tables have been created)
+					constraints.push(this.generateFKConstraint(table.name, field.name, field.ref.split(".")[0], field.ref.split(".")[1]));
+					
+					// Change this to instead collect all constraints organized by the referenced table name as the key in a dictionary.
+					// Then go through in order by table name. For each table, any field that is a primary key goes together. Actually,
+					// because we don't allow unique key links, just primary, that's all you have to do is organize them by table first.
+					// Then organize them by the field name they refence. If both fields reference the exact same field they don't
+					// go together as a primary key.
 				}
 			}.bind(this));
 			
+			
 			// Add multi-field primary key if needed
 			if (primaryCount > 1) {
-				code += "\tprimary key (" + primaryFields.join(', ') + ")\n";
-			} else {
-				code = code.slice(0, -2) + "\n"; //trim off that last nagging comma.
+				fieldCode.push("\tprimary key (" + primaryFields.join(', ') + ")");
 			}
 			
-			code += ");\n";
+			// Add foreign key lines now if needed
+			if (!this.deferForeignKeys) {
+				fieldCode = fieldCode.concat(constraints);
+				constraints = [];
+			}
+			
+			// Add all the lines for declaring fields, primary keys, and FKs (if needed)
+			code += fieldCode.join(",\n")+"\n);\n";
+			
 		}.bind(this));
 
-		//add any constraints placed by raw formats like mysql and postgres.
-		$.each(constraints, function(index, item) {
-			code += item;
-		});
+		// If foreign keys have to come after everything else, add them here
+		if (this.deferForeignKeys) {
+			code += constraints.join("\n");
+		}
 	
 		return code;
 	}
 }
 
 MySQL.prototype.generateFKConstraint = function(firstTableName, firstTableFields, secondTableName, secondTableFields) {
-	return "\nalter table " + firstTableName + " add constraint fk_" + firstTableName +  "_" + firstTableFields 
+	return "alter table " + firstTableName + " add constraint fk_" + firstTableName +  "_" + firstTableFields 
 			+  " foreign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ");"
 }
 
@@ -515,7 +517,7 @@ SQLite.prototype = Object.create(MySQL.prototype);
 SQLite.prototype.constructor = SQLite;
 
 SQLite.prototype.generateFKConstraint = function(firstTableName, firstTableFields, secondTableName, secondTableFields) {
-	return "\tforeign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ") \n"
+	return "\tforeign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ")"
 }
 
 var codeGenerators = {"ORM/SQLAlchemy": ORMSQLAlchemy, "mysql": MySQL, "sqlite": SQLite};
@@ -555,7 +557,7 @@ function showResultsDialog() {
 
 function runResultsDialog() {
 	bspopup({
-		type:"radiolist", text:"Select output format", list:["ORM/SQLAlchemy", "mysql", "sqlite"],
+		type:"radiolist", text:"Select output format", list: Object.keys(codeGenerators),
 		success: function(ev){
 			var outputType = ev.value;
 			generateCode(outputType);
