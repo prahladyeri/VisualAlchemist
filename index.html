@@ -25,7 +25,7 @@
 <!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script-->
 <link type="text/css" href="lib/prettify/prettify.css" rel="stylesheet" />
 
-<script type="text/javascript"  src="lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="lib/prettify/prettify.js"></script>
 <script src='lib/jquery.min.js'></script>
 <script src='lib/bootstrap.min.js'></script>
 <script src="lib/jsPlumb-2.1.2-min.js"></script>
@@ -51,23 +51,11 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li ><a href="javascript:" onclick="javascript:showAddTableDialog();"><span class="glyphicon glyphicon-plus"></span>&nbsp;New Table</a></li>
-        <li class="hidden" ><a href="#" onclick="tables={}; jsPlumb.remove($('.tableDesign'))">Clear All</a></li>
+        <li><a href="javascript:" onclick="javascript:showAddTableDialog();"><span class="glyphicon glyphicon-plus"></span>&nbsp;New Table</a></li>
+        <li><a href="javascript:" onclick="eraseCanvasState();"><span class="glyphicon glyphicon-remove">&nbsp;Clear All</span></a></li>
         <li><a href="javascript:" onclick="showResultsDialog();"><span class="glyphicon glyphicon-list"></span>&nbsp;Code</a></li>
         <li><a href="javascript:" onclick="exportCanvas();"><span class="glyphicon glyphicon-export"></span>&nbsp;Export Canvas</a></li>
 		<li><a href="javascript:" class="btn-file"><form action="#" onchange="importCanvas();"><input id="inputCanvasFile" type="file"><span class="glyphicon glyphicon-import"></span>&nbsp;Import Canvas</input></form></a></li>
-        <!--li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-        </li-->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a id="lnkHelp" onclick="bshelp();" href="javascript:"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;Help</a></li>

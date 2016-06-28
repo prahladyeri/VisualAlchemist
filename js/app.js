@@ -29,14 +29,6 @@ else {
 }
 
 $(window).load(function() {
-
-		console.log("readCookie::", readCookie(".mainAlert.closed"));
-		if (readCookie(".mainAlert.closed") != "true") 
-		{
-			bshelp();
-			console.log("CALLED");
-			createCookie(".mainAlert.closed", "true");
-		}
 	
 	//Objects Initialization
 	tables = {}; //dict of String:Table objects
@@ -52,7 +44,6 @@ $(window).load(function() {
     });
 	
 	jsPlumb.setContainer("theCanvas");
-	console.log('jsPlumb.getContainer():', jsPlumb.getContainer());
 	
 	//check local storage, if any build the tables.
 	$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
@@ -61,6 +52,13 @@ $(window).load(function() {
 	loadCanvasState(null);
 	
 	$(".footer #theyear").text((new Date()).getFullYear());
+	
+	// Display an initial popup with helpful information the first time the user loads this page
+	if (readCookie(".mainAlert.closed") != "true") 
+	{
+		bshelp();;
+		createCookie(".mainAlert.closed", "true");
+	}
 });
 
 /* jsPlumb events */
@@ -105,8 +103,6 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 
 	saveCanvasState();
 })
-
-//Other misc functions
 
 /**
 * Creates a new panel from scratch for a table
@@ -287,18 +283,19 @@ function saveCanvasState() {
 function loadCanvasState(json) {
 
 	tables  = new Object();
-	if (!window.localStorage) return;
 
-	if (localStorage.getItem("strTables") == null) return;
-	
 	if (!json) {
+		// If no json data provided, use local storage (if it exists)
+		if (!window.localStorage) return;
+		if (localStorage.getItem("strTables") == null) return;
+		
 		json = localStorage.getItem("strTables");
 	}
 	else {
 		console.log('json arg:',json);
-		jsPlumb.detachEveryConnection();
-		jsPlumb.empty($(".canvas"));
 	}
+	
+	clearCanvas();
 	
 	ttables = JSON.parse(json);
 
@@ -341,6 +338,29 @@ function loadCanvasState(json) {
 			});
 		});
 	});
+}
+
+function clearCanvas() {
+	jsPlumb.detachEveryConnection();
+	jsPlumb.remove($(".tableDesign"));
+	jsPlumb.empty($(".canvas"));
+}
+
+function eraseCanvasState() {
+	
+	if (confirm("All your tables will be erased so you can start over. Is this OK?")) {
+
+		// Clear out the copy stored in local storage
+		if (window.localStorage) {
+			window.localStorage.removeItem("strTables");
+		}
+		
+		// Erase tables from the canvas
+		clearCanvas();
+		
+		// Clear local tables object
+		tables={}; 
+	}
 }
 
 var ORMSQLAlchemy = function(templateDir) {
@@ -441,6 +461,12 @@ var MySQL = function(templateDir) {
 					// add any constraints placed by raw formats like mysql and postgres.
 					// save constraints in an array (they are added after all tables have been created)
 					constraints.push(this.generateFKConstraint(table.name, field.name, field.ref.split(".")[0], field.ref.split(".")[1]));
+					
+					// Change this to instead collect all constraints organized by the referenced table name as the key in a dictionary.
+					// Then go through in order by table name. For each table, any field that is a primary key goes together. Actually,
+					// because we don't allow unique key links, just primary, that's all you have to do is organize them by table first.
+					// Then organize them by the field name they refence. If both fields reference the exact same field they don't
+					// go together as a primary key.
 				}
 			}.bind(this));
 			
@@ -531,7 +557,7 @@ function showResultsDialog() {
 
 function runResultsDialog() {
 	bspopup({
-		type:"radiolist", text:"Select output format", list:["ORM/SQLAlchemy", "mysql", "sqlite"],
+		type:"radiolist", text:"Select output format", list: Object.keys(codeGenerators),
 		success: function(ev){
 			var outputType = ev.value;
 			generateCode(outputType);
