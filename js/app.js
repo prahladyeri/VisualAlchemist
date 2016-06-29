@@ -75,8 +75,8 @@ jsPlumb.bind("beforeDrop", function(info) {
 	var pkey = $(info.connection.source).attr('fpname').split(".");
 	var fkey = $(info.connection.target).attr('ffname').split(".");
 	console.log('BEFORE_DROP', pkey, fkey);
-	if (pkey[0] == fkey[0]) {
-		alert("Source and Target table cannot be the same");
+	if (pkey[0] == fkey[0] && pkey[1] == fkey[1]) {
+		alert("A field cannot have a reference to itself.");
 		return false;
 	}
 
