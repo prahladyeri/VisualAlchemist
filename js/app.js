@@ -19,7 +19,6 @@
 * @date 2015/06/16
 */
 var version = "1.0.6"; //TODO: Remember to automate this.
-var stringTypes = ["Text"];
 
 if (window.location.href.indexOf('127.0.0.1:') >=0 ) {
 	window.DEBUG = true;
@@ -75,8 +74,8 @@ jsPlumb.bind("beforeDrop", function(info) {
 	var pkey = $(info.connection.source).attr('fpname').split(".");
 	var fkey = $(info.connection.target).attr('ffname').split(".");
 	console.log('BEFORE_DROP', pkey, fkey);
-	if (pkey[0] == fkey[0]) {
-		alert("Source and Target table cannot be the same");
+	if (pkey[0] == fkey[0] && pkey[1] == fkey[1]) {
+		bspopup("A field cannot have a reference to itself.");
 		return false;
 	}
 
@@ -622,6 +621,7 @@ function deleteTable(tableName) {
 	if (confirm("Sure you want to delete this table along with all it's relations?")) {
 		delete tables[tableName];
 		jsPlumb.empty("tbl" + tableName);
+		$("#tbl" + tableName).remove();
 		saveCanvasState();
 	}
 }
