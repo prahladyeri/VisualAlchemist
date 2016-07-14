@@ -27,6 +27,8 @@ else {
 	window.DEBUG  = false;
 }
 
+var tableTemplate = "";
+
 $(window).load(function() {
 	
 	//Objects Initialization
@@ -48,7 +50,14 @@ $(window).load(function() {
 	$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
 	});
 	
-	loadCanvasState(null);
+	// Load table template
+	$.get("assets/partials/table.html", function(data) {
+		tableTemplate = data;
+		
+		// Finish loading canvas
+		loadCanvasFromLocalStorage();
+		
+	});
 	
 	$(".footer #theyear").text((new Date()).getFullYear());
 	
@@ -59,6 +68,16 @@ $(window).load(function() {
 		createCookie(".mainAlert.closed", "true");
 	}
 });
+
+function loadCanvasFromLocalStorage() {
+	// Use local storage (if it exists) to load the canvas from the user's last session
+	if (window.localStorage) {
+		if (localStorage.getItem("strTables") != null) {
+			json = localStorage.getItem("strTables");
+			loadCanvasState(json);
+		}
+	}
+}
 
 /* jsPlumb events */
 jsPlumb.bind("beforeDrop", function(info) {
@@ -109,42 +128,46 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 */
 function createThePanel(table, mode, func) {
 	if (mode == "add") {
-		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data) {
-			$('.canvas').append(data.format({table: table.name}));
-			setThePanel(table, mode);
-			if (func) func();
-		});
+		$('.canvas').append(tableTemplate.format({table: table.name}));
 	}
-	else {
-		setThePanel(table, mode);
-		if (func) func();
-	}
+
+	setThePanel(table, mode);
+	if (func) func();
 }
 
 function setThePanel(table, mode) {
+	
+	var tableID = '#tbl' + table.name;
+	
+	// If editing an existing table, delete all existing rows from the table
     if (mode=='edit') {
-        $('#tbl' + table.name + " .table tr").remove();
+        $(tableID + " .table tr").remove();
     }
 
     //Now lets build the new panel
-    $.each(table.fields, function(key, field) {
+    $.each(table.fields, function(fieldName, field) {
 		var html = '';
-		var sprim = "";
-
-		html += "<tr>";
-		html += "<td style='vertical-align: middle'><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
-		html += "<td>" + field.name + "</td>";
-		html += "<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
+		
+		// Setup details field for this row
 		var details = [];
 		if (field.primaryKey) details.push('primary');
 		if (field.unique) details.push('unique');
 		if (field.notNull) details.push('not null');
 		var tattr = details.join(',');
-		html += "<td>" + (tattr == "" ? "---" : tattr)  + "</td>";
-		html += "<td style='vertical-align: middle'>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
-		html += "</tr>";
 
-		$("#tbl" + table.name + " .table").append(html);
+		html =	"<tr>" +
+				"<td style='vertical-align: middle;'>" +
+					"<div ffname='" + table.name + "." + field.name +  "' class='field'></div>" + 
+				"</td>" + //virtual
+				"<td>" + field.name + "</td>" +
+				"<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>" +
+				"<td>" + (tattr == "" ? "---" : tattr) + "</td>" +
+				"<td style='vertical-align: middle;'>" + 
+					(field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') +  //virtual
+				"</td>" +
+				"</tr>";
+
+		$(tableID + " .table").append(html);
 
 		var ep;
 		if (field.primaryKey) {
@@ -165,7 +188,7 @@ function setThePanel(table, mode) {
 			});
 		}
 		
-		ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
+		ep = jsPlumb.addEndpoint($(tableID + " [ffname='" + table.name + "." +  field.name + "']"), {
 			isTarget: true,
 			anchor: "Left",
 			endpoint: ["Rectangle", {width:15, height:15}], //Rectangle
@@ -174,24 +197,18 @@ function setThePanel(table, mode) {
 				
 		jsPlumb.draggable('tbl' + table.name, {
 		   containment:true,
-			step: function () {
-				jsPlumb.repaintEverything();
-			},
-			drag:function(){
-				jsPlumb.repaintEverything();
-			},
 		   stop: function(event, ui) {
 				console.log(event.pos[0], event.pos[1]);
 				tables[table.name].position.x = event.pos[0] + 'px';
 				tables[table.name].position.y = event.pos[1] + 'px';
 				saveCanvasState();
-				jsPlumb.repaintEverything();
 		   }
 		});
     });
 
     //TODO: [STABLE]Rebuild connections to/from this table by looping thru tables collection.
     if (mode=='edit') {
+		createAllConnections(tables);
 		$.each(window.oldrefs, function(key, val) {
 			console.log('rebuilding ',key,val);
 			if (val.foreign != null) {
@@ -200,14 +217,8 @@ function setThePanel(table, mode) {
 				table.fields[key].foreign = val.foreign; //restore the lost foreign
 				tsa = val.foreign.split('.');
 				tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
-				elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
-				elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " [fpname='" + table.name + "." + key +  "']")});
-
-				var el1 = null;
-				var el2 = null;
-				elist1.each(function(key){el1=key});
-				elist2.each(function(key){el2=key});
-				jsPlumb.connect({target:el1, source:el2});
+				
+				connectEndpoints(tsa[0],tsa[1],table.name,key);
 			}
 			else if (val.ref != null) {
 				//check incoming
@@ -215,22 +226,15 @@ function setThePanel(table, mode) {
 				table.fields[key].ref = val.ref; //restore the lost ref
 				tsa = val.ref.split('.');
 				tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-				console.log("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']");
-				elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
-				elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
-
-				var el1 = null;
-				var el2 = null;
-				elist1.each(function(key){el1=key});
-				elist2.each(function(key){el2=key});
-				jsPlumb.connect({source:el1, target:el2});
+				
+				connectEndpoints(tsa[0],tsa[1],table.name,key);
 			}
 		});
     }
 
     if (mode=='add') {
 		if (window.lastPos == undefined) {
-				window.lastPos = {'x':0, 'y':0};
+			window.lastPos = {'x':0, 'y':0};
 		}
 
 		var maxX = $(".canvas").width() - $('#tbl' + table.name).width() ;
@@ -252,23 +256,20 @@ function setThePanel(table, mode) {
 		}
 		window.lastPos.y += $('#tbl' + table.name).position().top;
 
-		jsPlumb.repaintEverything();
-		console.log("repaintedEverything");
-		bsalert({text:"Table added!", type:'success'});
+		bsalert({text:table.name+"added!", type:'success'});
     }
     else 
     {
-		jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
 		bsalert({text:"Table updated!", type:'success'});
     }
-
-    saveCanvasState(); 
 }
 
 /**
 * @brief Save current canvas state to local store
 */
 function saveCanvasState() {
+
+	console.log("Saving canvas state...")
 
 	var json = null;
 	if (window.localStorage) {
@@ -280,63 +281,66 @@ function saveCanvasState() {
 }
 
 function loadCanvasState(json) {
-
-	tables  = new Object();
-
-	if (!json) {
-		// If no json data provided, use local storage (if it exists)
-		if (!window.localStorage) return;
-		if (localStorage.getItem("strTables") == null) return;
+	try {
+		// Clear canvas and create new table to start from a blank slate
+		clearCanvas();
+		tables  = new Object();
 		
-		json = localStorage.getItem("strTables");
-	}
-	else {
-		console.log('json arg:',json);
-	}
+		// Temporarily suspend drawing to speed up load time
+		jsPlumb.setSuspendDrawing(true);
+		
+		if (json) {
+			console.log('json arg:',json);
+		}
 	
-	clearCanvas();
-	
-	ttables = JSON.parse(json);
-
-	//import the table structures
-	$.each(ttables, function(k,v) {
-		console.log('PROCESSING: ' + k);
-		tables[k] = new Table(v.name);
-		tables[k].fields = {};
-		tables[k].position = v.position;
-		console.log('round1',tables[k].position,tables[k].position.x, tables[k].position.y);
-		$.each(v.fields, function(kk,vv) {
-			tables[k].fields[kk] = new Field(vv);
-			tables[k].fields[kk].foreign = (vv.foreign ? vv.foreign : null);
-			tables[k].fields[kk].ref = (vv.ref ? vv.ref : null);
-			//TODO: Remember to add any new attributes here, so canvas loads properly.
-		});
-	});
+		// Parse input JSON to restore tables that were saved previously
+		tables = JSON.parse(json);
 			
-	//set the panels
-	console.log('tlen:',Object.keys(tables).length);
-	$.each(tables, function(k,v) {
-		createThePanel(v, 'add', function() {
-			if ($("[id^='tbl']").length < Object.keys(tables).length) return;
-			//now create the relations after all panels are done.
-			$.each(tables, function(k,v) {
-				window.oldrefs = {};
-				$.each(v.fields, function(kk,vv) {
-					if (vv.ref != null) {
-						//check incoming
-						tsa = vv.ref.split('.');
-						elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
-						elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + v.name +  " div[ffname='" + v.name + "." + vv.name +  "']")});
-						var el1 = null;
-						var el2 = null;
-						elist1.each(function(key){el1=key});
-						elist2.each(function(key){el2=key});
-						jsPlumb.connect({source:el1, target:el2});
-					}
-				});
-			});
+		// Create the panels
+		$.each(tables, function(tableName,table) {
+			createThePanel(table, 'add', function() {});
+		});
+		
+		// Create the connections
+		createAllConnections(tables);
+	
+	} finally {
+		jsPlumb.setSuspendDrawing(false, true);
+	}
+}
+
+function createAllConnections(tables) {
+	//now create the relations after all panels are done.
+	$.each(tables, function(tableName,table) {
+		window.oldrefs = {};
+		$.each(table.fields, function(fieldName,field) {
+			// check incoming
+			if (field.ref != null) {
+				tsa = field.ref.split('.');
+				connectEndpoints(tsa[0],tsa[1],tableName,fieldName);
+			}
 		});
 	});
+}
+
+// Connect two fields on the canvas with arrows 
+function connectEndpoints(primaryTableName, primaryFieldName, foreignTableName, foreignKeyName) {
+	// Get the primary key field endpoint
+	var el1 = null;
+	console.log("#tbl" + primaryTableName +  " div[fpname='" + primaryTableName + "." + primaryFieldName +  "']");
+	console.log("result len:"+$("#tbl" + primaryTableName +  " div[fpname='" + primaryTableName + "." + primaryFieldName +  "']").length);
+	elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + primaryTableName +  " div[fpname='" + primaryTableName + "." + primaryFieldName +  "']")});
+	elist1.each(function(key){el1=key});
+	
+	// Get the foreign key field enpoint
+	var el2 = null;
+	console.log("#tbl" + foreignTableName +  " div[ffname='" + foreignTableName + "." + foreignKeyName +  "']");
+	console.log("result len:"+$("#tbl" + foreignTableName +  " div[ffname='" + foreignTableName + "." + foreignKeyName +  "']").length);
+	elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + foreignTableName +  " div[ffname='" + foreignTableName + "." + foreignKeyName +  "']")});
+	elist2.each(function(key){el2=key});
+	
+	// Connect primary to foreign key
+	jsPlumb.connect({source:el1, target:el2});
 }
 
 function clearCanvas() {

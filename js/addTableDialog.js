@@ -127,7 +127,7 @@ function saveData() {
 	$("#addTableDialog").modal('hide');
 	
 	//Now Build the new panel!
-	createThePanel(table, editMode, null);
+	createThePanel(table, editMode, function() {saveCanvasState()});
 }
 
 // Join two strings with a separator in between

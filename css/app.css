@@ -53,7 +53,7 @@ nav.navbar.navbar-inverse  .navbar-nav .dropdown-menu li a:hover
 	z-index: 255;
 	background-color: rgba(14, 63, 56, 0.56);
 	position:relative;
-	 /* 100vh height and auto overflow let the canvas grouw if users 
+	 /* 100vh height and auto overflow let the canvas grow if users 
 	 need more tables than can fit on the screen at one time. */
 	height:100vh;
 	overflow:auto;
