@@ -58,8 +58,7 @@ function saveData() {
 			bspopup('This table already exists.');
 			return;
 		}
-		table = new Table();
-		table.name = tableName;
+		table = new Table(tableName);
 	}
 	else if (editMode == "edit") {
 		if (tableName != originalName) {
@@ -80,47 +79,33 @@ function saveData() {
 		return;
 	}
 	
-	//remove old endpoints
-	window.oldrefs = {};
-	if (editMode == 'edit') {
-		jsPlumb.detachAllConnections($('#tbl' + table.name + " .table"));
-		window.oldrefs = {};
-		$.each(tables[table.name].fields, function(k,v) {
-			//preserve existing relations
-			window.oldrefs[v.name] = {};
-			window.oldrefs[v.name]['foreign'] = v.foreign;
-			window.oldrefs[v.name]['ref'] = v.ref;
-			console.log('oldref backing up',v.name,v.foreign,v.ref);
-			
-			//console.log(v.ep);
-			//elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
-			
-			//jsPlumb.deleteEndpoint(v.ep);
-			//console.log('deleted ep for',v.name);
-		});
-		jsPlumb.empty($('#tbl' + table.name + " .table"));
-	}
-	
-	table.fields={};
-	//First update the data model!
+	// Update the data model
 	$('.fieldRow').each(function(index) {
-		var isPrimary = Boolean($(this).find(".hfieldPrimary").text());
-		var isUnique  = Boolean($(this).find(".hfieldUnique").text());
-		var isNotNull = Boolean($(this).find(".hfieldNotNull").text());
-		var defaultValue = $(this).find(".hfieldDefaultValue").text();
-		console.log($(this).find(".fieldName").text(), 'primary: ' + $(this).find(".hfieldPrimary").text());
-		console.log($(this).find(".fieldName").text(), 'unique: ' + $(this).find(".hfieldUnique").text());
-		console.log("DATA_TYPE",$(this).find(".fieldType").val());
 		
-		table.fields[$(this).find(".fieldName").text()] = new Field({ 
-			name: $(this).find(".fieldName").text(),
+		var fieldName = $(this).find(".fieldName").text();
+		
+		var fieldData = {
+			primaryKey: Boolean($(this).find(".hfieldPrimary").text()),
+			unique: Boolean($(this).find(".hfieldUnique").text()),
+			notNull: Boolean($(this).find(".hfieldNotNull").text()),
+			defaultValue: $(this).find(".hfieldDefaultValue").text(),
 			type: $(this).find(".fieldType").text(),
-			size: $(this).find(".hfieldSize").text(),
-			primaryKey: isPrimary,
-			unique: isUnique,
-			notNull: isNotNull,
-			defaultValue:  (defaultValue=="" ? null : defaultValue)
-			});
+			name: fieldName,
+			size: $(this).find(".hfieldSize").text()
+		}
+		
+		if (fieldData.defaultValue == "") fieldData.defaultValue = null;
+		
+		// Get existing field if it already exists
+		var field;
+		if (fieldName in table.fields) {
+			field = table.fields[fieldName];
+			field.updateFromObject(fieldData);
+			
+		// else create new instance of Field
+		} else {
+			table.fields[fieldName] = new Field(fieldData);
+		}
 	});
 	
 	tables[table.name] = table;
@@ -162,9 +147,10 @@ function addField()
 		bspopup("A field with this name already exists.");
 		return;
 	}
-	var html = "<tr class='fieldRow' id='" + $("#fieldName").val() + "'>";
-	html += "<td class='fieldName'>" + $("#fieldName").val() + "</td>";
-	html += "<td class='fieldType'>" + $("#fieldType").val() + "</td>";
+	var html =	"<tr class='fieldRow' id='" + $("#fieldName").val() + "'>" +
+				"<td class='fieldName'>" + $("#fieldName").val() + "</td>" +
+				"<td class='fieldType'>" + $("#fieldType").val() + "</td>";
+				
 	var size = $("#fieldSize").val();
 	html += "<td class='fieldSize'>" + (size==0 ? "-" : size)  + "</td>";
 	
@@ -191,6 +177,11 @@ function addField()
 	html += "</tr>";
 	
 	$("#fields").append(html);
+	resetNewFieldBoxes();
+	$("#fieldName").focus();
+}
+
+function resetNewFieldBoxes() {
 	$("#fieldName").val("");
 	$("#fieldSize").val("");
 	$('#fieldSize').removeAttr('disabled');
@@ -199,8 +190,6 @@ function addField()
 	$('#fieldPrimary').removeAttr("checked");
 	$('#fieldUnique').removeAttr("checked");
 	$('#fieldNotNull').removeAttr("checked");
-
-	$("#fieldName").focus();
 }
 
 function tryToDelete(fieldName) {

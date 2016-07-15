@@ -44,21 +44,25 @@ $(window).load(function() {
         EndpointHoverStyle: { fillStyle:"red" }, 
     });
 	
+	var testField = new Field();
+	testField.name = "MyNameIs";
+	testField.updateFromObject("dsfs");
+	
 	jsPlumb.setContainer("theCanvas");
 	
 	//check local storage, if any build the tables.
-	$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
+	$("#holder").load("assets/partials/addTableDialog.html", function(){
 	});
 	
 	// Load table template
 	$.get("assets/partials/table.html", function(data) {
 		tableTemplate = data;
 		
-		// Finish loading canvas
+		// Finish loading canvas - this step is important!
 		loadCanvasFromLocalStorage();
-		
 	});
 	
+	// Write the year in the footer (for copyright)
 	$(".footer #theyear").text((new Date()).getFullYear());
 	
 	// Display an initial popup with helpful information the first time the user loads this page
@@ -206,30 +210,10 @@ function setThePanel(table, mode) {
 		});
     });
 
-    //TODO: [STABLE]Rebuild connections to/from this table by looping thru tables collection.
+
+	// If editing, ensure all connections get re-created
     if (mode=='edit') {
 		createAllConnections(tables);
-		$.each(window.oldrefs, function(key, val) {
-			console.log('rebuilding ',key,val);
-			if (val.foreign != null) {
-				//check outgoing
-				console.log('primary key found:',key, val.foreign);
-				table.fields[key].foreign = val.foreign; //restore the lost foreign
-				tsa = val.foreign.split('.');
-				tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
-				
-				connectEndpoints(tsa[0],tsa[1],table.name,key);
-			}
-			else if (val.ref != null) {
-				//check incoming
-				console.log('foreign key found:',key, val.ref);
-				table.fields[key].ref = val.ref; //restore the lost ref
-				tsa = val.ref.split('.');
-				tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-				
-				connectEndpoints(tsa[0],tsa[1],table.name,key);
-			}
-		});
     }
 
     if (mode=='add') {
@@ -288,13 +272,22 @@ function loadCanvasState(json) {
 		
 		// Temporarily suspend drawing to speed up load time
 		jsPlumb.setSuspendDrawing(true);
-		
-		if (json) {
-			console.log('json arg:',json);
-		}
 	
 		// Parse input JSON to restore tables that were saved previously
-		tables = JSON.parse(json);
+		var ttables = JSON.parse(json);
+
+		//import the table structures
+		$.each(ttables, function(k,v) {
+			console.log('PROCESSING: ' + k);
+			tables[k] = new Table(v.name);
+			tables[k].fields = {};
+			tables[k].position = v.position;
+			$.each(v.fields, function(kk,vv) {
+				tables[k].fields[kk] = new Field(vv);
+				tables[k].fields[kk].foreign = (vv.foreign ? vv.foreign : null);
+				tables[k].fields[kk].ref = (vv.ref ? vv.ref : null);
+			});
+		});
 			
 		// Create the panels
 		$.each(tables, function(tableName,table) {
@@ -327,15 +320,11 @@ function createAllConnections(tables) {
 function connectEndpoints(primaryTableName, primaryFieldName, foreignTableName, foreignKeyName) {
 	// Get the primary key field endpoint
 	var el1 = null;
-	console.log("#tbl" + primaryTableName +  " div[fpname='" + primaryTableName + "." + primaryFieldName +  "']");
-	console.log("result len:"+$("#tbl" + primaryTableName +  " div[fpname='" + primaryTableName + "." + primaryFieldName +  "']").length);
 	elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + primaryTableName +  " div[fpname='" + primaryTableName + "." + primaryFieldName +  "']")});
 	elist1.each(function(key){el1=key});
 	
 	// Get the foreign key field enpoint
 	var el2 = null;
-	console.log("#tbl" + foreignTableName +  " div[ffname='" + foreignTableName + "." + foreignKeyName +  "']");
-	console.log("result len:"+$("#tbl" + foreignTableName +  " div[ffname='" + foreignTableName + "." + foreignKeyName +  "']").length);
 	elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + foreignTableName +  " div[ffname='" + foreignTableName + "." + foreignKeyName +  "']")});
 	elist2.each(function(key){el2=key});
 	
@@ -366,179 +355,6 @@ function eraseCanvasState() {
 	}
 }
 
-var ORMSQLAlchemy = function(templateDir) {
-
-	 this.template = templateDir+"sqlalchemy.py";
-	 
-	 this.generateCode = function(tables) {
-		var code = '';
-		
-		 $.each(tables, function(tableName, table) {
-			code += "class " + table.name + "(Base):\n";
-			code += "\t" + "__tablename__ = \"" + table.name + "\"\n";
-			$.each(table.fields, function(fieldName, field){
-				//embed quotes if they don't already exist
-				if (field.type=='Text' || field.type=='String') {
-					if (field.defaultValue!=null) {
-						var sdef = field.defaultValue;
-						if (sdef.indexOf('"') !=0) field.defaultValue = '"' + sdef;
-						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) field.defaultValue += '"';
-					}
-					// Default text size is 255 if user didn't specify a size
-					if (field.size==0) {
-						field.size = 255;
-					}
-				}
-				
-				code += "\t" + field.name + " = Column(" 
-				+ field.type + (field.size==0 ? '' : '(' + field.size + ')')
-				+ (field.ref != null ? ", ForeignKey('" + field.ref + "')" : "")
-				+ (field.primaryKey ? ", primary_key=True" : "")
-				+ (field.unique ? ", unique=True" : "")
-				+ (field.notNull ? ", nullable=False" : "")
-				+ (field.defaultValue!=null ? ", default=" + field.defaultValue : "")
-				+ ")\n";
-			});
-			code += "\n";
-		});
-
-		return code;
-	}
-}
-
-var MySQL = function(templateDir) {
-	var rawTypes = 
-	{'Text': 'varchar',
-	 'Integer': 'int',
-	 'Float': 'float'};
-	this.template = templateDir+"mysql.sql";
-	
-	// Add foreign key constraint after running CREATE TABLE statement?
-	this.deferForeignKeys = true;
-	
-	this.generateCode = function(tables) {
-	
-		var code = '';
-		var constraints = [];
-		$.each(tables, function(tableName, table) {
-			code += "create table " + table.name + "\n(\n";
-			
-			var primaryFields = [];
-			var primaryCount = 0;
-			
-			// Collect number and names of primary key fields
-			$.each(table.fields, function(fieldName, field) {
-				if (field.primaryKey) {
-					primaryFields.push(field.name);
-					primaryCount += 1;
-				}
-			});
-			
-			var fieldCode = [];
-			
-			$.each(table.fields, function(fieldName, field)
-			{
-				if (field.type=='Text' || field.type=='String') {
-					//embed quotes if they don't already exist
-					if (field.defaultValue!=null) {
-						var sdef = field.defaultValue;
-						if (sdef.indexOf('"') !=0) field.defaultValue = '"' + sdef;
-						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) field.defaultValue += '"';
-					}
-					
-					// Default text size is 255 if user didn't specify a size
-					if (field.size==0) {
-						field.size = 255;
-					}
-				}
-				
-				fieldCode.push("\t" + field.name + " " + rawTypes[field.type] + (field.size==0 ? '' : '(' + field.size + ')')
-				+ (field.notNull ? " not null" : "")
-				+ (field.primaryKey && primaryCount == 1 ? " primary key" : "")
-				+ (field.unique ? " unique" : "")
-				+ (field.defaultValue!=null ? " default " + field.defaultValue  : ""));
-				
-				// If this field has any references to other fields 
-				if (field.ref!=null) 
-				{
-					// add any constraints placed by raw formats like mysql and postgres.
-					// save constraints in an array (they are added after all tables have been created)
-					constraints.push(this.generateFKConstraint(table.name, field.name, field.ref.split(".")[0], field.ref.split(".")[1]));
-					
-					// Change this to instead collect all constraints organized by the referenced table name as the key in a dictionary.
-					// Then go through in order by table name. For each table, any field that is a primary key goes together. Actually,
-					// because we don't allow unique key links, just primary, that's all you have to do is organize them by table first.
-					// Then organize them by the field name they refence. If both fields reference the exact same field they don't
-					// go together as a primary key.
-				}
-			}.bind(this));
-			
-			
-			// Add multi-field primary key if needed
-			if (primaryCount > 1) {
-				fieldCode.push("\tprimary key (" + primaryFields.join(', ') + ")");
-			}
-			
-			// Add foreign key lines now if needed
-			if (!this.deferForeignKeys) {
-				fieldCode = fieldCode.concat(constraints);
-				constraints = [];
-			}
-			
-			// Add all the lines for declaring fields, primary keys, and FKs (if needed)
-			code += fieldCode.join(",\n")+"\n);\n";
-			
-		}.bind(this));
-
-		// If foreign keys have to come after everything else, add them here
-		if (this.deferForeignKeys) {
-			code += constraints.join("\n");
-		}
-	
-		return code;
-	}
-}
-
-MySQL.prototype.generateFKConstraint = function(firstTableName, firstTableFields, secondTableName, secondTableFields) {
-	return "alter table " + firstTableName + " add constraint fk_" + firstTableName +  "_" + firstTableFields 
-			+  " foreign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ");"
-}
-
-// SQLite inherits from MySQL. It's mostly the same syntax, the only difference is that
-// MySQL doesn't support ALTER TABLE ADD CONSTRAINT FOREIGN KEY, so FKs have to be added
-// as part of the CREATE TABLE statement.
-var SQLite = function(templateDir) {
-	MySQL.call(this, templateDir);
-	
-	this.template = templateDir+"sqlite.sql";
-	
-	// Add foreign key constraint after running CREATE TABLE statement?
-	this.deferForeignKeys = false;
-}
-
-SQLite.prototype = Object.create(MySQL.prototype);
-SQLite.prototype.constructor = SQLite;
-
-SQLite.prototype.generateFKConstraint = function(firstTableName, firstTableFields, secondTableName, secondTableFields) {
-	return "\tforeign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ")"
-}
-
-var codeGenerators = {"ORM/SQLAlchemy": ORMSQLAlchemy, "mysql": MySQL, "sqlite": SQLite};
-function generateCode(outputType) {
-
-	var codeGenerator;
-	var templateDir = "/assets/templates/";
-	
-	// Pick code generator based on desired output format
-	var codeGenerator = new codeGenerators[outputType](templateDir);
-	
-	// Combine template with generated code then show the output
-	$.get(codeGenerator.template, function(data) {
-		var code = codeGenerator.generateCode(tables);
-		code = data.format({body: code, version: version});
-		showResults(code);
-	});
-}
 
 function showResultsDialog() {
 	if (!window.DEBUG && Object.keys(tables).length==0) {

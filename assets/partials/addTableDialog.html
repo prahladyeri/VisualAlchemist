@@ -9,18 +9,11 @@
       <div class="modal-body form-inline">
         <input id="fieldName" style="width:110px;" class="form-control" type="text" placeholder="Field name"></input>
         <select id="fieldType" class="form-control" type="text" onchange="if ($('#fieldType').val()!='String' && $('#fieldType').val()!='Text') $('#fieldSize').attr('disabled',''); else $('#fieldSize').removeAttr('disabled');">
-<!--
-			<option value="LONGTEXT">mysql.LONGTEXT</option>
--->
 			<option value="Text">Text</option>
 			<option value="Integer">Integer</option>
 			<option value="Float">Float</option>
 			<option value="Date">Date</option>
 			<option value="Date">DateTime</option>
-<!--
-			<option value="BIGINT">mysql.BIGINT</option>
-			<option value="BIGINT(unsigned=True)">mysql.BIGINT(unsigned)</option>
--->
 		</select>
         <input id="fieldSize" style="width:70px;" class="form-control" type="number" min="0" placeholder="size" value=""></input>
         <input id="fieldDefault" style="width:100px;" class="form-control" type="text" placeholder="Default" value=""></input>
@@ -48,6 +41,6 @@
 		<div class="alert alert-info" role="alert">
 		<small>Note: Use <kbd>tab</kbd> key to navigate through the widgets.</small>
 		</div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+    </div>
+  </div>
+</div>
