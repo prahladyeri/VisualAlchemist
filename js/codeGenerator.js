@@ -96,12 +96,6 @@ var MySQL = function(templateDir) {
 					// add any constraints placed by raw formats like mysql and postgres.
 					// save constraints in an array (they are added after all tables have been created)
 					constraints.push(this.generateFKConstraint(table.name, field.name, field.ref.split(".")[0], field.ref.split(".")[1]));
-					
-					// Change this to instead collect all constraints organized by the referenced table name as the key in a dictionary.
-					// Then go through in order by table name. For each table, any field that is a primary key goes together. Actually,
-					// because we don't allow unique key links, just primary, that's all you have to do is organize them by table first.
-					// Then organize them by the field name they refence. If both fields reference the exact same field they don't
-					// go together as a primary key.
 				}
 			}.bind(this));
 			

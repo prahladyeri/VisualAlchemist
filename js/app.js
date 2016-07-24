@@ -102,9 +102,8 @@ jsPlumb.bind("beforeDrop", function(info) {
 		return false;
 	}
 
-	tables[pkey[0]].fields[pkey[1]].foreign = fkey[0] + '.' + fkey[1];
 	tables[fkey[0]].fields[fkey[1]].ref = pkey[0] + '.' + pkey[1];
-	bsalert({text: pkey[1] + '->' + fkey[1], title:"Established: "});
+	bsalert({text: pkey[1] + '->' + fkey[1], title:"Connection established: "});
 
 	saveCanvasState();
 	
@@ -112,16 +111,20 @@ jsPlumb.bind("beforeDrop", function(info) {
 });
 
 jsPlumb.bind("connectionDetached", function(info, originalEvent) {
-	console.log(info.source, info.target);
+	
+	// Don't do connection detached event if it wasn't caused by a user action
+	if (originalEvent == undefined)
+		return;
+	
+	console.log('Detaching ', info.source, info.target);
 
 	if ($(info.source).attr('fpname') == undefined || $(info.target).attr('ffname')==undefined)
 		return;
 	var pkey = $(info.source).attr('fpname').split(".");
 	var fkey = $(info.target).attr('ffname').split(".");
 
-	tables[pkey[0]].fields[pkey[1]].foreign = null;
 	tables[fkey[0]].fields[fkey[1]].ref = null;
-	bsalert({text: pkey[1] + '->' + fkey[1], title:"Detached: "});
+	bsalert({text: pkey[1] + '->' + fkey[1], title:"Detached connection: "});
 
 	saveCanvasState();
 })
@@ -145,13 +148,13 @@ function setThePanel(table, mode) {
 	
 	// If editing an existing table, delete all existing rows from the table
     if (mode=='edit') {
-        $(tableID + " .table tr").remove();
+		//jsPlumb.empty("tbl" + table.name);
+		$(tableID + " .table tr").remove();
     }
 
     //Now lets build the new panel
     $.each(table.fields, function(fieldName, field) {
-		var html = '';
-		
+
 		// Setup details field for this row
 		var details = [];
 		if (field.primaryKey) details.push('primary');
@@ -159,7 +162,8 @@ function setThePanel(table, mode) {
 		if (field.notNull) details.push('not null');
 		var tattr = details.join(',');
 
-		html =	"<tr>" +
+		$(tableID + " .table").append(
+			$("<tr>" +
 				"<td style='vertical-align: middle;'>" +
 					"<div ffname='" + table.name + "." + field.name +  "' class='field'></div>" + 
 				"</td>" + //virtual
@@ -169,47 +173,63 @@ function setThePanel(table, mode) {
 				"<td style='vertical-align: middle;'>" + 
 					(field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') +  //virtual
 				"</td>" +
-				"</tr>";
+			"</tr>"));
 
-		$(tableID + " .table").append(html);
-
-		var ep;
-		if (field.primaryKey) {
-			ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
-				isSource: true,
-				anchor: "Right",
-				endpoint: ["Rectangle",{width:15, height:15}], //Dot
-				paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
-				connectorOverlays: [ 
-					[ "Arrow", { width:10, height:10, location:1, id:"arrow",
-								events:{
-									click: function(){
-										//bspopup("Don't click on the connecting arrows. Click on the dots (endpoints) instead to drag.");
-									},
-								}
-					}],
-				],
-			});
+		if (field.primaryKey == true) {
+					
+			
+			if (field.pkEndpoint != null) {
+				// Delete the old endpoint attached to the previous element
+				jsPlumb.deleteEndpoint(field.pkEndpoint);
+				field.pkEndpoint = null;
+			}
+		
+			// Create an endpoint for PK connections
+			var pkAnchor = $(tableID + " div[fpname='" + table.name + "." +  field.name + "']");
+			if (field.pkEndpoint == null) {
+				field.pkEndpoint = jsPlumb.addEndpoint(pkAnchor, {
+					isSource: true,
+					anchor: "Right",
+					endpoint: ["Rectangle",{width:15, height:15}], //Dot
+					paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
+					connectorOverlays: [ 
+						[ "Arrow", { width:10, height:10, location:1, id:"arrow"}],
+					],
+				});
+			} else {
+				field.pkEndpoint.setElement(pkAnchor[0]);
+			}
 		}
 		
-		ep = jsPlumb.addEndpoint($(tableID + " [ffname='" + table.name + "." +  field.name + "']"), {
+		if (field.fkEndpoint != null) {
+			// Delete the old endpoint attached to the previous element
+			jsPlumb.deleteEndpoint(field.fkEndpoint);
+			field.fkEndpoint = null;
+		}
+		
+		// Create an endpoint for FK connections
+		var fkAnchor = $(tableID + " div[ffname='" + table.name + "." +  field.name + "']");
+		field.fkEndpoint = jsPlumb.addEndpoint(fkAnchor, {
 			isTarget: true,
 			anchor: "Left",
 			endpoint: ["Rectangle", {width:15, height:15}], //Rectangle
-			paintStyle: {  fillStyle:"blue", outlineColor:"black", outlineWidth:1},
+			paintStyle: {fillStyle:"blue", outlineColor:"black", outlineWidth:1},
 		});
-				
-		jsPlumb.draggable('tbl' + table.name, {
-		   containment:true,
-		   stop: function(event, ui) {
-				console.log(event.pos[0], event.pos[1]);
-				tables[table.name].position.x = event.pos[0] + 'px';
-				tables[table.name].position.y = event.pos[1] + 'px';
-				saveCanvasState();
-		   }
-		});
-    });
 
+    });
+	
+	// Make table draggable
+	jsPlumb.draggable('tbl' + table.name, {
+	   containment:true,
+	   stop: function(event, ui) {
+			tables[table.name].position.x = event.pos[0] + 'px';
+			tables[table.name].position.y = event.pos[1] + 'px';
+			saveCanvasState();
+	   }
+	});
+
+	// Need to revalidate whenever the table's dimensions change
+	jsPlumb.revalidate('tbl' + table.name);
 
 	// If editing, ensure all connections get re-created
     if (mode=='edit') {
@@ -277,15 +297,13 @@ function loadCanvasState(json) {
 		var ttables = JSON.parse(json);
 
 		//import the table structures
-		$.each(ttables, function(k,v) {
-			console.log('PROCESSING: ' + k);
-			tables[k] = new Table(v.name);
-			tables[k].fields = {};
-			tables[k].position = v.position;
-			$.each(v.fields, function(kk,vv) {
-				tables[k].fields[kk] = new Field(vv);
-				tables[k].fields[kk].foreign = (vv.foreign ? vv.foreign : null);
-				tables[k].fields[kk].ref = (vv.ref ? vv.ref : null);
+		$.each(ttables, function(tableName,tableData) {
+			tables[tableName] = new Table(tableData.name);
+			tables[tableName].fields = {};
+			tables[tableName].position = tableData.position;
+			$.each(tableData.fields, function(fieldName,field) {
+				tables[tableName].fields[fieldName] = new Field(field);
+				tables[tableName].fields[fieldName].ref = (field.ref ? field.ref : null);
 			});
 		});
 			
@@ -303,33 +321,17 @@ function loadCanvasState(json) {
 }
 
 function createAllConnections(tables) {
-	//now create the relations after all panels are done.
+	
+	// now create the relations after all panels are done.
 	$.each(tables, function(tableName,table) {
-		window.oldrefs = {};
 		$.each(table.fields, function(fieldName,field) {
 			// check incoming
 			if (field.ref != null) {
 				tsa = field.ref.split('.');
-				connectEndpoints(tsa[0],tsa[1],tableName,fieldName);
+				jsPlumb.connect({source: tables[tsa[0]].fields[tsa[1]].pkEndpoint, target: field.fkEndpoint});
 			}
 		});
 	});
-}
-
-// Connect two fields on the canvas with arrows 
-function connectEndpoints(primaryTableName, primaryFieldName, foreignTableName, foreignKeyName) {
-	// Get the primary key field endpoint
-	var el1 = null;
-	elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + primaryTableName +  " div[fpname='" + primaryTableName + "." + primaryFieldName +  "']")});
-	elist1.each(function(key){el1=key});
-	
-	// Get the foreign key field enpoint
-	var el2 = null;
-	elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + foreignTableName +  " div[ffname='" + foreignTableName + "." + foreignKeyName +  "']")});
-	elist2.each(function(key){el2=key});
-	
-	// Connect primary to foreign key
-	jsPlumb.connect({source:el1, target:el2});
 }
 
 function clearCanvas() {

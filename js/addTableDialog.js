@@ -79,10 +79,13 @@ function saveData() {
 		return;
 	}
 	
+	var fieldNames = {};
+	
 	// Update the data model
 	$('.fieldRow').each(function(index) {
 		
 		var fieldName = $(this).find(".fieldName").text();
+		fieldNames[fieldName] = true;
 		
 		var fieldData = {
 			primaryKey: Boolean($(this).find(".hfieldPrimary").text()),
@@ -108,11 +111,23 @@ function saveData() {
 		}
 	});
 	
+	// Remove any fields that have been deleted (and therefore aren't in fieldNames)
+	$.each(table.fields, function(fieldName, field) {
+		if (!(fieldName in fieldNames)) {
+			if (field.pkEndpoint != null) jsPlumb.deleteEndpoint(field.pkEndpoint);
+			if (field.fkEndpoint != null) jsPlumb.deleteEndpoint(field.fkEndpoint);
+			delete table.fields[fieldName];
+		}
+	});
+	
+	if (originalName.length > 0) 
+		delete tables[originalName];
+	
 	tables[table.name] = table;
 	$("#addTableDialog").modal('hide');
 	
 	//Now Build the new panel!
-	createThePanel(table, editMode, function() {saveCanvasState()});
+	createThePanel(table, editMode, saveCanvasState);
 }
 
 // Join two strings with a separator in between
@@ -194,17 +209,24 @@ function resetNewFieldBoxes() {
 
 function tryToDelete(fieldName) {
 
-	var tname = $('#tableName').val();
-	var existing = tables[tname].fields[fieldName];
-
-	if (existing!=undefined && existing.foreign != null) {
-		bspopup("This key is acting as a primary key in a relation. Please delete that relation first.");
-		return;
+	// Look at original table name.
+	var tname = $('#originalTableName').val();
+	
+	// If this table isn't new, check for referencers
+	if (tables[tname] != undefined) {
+	
+		var field = tables[tname].fields[fieldName];
+		if (field != undefined) {
+			if (field.referencers(tname).length > 0) {
+				bspopup("This key is acting as a primary key in a relation. Please delete the relation(s) first.");
+				return;
+			}
+			else if (field.ref != null) {
+				bspopup("This key is acting as a foreign key in a relation. Please delete that relation first.");
+				return;
+			}
+		}
 	}
-	else if (existing!=undefined && existing.ref != null) {
-		bspopup("This key is acting as a foreign key in a relation. Please delete that relation first.");
-		return;
-	}
-
+	
 	$('#' + fieldName).remove();
 }
