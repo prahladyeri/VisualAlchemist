@@ -19,7 +19,6 @@
 * @date 2015/06/16
 */
 
-
 /**
  * Table object to hold the structure of fields and relations.
  * 
@@ -33,13 +32,16 @@ var Table = function(name)
 		console.log('name set');
 	}
 	else {
-		this.name='Unnamed';
-		console.log('name undefined');
+		throw 'Table name undefined';
 	}
-	this.fields=new Object();
-	this.position = new Object();
+	this.fields = {};
+	this.position = {};
 	return this;
 };
+
+Table.prototype.name = "Unnamed";
+Table.prototype.position = {x:0,y:0}; //x,y coordinates on the canvas
+Table.prototype.fields = {}; //dict of String:Field objects
 
 /**
 * Field object constructor.
@@ -50,27 +52,13 @@ var Table = function(name)
 * @param primary Boolean Indicates whether this is a primary key
 */
 var Field = function(obj) {
-	if (obj.unique==undefined) obj.unique=false;
-	if (obj.primaryKey==undefined) obj.primaryKey=false;
-	//if (obj.references==undefined) obj.references=null;
-	if (obj.defaultValue==undefined) obj.defaultValue=null;
-	//c = new Field();
-	this.name = obj.name;
-	this.type = obj.type;
-	this.size = obj.size;
-	this.unique = obj.unique;
-	this.primaryKey = obj.primaryKey;
-	this.notNull = obj.notNull;
-	//c.references = obj.references;
-	this.defaultValue = obj.defaultValue;
-	//console.log(name);
-	//this.fields[c.name] = c;
+	
+	if (obj != undefined) {
+		this.updateFromObject(obj);
+	}
+
 	return this;
 };
-
-Table.prototype.name = "Unnamed";
-Table.prototype.position = {x:0,y:0}; //x,y coordinates on the canvas
-Table.prototype.fields = {}; //dict of String:Field objects
 
 Field.prototype.name = "Unnamed";
 Field.prototype.type = "";
@@ -79,5 +67,50 @@ Field.prototype.unique = false;
 Field.prototype.primaryKey = false;
 Field.prototype.notNull = false;
 Field.prototype.defaultValue = null;
-Field.prototype.foreign = null; //for primary only: the name[s] of fields that refer to this primary key.
 Field.prototype.ref = null; //for non-primary only: the name[s] of primary key field in another table that this refers to.
+Field.prototype.fkEndpoint = null;
+Field.prototype.pkEndpoint = null;
+
+Field.prototype.updateFromObject = function(obj) {
+
+	if (obj.name) this.name = obj.name;
+	if (obj.type) this.type = obj.type;
+	if (obj.size) this.size = obj.size;
+	if (obj.unique) this.unique = obj.unique;
+	if (obj.primaryKey) this.primaryKey = obj.primaryKey;
+	if (obj.notNull) this.notNull = obj.notNull;
+	if (obj.defaultValue) this.defaultValue = obj.defaultValue;
+	if (obj.ref) this.ref = obj.ref;
+	//TODO: Remember to add any new attributes here, so canvas loads properly.
+};
+
+// Get list of all fields that reference this field
+Field.prototype.referencers = function(tableName) {
+	var result = [];
+	var thisField = tableName + "." + this.name;
+
+	$.each(tables, function(tableName,table) {
+		$.each(table.fields, function(fieldName,field) {
+			if (field.ref == thisField) {
+				result.push(field);
+			}
+		}.bind(this));
+	}.bind(this));
+	
+	return result;
+}
+
+// Override toJSON so that the endpoints aren't included (which would lead to circular reference error and larger JSON)
+Field.prototype.toJSON = function() {
+	return {
+		name: this.name,
+		type: this.type,
+		size: this.size,
+		unique: this.unique,
+		primaryKey: this.primaryKey,
+		notNull: this.notNull,
+		defaultValue: this.defaultValue,
+		ref: this.ref
+	};
+};
+

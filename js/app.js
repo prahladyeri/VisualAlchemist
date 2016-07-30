@@ -27,6 +27,8 @@ else {
 	window.DEBUG  = false;
 }
 
+var tableTemplate = "";
+
 $(window).load(function() {
 	
 	//Objects Initialization
@@ -42,14 +44,25 @@ $(window).load(function() {
         EndpointHoverStyle: { fillStyle:"red" }, 
     });
 	
+	var testField = new Field();
+	testField.name = "MyNameIs";
+	testField.updateFromObject("dsfs");
+	
 	jsPlumb.setContainer("theCanvas");
 	
 	//check local storage, if any build the tables.
-	$("#holder").load("assets/partials/addTableDialog.html?time=" + (new Date()).getTime(), function(){
+	$("#holder").load("assets/partials/addTableDialog.html", function(){
 	});
 	
-	loadCanvasState(null);
+	// Load table template
+	$.get("assets/partials/table.html", function(data) {
+		tableTemplate = data;
+		
+		// Finish loading canvas - this step is important!
+		loadCanvasFromLocalStorage();
+	});
 	
+	// Write the year in the footer (for copyright)
 	$(".footer #theyear").text((new Date()).getFullYear());
 	
 	// Display an initial popup with helpful information the first time the user loads this page
@@ -59,6 +72,16 @@ $(window).load(function() {
 		createCookie(".mainAlert.closed", "true");
 	}
 });
+
+function loadCanvasFromLocalStorage() {
+	// Use local storage (if it exists) to load the canvas from the user's last session
+	if (window.localStorage) {
+		if (localStorage.getItem("strTables") != null) {
+			json = localStorage.getItem("strTables");
+			loadCanvasState(json);
+		}
+	}
+}
 
 /* jsPlumb events */
 jsPlumb.bind("beforeDrop", function(info) {
@@ -79,9 +102,8 @@ jsPlumb.bind("beforeDrop", function(info) {
 		return false;
 	}
 
-	tables[pkey[0]].fields[pkey[1]].foreign = fkey[0] + '.' + fkey[1];
 	tables[fkey[0]].fields[fkey[1]].ref = pkey[0] + '.' + pkey[1];
-	bsalert({text: pkey[1] + '->' + fkey[1], title:"Established: "});
+	bsalert({text: pkey[1] + '->' + fkey[1], title:"Connection established: "});
 
 	saveCanvasState();
 	
@@ -89,16 +111,20 @@ jsPlumb.bind("beforeDrop", function(info) {
 });
 
 jsPlumb.bind("connectionDetached", function(info, originalEvent) {
-	console.log(info.source, info.target);
+	
+	// Don't do connection detached event if it wasn't caused by a user action
+	if (originalEvent == undefined)
+		return;
+	
+	console.log('Detaching ', info.source, info.target);
 
 	if ($(info.source).attr('fpname') == undefined || $(info.target).attr('ffname')==undefined)
 		return;
 	var pkey = $(info.source).attr('fpname').split(".");
 	var fkey = $(info.target).attr('ffname').split(".");
 
-	tables[pkey[0]].fields[pkey[1]].foreign = null;
 	tables[fkey[0]].fields[fkey[1]].ref = null;
-	bsalert({text: pkey[1] + '->' + fkey[1], title:"Detached: "});
+	bsalert({text: pkey[1] + '->' + fkey[1], title:"Detached connection: "});
 
 	saveCanvasState();
 })
@@ -109,128 +135,110 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 */
 function createThePanel(table, mode, func) {
 	if (mode == "add") {
-		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data) {
-			$('.canvas').append(data.format({table: table.name}));
-			setThePanel(table, mode);
-			if (func) func();
-		});
+		$('.canvas').append(tableTemplate.format({table: table.name}));
 	}
-	else {
-		setThePanel(table, mode);
-		if (func) func();
-	}
+
+	setThePanel(table, mode);
+	if (func) func();
 }
 
 function setThePanel(table, mode) {
+	
+	var tableID = '#tbl' + table.name;
+	
+	// If editing an existing table, delete all existing rows from the table
     if (mode=='edit') {
-        $('#tbl' + table.name + " .table tr").remove();
+		//jsPlumb.empty("tbl" + table.name);
+		$(tableID + " .table tr").remove();
     }
 
     //Now lets build the new panel
-    $.each(table.fields, function(key, field) {
-		var html = '';
-		var sprim = "";
+    $.each(table.fields, function(fieldName, field) {
 
-		html += "<tr>";
-		html += "<td style='vertical-align: middle'><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
-		html += "<td>" + field.name + "</td>";
-		html += "<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
+		// Setup details field for this row
 		var details = [];
 		if (field.primaryKey) details.push('primary');
 		if (field.unique) details.push('unique');
 		if (field.notNull) details.push('not null');
 		var tattr = details.join(',');
-		html += "<td>" + (tattr == "" ? "---" : tattr)  + "</td>";
-		html += "<td style='vertical-align: middle'>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
-		html += "</tr>";
 
-		$("#tbl" + table.name + " .table").append(html);
+		$(tableID + " .table").append(
+			$("<tr>" +
+				"<td style='vertical-align: middle;'>" +
+					"<div ffname='" + table.name + "." + field.name +  "' class='field'></div>" + 
+				"</td>" + //virtual
+				"<td>" + field.name + "</td>" +
+				"<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>" +
+				"<td>" + (tattr == "" ? "---" : tattr) + "</td>" +
+				"<td style='vertical-align: middle;'>" + 
+					(field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') +  //virtual
+				"</td>" +
+			"</tr>"));
 
-		var ep;
-		if (field.primaryKey) {
-			ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
-				isSource: true,
-				anchor: "Right",
-				endpoint: ["Rectangle",{width:15, height:15}], //Dot
-				paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
-				connectorOverlays: [ 
-					[ "Arrow", { width:10, height:10, location:1, id:"arrow",
-								events:{
-									click: function(){
-										//bspopup("Don't click on the connecting arrows. Click on the dots (endpoints) instead to drag.");
-									},
-								}
-					}],
-				],
-			});
+		if (field.primaryKey == true) {
+					
+			
+			if (field.pkEndpoint != null) {
+				// Delete the old endpoint attached to the previous element
+				jsPlumb.deleteEndpoint(field.pkEndpoint);
+				field.pkEndpoint = null;
+			}
+		
+			// Create an endpoint for PK connections
+			var pkAnchor = $(tableID + " div[fpname='" + table.name + "." +  field.name + "']");
+			if (field.pkEndpoint == null) {
+				field.pkEndpoint = jsPlumb.addEndpoint(pkAnchor, {
+					isSource: true,
+					anchor: "Right",
+					endpoint: ["Rectangle",{width:15, height:15}], //Dot
+					paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
+					connectorOverlays: [ 
+						[ "Arrow", { width:10, height:10, location:1, id:"arrow"}],
+					],
+				});
+			} else {
+				field.pkEndpoint.setElement(pkAnchor[0]);
+			}
 		}
 		
-		ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
+		if (field.fkEndpoint != null) {
+			// Delete the old endpoint attached to the previous element
+			jsPlumb.deleteEndpoint(field.fkEndpoint);
+			field.fkEndpoint = null;
+		}
+		
+		// Create an endpoint for FK connections
+		var fkAnchor = $(tableID + " div[ffname='" + table.name + "." +  field.name + "']");
+		field.fkEndpoint = jsPlumb.addEndpoint(fkAnchor, {
 			isTarget: true,
 			anchor: "Left",
 			endpoint: ["Rectangle", {width:15, height:15}], //Rectangle
-			paintStyle: {  fillStyle:"blue", outlineColor:"black", outlineWidth:1},
+			paintStyle: {fillStyle:"blue", outlineColor:"black", outlineWidth:1},
 		});
-				
-		jsPlumb.draggable('tbl' + table.name, {
-		   containment:true,
-			step: function () {
-				jsPlumb.repaintEverything();
-			},
-			drag:function(){
-				jsPlumb.repaintEverything();
-			},
-		   stop: function(event, ui) {
-				console.log(event.pos[0], event.pos[1]);
-				tables[table.name].position.x = event.pos[0] + 'px';
-				tables[table.name].position.y = event.pos[1] + 'px';
-				saveCanvasState();
-				jsPlumb.repaintEverything();
-		   }
-		});
+
     });
+	
+	// Make table draggable
+	jsPlumb.draggable('tbl' + table.name, {
+	   containment:true,
+	   stop: function(event, ui) {
+			tables[table.name].position.x = event.pos[0] + 'px';
+			tables[table.name].position.y = event.pos[1] + 'px';
+			saveCanvasState();
+	   }
+	});
 
-    //TODO: [STABLE]Rebuild connections to/from this table by looping thru tables collection.
+	// Need to revalidate whenever the table's dimensions change
+	jsPlumb.revalidate('tbl' + table.name);
+
+	// If editing, ensure all connections get re-created
     if (mode=='edit') {
-		$.each(window.oldrefs, function(key, val) {
-			console.log('rebuilding ',key,val);
-			if (val.foreign != null) {
-				//check outgoing
-				console.log('primary key found:',key, val.foreign);
-				table.fields[key].foreign = val.foreign; //restore the lost foreign
-				tsa = val.foreign.split('.');
-				tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
-				elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
-				elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " [fpname='" + table.name + "." + key +  "']")});
-
-				var el1 = null;
-				var el2 = null;
-				elist1.each(function(key){el1=key});
-				elist2.each(function(key){el2=key});
-				jsPlumb.connect({target:el1, source:el2});
-			}
-			else if (val.ref != null) {
-				//check incoming
-				console.log('foreign key found:',key, val.ref);
-				table.fields[key].ref = val.ref; //restore the lost ref
-				tsa = val.ref.split('.');
-				tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-				console.log("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']");
-				elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
-				elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
-
-				var el1 = null;
-				var el2 = null;
-				elist1.each(function(key){el1=key});
-				elist2.each(function(key){el2=key});
-				jsPlumb.connect({source:el1, target:el2});
-			}
-		});
+		createAllConnections(tables);
     }
 
     if (mode=='add') {
 		if (window.lastPos == undefined) {
-				window.lastPos = {'x':0, 'y':0};
+			window.lastPos = {'x':0, 'y':0};
 		}
 
 		var maxX = $(".canvas").width() - $('#tbl' + table.name).width() ;
@@ -252,23 +260,20 @@ function setThePanel(table, mode) {
 		}
 		window.lastPos.y += $('#tbl' + table.name).position().top;
 
-		jsPlumb.repaintEverything();
-		console.log("repaintedEverything");
-		bsalert({text:"Table added!", type:'success'});
+		bsalert({text:table.name+"added!", type:'success'});
     }
     else 
     {
-		jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
 		bsalert({text:"Table updated!", type:'success'});
     }
-
-    saveCanvasState(); 
 }
 
 /**
 * @brief Save current canvas state to local store
 */
 function saveCanvasState() {
+
+	console.log("Saving canvas state...")
 
 	var json = null;
 	if (window.localStorage) {
@@ -280,61 +285,51 @@ function saveCanvasState() {
 }
 
 function loadCanvasState(json) {
-
-	tables  = new Object();
-
-	if (!json) {
-		// If no json data provided, use local storage (if it exists)
-		if (!window.localStorage) return;
-		if (localStorage.getItem("strTables") == null) return;
+	try {
+		// Clear canvas and create new table to start from a blank slate
+		clearCanvas();
+		tables  = new Object();
 		
-		json = localStorage.getItem("strTables");
-	}
-	else {
-		console.log('json arg:',json);
-	}
+		// Temporarily suspend drawing to speed up load time
+		jsPlumb.setSuspendDrawing(true);
 	
-	clearCanvas();
-	
-	ttables = JSON.parse(json);
+		// Parse input JSON to restore tables that were saved previously
+		var ttables = JSON.parse(json);
 
-	//import the table structures
-	$.each(ttables, function(k,v) {
-		console.log('PROCESSING: ' + k);
-		tables[k] = new Table(v.name);
-		tables[k].fields = {};
-		tables[k].position = v.position;
-		console.log('round1',tables[k].position,tables[k].position.x, tables[k].position.y);
-		$.each(v.fields, function(kk,vv) {
-			tables[k].fields[kk] = new Field(vv);
-			tables[k].fields[kk].foreign = (vv.foreign ? vv.foreign : null);
-			tables[k].fields[kk].ref = (vv.ref ? vv.ref : null);
-			//TODO: Remember to add any new attributes here, so canvas loads properly.
-		});
-	});
-			
-	//set the panels
-	console.log('tlen:',Object.keys(tables).length);
-	$.each(tables, function(k,v) {
-		createThePanel(v, 'add', function() {
-			if ($("[id^='tbl']").length < Object.keys(tables).length) return;
-			//now create the relations after all panels are done.
-			$.each(tables, function(k,v) {
-				window.oldrefs = {};
-				$.each(v.fields, function(kk,vv) {
-					if (vv.ref != null) {
-						//check incoming
-						tsa = vv.ref.split('.');
-						elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
-						elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + v.name +  " div[ffname='" + v.name + "." + vv.name +  "']")});
-						var el1 = null;
-						var el2 = null;
-						elist1.each(function(key){el1=key});
-						elist2.each(function(key){el2=key});
-						jsPlumb.connect({source:el1, target:el2});
-					}
-				});
+		//import the table structures
+		$.each(ttables, function(tableName,tableData) {
+			tables[tableName] = new Table(tableData.name);
+			tables[tableName].fields = {};
+			tables[tableName].position = tableData.position;
+			$.each(tableData.fields, function(fieldName,field) {
+				tables[tableName].fields[fieldName] = new Field(field);
+				tables[tableName].fields[fieldName].ref = (field.ref ? field.ref : null);
 			});
+		});
+			
+		// Create the panels
+		$.each(tables, function(tableName,table) {
+			createThePanel(table, 'add', function() {});
+		});
+		
+		// Create the connections
+		createAllConnections(tables);
+	
+	} finally {
+		jsPlumb.setSuspendDrawing(false, true);
+	}
+}
+
+function createAllConnections(tables) {
+	
+	// now create the relations after all panels are done.
+	$.each(tables, function(tableName,table) {
+		$.each(table.fields, function(fieldName,field) {
+			// check incoming
+			if (field.ref != null) {
+				tsa = field.ref.split('.');
+				jsPlumb.connect({source: tables[tsa[0]].fields[tsa[1]].pkEndpoint, target: field.fkEndpoint});
+			}
 		});
 	});
 }
@@ -362,179 +357,6 @@ function eraseCanvasState() {
 	}
 }
 
-var ORMSQLAlchemy = function(templateDir) {
-
-	 this.template = templateDir+"sqlalchemy.py";
-	 
-	 this.generateCode = function(tables) {
-		var code = '';
-		
-		 $.each(tables, function(tableName, table) {
-			code += "class " + table.name + "(Base):\n";
-			code += "\t" + "__tablename__ = \"" + table.name + "\"\n";
-			$.each(table.fields, function(fieldName, field){
-				//embed quotes if they don't already exist
-				if (field.type=='Text' || field.type=='String') {
-					if (field.defaultValue!=null) {
-						var sdef = field.defaultValue;
-						if (sdef.indexOf('"') !=0) field.defaultValue = '"' + sdef;
-						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) field.defaultValue += '"';
-					}
-					// Default text size is 255 if user didn't specify a size
-					if (field.size==0) {
-						field.size = 255;
-					}
-				}
-				
-				code += "\t" + field.name + " = Column(" 
-				+ field.type + (field.size==0 ? '' : '(' + field.size + ')')
-				+ (field.ref != null ? ", ForeignKey('" + field.ref + "')" : "")
-				+ (field.primaryKey ? ", primary_key=True" : "")
-				+ (field.unique ? ", unique=True" : "")
-				+ (field.notNull ? ", nullable=False" : "")
-				+ (field.defaultValue!=null ? ", default=" + field.defaultValue : "")
-				+ ")\n";
-			});
-			code += "\n";
-		});
-
-		return code;
-	}
-}
-
-var MySQL = function(templateDir) {
-	var rawTypes = 
-	{'Text': 'varchar',
-	 'Integer': 'int',
-	 'Float': 'float'};
-	this.template = templateDir+"mysql.sql";
-	
-	// Add foreign key constraint after running CREATE TABLE statement?
-	this.deferForeignKeys = true;
-	
-	this.generateCode = function(tables) {
-	
-		var code = '';
-		var constraints = [];
-		$.each(tables, function(tableName, table) {
-			code += "create table " + table.name + "\n(\n";
-			
-			var primaryFields = [];
-			var primaryCount = 0;
-			
-			// Collect number and names of primary key fields
-			$.each(table.fields, function(fieldName, field) {
-				if (field.primaryKey) {
-					primaryFields.push(field.name);
-					primaryCount += 1;
-				}
-			});
-			
-			var fieldCode = [];
-			
-			$.each(table.fields, function(fieldName, field)
-			{
-				if (field.type=='Text' || field.type=='String') {
-					//embed quotes if they don't already exist
-					if (field.defaultValue!=null) {
-						var sdef = field.defaultValue;
-						if (sdef.indexOf('"') !=0) field.defaultValue = '"' + sdef;
-						if (sdef.lastIndexOf('"') != sdef.length-1 || sdef.lastIndexOf('"')==-1) field.defaultValue += '"';
-					}
-					
-					// Default text size is 255 if user didn't specify a size
-					if (field.size==0) {
-						field.size = 255;
-					}
-				}
-				
-				fieldCode.push("\t" + field.name + " " + rawTypes[field.type] + (field.size==0 ? '' : '(' + field.size + ')')
-				+ (field.notNull ? " not null" : "")
-				+ (field.primaryKey && primaryCount == 1 ? " primary key" : "")
-				+ (field.unique ? " unique" : "")
-				+ (field.defaultValue!=null ? " default " + field.defaultValue  : ""));
-				
-				// If this field has any references to other fields 
-				if (field.ref!=null) 
-				{
-					// add any constraints placed by raw formats like mysql and postgres.
-					// save constraints in an array (they are added after all tables have been created)
-					constraints.push(this.generateFKConstraint(table.name, field.name, field.ref.split(".")[0], field.ref.split(".")[1]));
-					
-					// Change this to instead collect all constraints organized by the referenced table name as the key in a dictionary.
-					// Then go through in order by table name. For each table, any field that is a primary key goes together. Actually,
-					// because we don't allow unique key links, just primary, that's all you have to do is organize them by table first.
-					// Then organize them by the field name they refence. If both fields reference the exact same field they don't
-					// go together as a primary key.
-				}
-			}.bind(this));
-			
-			
-			// Add multi-field primary key if needed
-			if (primaryCount > 1) {
-				fieldCode.push("\tprimary key (" + primaryFields.join(', ') + ")");
-			}
-			
-			// Add foreign key lines now if needed
-			if (!this.deferForeignKeys) {
-				fieldCode = fieldCode.concat(constraints);
-				constraints = [];
-			}
-			
-			// Add all the lines for declaring fields, primary keys, and FKs (if needed)
-			code += fieldCode.join(",\n")+"\n);\n";
-			
-		}.bind(this));
-
-		// If foreign keys have to come after everything else, add them here
-		if (this.deferForeignKeys) {
-			code += constraints.join("\n");
-		}
-	
-		return code;
-	}
-}
-
-MySQL.prototype.generateFKConstraint = function(firstTableName, firstTableFields, secondTableName, secondTableFields) {
-	return "alter table " + firstTableName + " add constraint fk_" + firstTableName +  "_" + firstTableFields 
-			+  " foreign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ");"
-}
-
-// SQLite inherits from MySQL. It's mostly the same syntax, the only difference is that
-// MySQL doesn't support ALTER TABLE ADD CONSTRAINT FOREIGN KEY, so FKs have to be added
-// as part of the CREATE TABLE statement.
-var SQLite = function(templateDir) {
-	MySQL.call(this, templateDir);
-	
-	this.template = templateDir+"sqlite.sql";
-	
-	// Add foreign key constraint after running CREATE TABLE statement?
-	this.deferForeignKeys = false;
-}
-
-SQLite.prototype = Object.create(MySQL.prototype);
-SQLite.prototype.constructor = SQLite;
-
-SQLite.prototype.generateFKConstraint = function(firstTableName, firstTableFields, secondTableName, secondTableFields) {
-	return "\tforeign key (" + firstTableFields +  ") references " + secondTableName +  "(" + secondTableFields  + ")"
-}
-
-var codeGenerators = {"ORM/SQLAlchemy": ORMSQLAlchemy, "mysql": MySQL, "sqlite": SQLite};
-function generateCode(outputType) {
-
-	var codeGenerator;
-	var templateDir = "/assets/templates/";
-	
-	// Pick code generator based on desired output format
-	var codeGenerator = new codeGenerators[outputType](templateDir);
-	
-	// Combine template with generated code then show the output
-	$.get(codeGenerator.template, function(data) {
-		var code = codeGenerator.generateCode(tables);
-		code = data.format({body: code, version: version});
-		showResults(code);
-	});
-}
 
 function showResultsDialog() {
 	if (!window.DEBUG && Object.keys(tables).length==0) {
