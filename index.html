@@ -28,7 +28,9 @@
 <script type="text/javascript"  src="lib/prettify/prettify.js"></script>
 <script src='lib/jquery.min.js'></script>
 <script src='lib/bootstrap.min.js'></script>
-<script src="lib/dom.jsPlumb-1.7.5-min.js"></script>
+<!--<script src="lib/dom.jsPlumb-1.7.5-min.js"></script>-->
+<script src="lib/jsPlumb-2.1.2-min.js"></script>
+
 <!--script src='fullcalendar/lib/moment.min.js'></script>
 <script src='fullcalendar/fullcalendar.js'></script-->
 <script src='js/classes.js'></script>
@@ -71,7 +73,10 @@
         </li-->
       </ul>
       <ul class="nav navbar-nav navbar-right">
+<!--
         <li><a id="lnkHelp" onclick="bsalert({title:'How to:',text:'Just click the New Table link above to start creating tables. Once done, simply click the Code button to get the code to build the models!<br><br>To create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the green area on the foreign-keys and drag it outside the table panel.', type:'danger', delay:0});" href="javascript:"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;Help</a></li>
+-->
+        <li><a id="lnkHelp" onclick="bshelp();" href="javascript:"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;Help</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Links <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">

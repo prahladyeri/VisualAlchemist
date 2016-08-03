@@ -235,12 +235,37 @@ function selectText(element) {
 
 /*END UTILITY FUNCTIONS*/
 
+function bshelp() {
+	//bsalert({title:'How to:',text:"Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.", type:'success', delay:0});
+	bspopup({
+		text: "Just click the New Table link to start creating tables. \n\nOnce done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).\n\nTo detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel."
+	});
+}
+
 function bsabout() {
 	bspopup({type:"about"});	
 }
 
 /**
- * Shows a bootstrap popup dialog on the center of screen.
+ * Returns an options object that has type, text, and title properties. 
+ */
+function bsoptions(options) {
+
+	if (typeof(options)=='string')
+	{
+		text = options;
+        options = {type:"text", text:text};
+	}
+    if (options==undefined) options={};
+	if (options.type==undefined) options.type='text';
+	if (options.text==undefined) options.text='';
+	
+	return options;
+}
+
+
+/**
+ * Shows a bootstrap popup dialog (NEW) on the center of screen.
  * Depends on jQuery and Bootstrap.
  * */
 function bspopup(options, success) {
@@ -253,20 +278,13 @@ function bspopup(options, success) {
         });
     }
     
-	//text, type, title
-	if (typeof(options)=='string')
-	{
-		text = options;
-        options = {type:"text", text:text};
-	}
-    if (options==undefined) options={};
-	if (options.type==undefined) options.type='text';
-	if (options.text==undefined) options.text='';
+	// Make sure options is a valid object with text, type, and title properties
+	options = bsoptions(options);
     
     var text = options.text;
 	var type = options.type;
 	var title = options.title;
-	//if (obj.delay!=undefined) delay = obj.delay;
+	
     var proto = '';
     if (type=='text') {
         proto = 'Generic';
@@ -277,11 +295,17 @@ function bspopup(options, success) {
     else if (type=='about') {
 		proto = 'About';
 	}
-	console.log("proto: ", proto, ",type: ", type);
+    else if (type=='stack') {
+        proto = 'Stack'
+    }
+        
     
+	// Create a new box cloned from prototype and give it a random ID
     var theBox = $("#popupBox" + proto).clone();
     theBox.attr("id", "popupBox" + (Math.random() + "").replace(".","") )
         .removeClass("hidden");
+		
+	// Insert HTML in to the box based on popup box type
     if (type=='radiolist') {
 		theBox.find(".messageText").text(text);
         theBox.find("#txtInput").remove();
@@ -293,13 +317,16 @@ function bspopup(options, success) {
         theBox.find(".modal-body").append(html);
     }
     else if (type=='input') {
+		theBox.find('#txtInput').get(0).placeholder = text;
 		theBox.find(".messageText").text(text);
 	}
     else if (type=='text') 
     {
-		theBox.find(".messageText").text(text);
+		var tobj = theBox.find(".messageText").text(text);
+		tobj.html(tobj.html().replace(/\n/g,'<br/>'));
         if (options.button1 != undefined) {
             theBox.find("#btnClose").text(options.button1);
+            
             theBox.find("#btnClose").click(function(){
                 ev = {};
                 ev.button = "button1";
@@ -332,18 +359,17 @@ function bspopup(options, success) {
             options.success(ev);
         });
     }
-    
-    theBox.on('shown.bs.modal', function () {
-		if (type=='input') {
+	
+	if (type=='text' || type=='input') {
+		// Focus the text box when it is first shown
+		theBox.on('shown.bs.modal', function () {
 			$(this).find('#txtInput').focus();
-			console.log('focussed!');
-		}
-	});
-    
+		});
+	}
+
     theBox.on("hidden.bs.modal", function(e) {
         if (options.complete!=undefined) {
             var ev = {};
-            //ev.id = theBox.attr("id");
             options.complete(ev);
         }
         theBox.remove();

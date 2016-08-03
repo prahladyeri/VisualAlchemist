@@ -18,7 +18,7 @@
 * @author Prahlad Yeri
 * @date 2015/06/16
 */
-var version = "1.0.5"; //TODO: Remember to automate this.
+var version = "1.0.6"; //TODO: Remember to automate this.
 var stringTypes = ["Text"];
 
 if (window.location.href.indexOf('127.0.0.1:') >=0 ) {
@@ -35,7 +35,7 @@ $(window).load(function() {
 		console.log("readCookie::", readCookie(".mainAlert.closed"));
 		if (readCookie(".mainAlert.closed") != "true") 
 		{
-			bsalert({title:'How to:',text:"Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.", type:'success', delay:0});
+			bshelp();
 			console.log("CALLED");
 			createCookie(".mainAlert.closed", "true");
 		}
@@ -49,11 +49,12 @@ $(window).load(function() {
 		Endpoints : [ [ "Rectangle" ], [ "Rectangle" ] ],
 		Connector: "Bezier",//Flowchart, Straight, Bezier
 		MaxConnections : 5,
-		PaintStyle: {strokeStyle: "rgba(0,0,0,100)", lineWidth:4},
-		/*HoverPaintStyle: { lineWidth:4,
-			strokeStyle: 'rgba(200,0,0,100)'
-		}*/
-	});
+		PaintStyle: {strokeStyle: "rgba(50,50,50,1)", lineWidth:2.5},
+		HoverPaintStyle: { lineWidth:4,
+			//strokeStyle: 'rgba(255,255,255,1)'
+		},
+            EndpointHoverStyle: { fillStyle:"red" }, 
+    });
 	
 	jsPlumb.setContainer("theCanvas");
 	console.log('jsPlumb.getContainer():', jsPlumb.getContainer());
@@ -121,15 +122,12 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 	//window.tobj = info;
 })
 
-
 //Other misc functions
 
 /**
 * Creates a new panel from scratch for a table
 * @param mode Should be 'add' or 'edit'
 */
-
-
 function createThePanel(table, mode, func) {
 	if (mode == "add") {
 		$.get("assets/partials/table.html?time=" + (new Date()).getTime(), function(data) {
@@ -146,184 +144,204 @@ function createThePanel(table, mode, func) {
 }
 
 function setThePanel(table, mode) {
-		if (mode=='edit') {
-			/*jsPlumb.detachAllConnections($('#tbl' + table.name + " .table"));
-			$.each(window.oldTable.fields, function(k,v) {
-				console.log(v.ep);
-				jsPlumb.deleteEndpoint(v.ep);
-				console.log('deleted ep for',v.name);
-			});*/
-			
-			//jsPlumb.deleteEveryEndpoint();
-			//jsPlumb.removeAllEndpoints($('#tbl' + table.name + " .table"));
-			//jsPlumb.remove($('#tbl' + table.name + " .table tr"));
-			//jsPlumb.removeAL
+    if (mode=='edit') {
+            /*jsPlumb.detachAllConnections($('#tbl' + table.name + " .table"));
+            $.each(window.oldTable.fields, function(k,v) {
+                    console.log(v.ep);
+                    jsPlumb.deleteEndpoint(v.ep);
+                    console.log('deleted ep for',v.name);
+            });*/
 
-			//jsPlumb.empty($('#tbl' + table.name + " .table tbody"));
-			/*while ($('#tbl' + table.name +  ' .table tr').length>0) 
-			{
-				jsPlumb.deleteEndpoint($('#tbl' + table.name +  ' .table tr'));
-			}*/
-			$('#tbl' + table.name + " .table tr").remove();
-			
-			//jsPlumb.repaintEverything();
-		}
-		
-		//Now lets build the new panel
-		$.each(table.fields, function(key, field) {
-			var html = '';
-			var sprim = "";
-			if (field.primaryKey) {
-				//sprim+= " style='cursor:move' ";
-			}
-			html += "<tr>";
-			//if (mode=='add') 
-			/*html += "<td>" + (field.primaryKey ? '' : "<div ffname='" + table.name + "." + field.name +  "' class='field'></div>") + "</td>"; //virtual*/
-			html += "<td><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
-			html += "<td>" + field.name + "</td>";
-			html += "<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
-			html += "<td>" + (field.primaryKey ? 'primary' : '') + (field.unique ? 'unique' : '') + "</td>";
-			//if (mode=='add') 
-			
-			html += "<td>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
-			html += "</tr>";
-			console.log("HTML__", html);
-			//
-			$("#tbl" + table.name + " .table").append(html);
-			//
-			var ep;
-			console.log("The anchor will be LEFT");
-			if (field.primaryKey) {
-				//jsPlumb.addEndpoint($('#tbl' + table.name + " div.prima"), {
-				ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
-					isSource: true,
-					//anchor:["Left"],
-					paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
-					//connectorPaintStyle:{ strokeStyle:"blue", lineWidth:10 },
-					connectorOverlays: [ 
-						[ "Arrow", { width:10, length:15, location:1, id:"arrow" } ],
-						//[ "Label", { label:"Relationship", id:"lblPrimary_" + table.name } ]
-						],
-				});
-			}
-			//else {
-				//jsPlumb.addEndpoint($('#tbl' + table.name + " div.field"), {isTarget: true,
-				ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
-						isTarget: true,
-						paintStyle: { fillStyle:"blue", outlineColor:"black", outlineWidth:1 },
-					});
-			//}
-			jsPlumb.draggable('tbl' + table.name, {
-			   containment:true,
-			   stop: function(event, ui) {
-					console.log(event.pos[0], event.pos[1]);
-					tables[table.name].position.x = event.pos[0] + 'px';
-					tables[table.name].position.y = event.pos[1] + 'px';
-					saveCanvasState();
-					jsPlumb.repaintEverything();
-			   }
-			});
-			//field.ep  = ep; //TODO: [inprogress]This may no longer be required since we are not using ep anywhere.
-			//
-			//console.log('added field', field.name);
-		});
-		
-		//jsPlumb.draggable($('#tbl' + table.name + " tr.prima"),{}); //containment:true
-		console.log('#tbl' + table.name + " td.prima",'#tbl' + table.name + " td:not(.prima)");
-		 //if (mode=='add') 
-		//if (mode=='add') 
-		
-		//TODO: [STABLE]Rebuild connections to/from this table by looping thru tables collection.
-		if (mode=='edit') {
-			$.each(window.oldrefs, function(key, val) {
-				console.log('rebuilding ',key,val);
-				if (val.foreign != null) {
-					//check outgoing
-					console.log('primary key found:',key, val.foreign);
-					table.fields[key].foreign = val.foreign; //restore the lost foreign
-					tsa = val.foreign.split('.');
-					tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
-					elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
-					elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " [fpname='" + table.name + "." + key +  "']")});
-					//console.log(elist1.length, elist2.length);
-					var el1 = null;
-					var el2 = null;
-					elist1.each(function(key){el1=key});
-					elist2.each(function(key){el2=key});
-					jsPlumb.connect({target:el1, source:el2});
-				}
-				else if (val.ref != null) {
-					//check incoming
-					console.log('foreign key found:',key, val.ref);
-					table.fields[key].ref = val.ref; //restore the lost ref
-					tsa = val.ref.split('.');
-					tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
-					console.log("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']");
-					elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
-					elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
-					//console.log(elist1.length, elist2.length);
-					var el1 = null;
-					var el2 = null;
-					elist1.each(function(key){el1=key});
-					elist2.each(function(key){el2=key});
-					jsPlumb.connect({source:el1, target:el2});
-				}
-			});
-		}
-		
-		if (mode=='add') {
-			if (window.lastPos == undefined) {
-				window.lastPos = {'x':0, 'y':0};
-			}
+            //jsPlumb.deleteEveryEndpoint();
+            //jsPlumb.removeAllEndpoints($('#tbl' + table.name + " .table"));
+            //jsPlumb.remove($('#tbl' + table.name + " .table tr"));
+            //jsPlumb.removeAL
 
-			var maxX = $(".canvas").width() - $('#tbl' + table.name).width() ;
-			var maxY = $(".canvas").height() - $('#tbl' + table.name).height();
-			if (table.position.x==0 && table.position.y==0) {
-				table.position.x = (Math.random() * maxX) + 'px';
-				table.position.y = (Math.random() * maxY) + 'px';
-			}
-			$('#tbl' + table.name).css({
-				//'left': window.lastPos.x + "px",
-				//'top': window.lastPos.y + "px"
-				left: table.position.x,
-				top: table.position.y
-			});
-			
-			if (window.lastPos.x >= $('.container').offset().left + $('.container').offset().width) {
-				window.lastPos.x = 0;
-			}
-			else {
-				window.lastPos.x += $('#tbl' + table.name).width() + 20;
-			}
-			window.lastPos.y += $('#tbl' + table.name).position().top;
-			
-			jsPlumb.repaintEverything();
-			console.log("repaintedEverything");
-			bsalert({text:"Table added!", type:'success'});
-		}
-		else 
-		{
-			//EDIT
-			$.each(tables, function(k,v) {
-				//jsPlumb.repaint(['tbl' + k]);
-				//jsPlumb.draggable('tbl' + k);
-				//console.log('repainted div ' + 'tbl' + k);
-			});
-			jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
-			console.log("repaintedEverything");
-			//console.log('repainted all connections');
-			bsalert({text:"Table updated!", type:'success'});
-		}
-		
-		saveCanvasState(); 
-		//jsPlumb.addEndpoint($('#tbl' + table.name), {  });
-		//jsPlumb.setContainer('theCanvas');
-		//console.log(
-		//);
-		//jsPlumb.repaint('#theCanvas');
-		//console.log('repaint done');
-		//console.log('made draggable ;' + 'tbl' + table.name);
-		//jsPlumb.addEndpoint('tbl' + table.name, {  });
+            //jsPlumb.empty($('#tbl' + table.name + " .table tbody"));
+            /*while ($('#tbl' + table.name +  ' .table tr').length>0) 
+            {
+                    jsPlumb.deleteEndpoint($('#tbl' + table.name +  ' .table tr'));
+            }*/
+            $('#tbl' + table.name + " .table tr").remove();
+
+            //jsPlumb.repaintEverything();
+    }
+
+    //Now lets build the new panel
+    $.each(table.fields, function(key, field) {
+            var html = '';
+            var sprim = "";
+            if (field.primaryKey) {
+                    //sprim+= " style='cursor:move' ";
+            }
+            html += "<tr>";
+            //if (mode=='add') 
+            /*html += "<td>" + (field.primaryKey ? '' : "<div ffname='" + table.name + "." + field.name +  "' class='field'></div>") + "</td>"; //virtual*/
+            html += "<td><div ffname='" + table.name + "." + field.name +  "' class='field'></div></td>"; //virtual
+            html += "<td>" + field.name + "</td>";
+            html += "<td>" + field.type.replace("=True","") + (field.size>0 ? '(' + field.size + ')' : '') + "</td>";
+            var tattr = (field.primaryKey ? 'primary' : '') + (field.unique ? 'unique' : '');
+            html += "<td>" + (tattr == "" ? "---" : tattr)  + "</td>";
+            //if (mode=='add') 
+
+            html += "<td>" + (field.primaryKey ? "<div fpname='"  + table.name + "." + field.name +   "' class='prima'></div>" : '') + "</td>"; //virtual
+            //html += "<td><div " + (field.primaryKey ? "fpname='"  + table.name + "." + field.name +   "' class='prima'" : '') + "></div></td>"; //virtual
+            html += "</tr>";
+            //bspopup(html);
+            console.log("HTML__", html);
+            //
+            $("#tbl" + table.name + " .table").append(html);
+            //
+            var ep;
+            console.log("The anchor will be LEFT");
+            if (field.primaryKey) {
+                    //jsPlumb.addEndpoint($('#tbl' + table.name + " div.prima"), {
+                    ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [fpname='" + table.name + "." +  field.name + "']"), {
+                            isSource: true,
+                            //anchor:["Left"],
+                            maxConnections:1,
+                            anchor: "Right",
+                            endpoint: ["Rectangle",{width:15, height:15}], //Dot
+                            paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
+                            //connectorPaintStyle:{ strokeStyle:"blue", lineWidth:10 },
+                            connectorOverlays: [ 
+                                    [ "Arrow", { width:10, height:10, location:1, id:"arrow",
+                                            events:{
+                                                click: function(){
+                                                    //bspopup("Don't click on the connecting arrows. Click on the dots (endpoints) instead to drag.");
+                                                },
+                                            }
+                                } ],
+                                    //[ "Label", { label:"Relationship", id:"lblPrimary_" + table.name } ]
+                                    ],
+                    });
+            }
+            //else {
+                    //jsPlumb.addEndpoint($('#tbl' + table.name + " div.field"), {isTarget: true,
+                    ep = jsPlumb.addEndpoint($('#tbl' + table.name + " [ffname='" + table.name + "." +  field.name + "']"), {
+                                    isTarget: true,
+                                    anchor: "Left",
+                                    endpoint: ["Rectangle", {width:15, height:15}], //Rectangle
+                                    paintStyle: {  fillStyle:"blue", outlineColor:"black", outlineWidth:1},
+                            });
+            //}
+            jsPlumb.draggable('tbl' + table.name, {
+               containment:true,
+                step: function () {
+                    jsPlumb.repaintEverything();
+                },
+                drag:function(){
+                    jsPlumb.repaintEverything();
+                },
+               stop: function(event, ui) {
+                            console.log(event.pos[0], event.pos[1]);
+                            tables[table.name].position.x = event.pos[0] + 'px';
+                            tables[table.name].position.y = event.pos[1] + 'px';
+                            saveCanvasState();
+                            jsPlumb.repaintEverything();
+               }
+            });
+            //field.ep  = ep; //TODO: [inprogress]This may no longer be required since we are not using ep anywhere.
+            //
+            //console.log('added field', field.name);
+    });
+
+    //jsPlumb.draggable($('#tbl' + table.name + " tr.prima"),{}); //containment:true
+    console.log('#tbl' + table.name + " td.prima",'#tbl' + table.name + " td:not(.prima)");
+     //if (mode=='add') 
+    //if (mode=='add') 
+
+    //TODO: [STABLE]Rebuild connections to/from this table by looping thru tables collection.
+    if (mode=='edit') {
+            $.each(window.oldrefs, function(key, val) {
+                    console.log('rebuilding ',key,val);
+                    if (val.foreign != null) {
+                            //check outgoing
+                            console.log('primary key found:',key, val.foreign);
+                            table.fields[key].foreign = val.foreign; //restore the lost foreign
+                            tsa = val.foreign.split('.');
+                            tables[tsa[0]].fields[tsa[1]].ref = table.name + '.' + key; //restore the lost ref
+                            elist1 = jsPlumb.selectEndpoints({target:$("#tbl" + tsa[0] +  " div[ffname='" + tsa[0] + "." + tsa[1] +  "']")});
+                            elist2 = jsPlumb.selectEndpoints({source:$("#tbl" + table.name +  " [fpname='" + table.name + "." + key +  "']")});
+                            //console.log(elist1.length, elist2.length);
+                            var el1 = null;
+                            var el2 = null;
+                            elist1.each(function(key){el1=key});
+                            elist2.each(function(key){el2=key});
+                            jsPlumb.connect({target:el1, source:el2});
+                    }
+                    else if (val.ref != null) {
+                            //check incoming
+                            console.log('foreign key found:',key, val.ref);
+                            table.fields[key].ref = val.ref; //restore the lost ref
+                            tsa = val.ref.split('.');
+                            tables[tsa[0]].fields[tsa[1]].foreign = table.name + '.' + key; //restore the lost foreign
+                            console.log("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']");
+                            elist1 = jsPlumb.selectEndpoints({source:$("#tbl" + tsa[0] +  " [fpname='" + tsa[0] + "." + tsa[1] +  "']")});
+                            elist2 = jsPlumb.selectEndpoints({target:$("#tbl" + table.name +  " div[ffname='" + table.name + "." + key +  "']")});
+                            //console.log(elist1.length, elist2.length);
+                            var el1 = null;
+                            var el2 = null;
+                            elist1.each(function(key){el1=key});
+                            elist2.each(function(key){el2=key});
+                            jsPlumb.connect({source:el1, target:el2});
+                    }
+            });
+    }
+
+    if (mode=='add') {
+            if (window.lastPos == undefined) {
+                    window.lastPos = {'x':0, 'y':0};
+            }
+
+            var maxX = $(".canvas").width() - $('#tbl' + table.name).width() ;
+            var maxY = $(".canvas").height() - $('#tbl' + table.name).height();
+            if (table.position.x==0 && table.position.y==0) {
+                    table.position.x = (Math.random() * maxX) + 'px';
+                    table.position.y = (Math.random() * maxY) + 'px';
+            }
+            $('#tbl' + table.name).css({
+                    //'left': window.lastPos.x + "px",
+                    //'top': window.lastPos.y + "px"
+                    left: table.position.x,
+                    top: table.position.y
+            });
+
+            if (window.lastPos.x >= $('.container').offset().left + $('.container').offset().width) {
+                    window.lastPos.x = 0;
+            }
+            else {
+                    window.lastPos.x += $('#tbl' + table.name).width() + 20;
+            }
+            window.lastPos.y += $('#tbl' + table.name).position().top;
+
+            jsPlumb.repaintEverything();
+            console.log("repaintedEverything");
+            bsalert({text:"Table added!", type:'success'});
+    }
+    else 
+    {
+            //EDIT
+            $.each(tables, function(k,v) {
+                    //jsPlumb.repaint(['tbl' + k]);
+                    //jsPlumb.draggable('tbl' + k);
+                    //console.log('repainted div ' + 'tbl' + k);
+            });
+            jsPlumb.repaintEverything(); //all connections TODO: test this is required or not.
+            console.log("repaintedEverything");
+            //console.log('repainted all connections');
+            bsalert({text:"Table updated!", type:'success'});
+    }
+
+    saveCanvasState(); 
+    //jsPlumb.addEndpoint($('#tbl' + table.name), {  });
+    //jsPlumb.setContainer('theCanvas');
+    //console.log(
+    //);
+    //jsPlumb.repaint('#theCanvas');
+    //console.log('repaint done');
+    //console.log('made draggable ;' + 'tbl' + table.name);
+    //jsPlumb.addEndpoint('tbl' + table.name, {  });
 }
 
 
