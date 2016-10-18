@@ -260,7 +260,7 @@ function setThePanel(table, mode) {
 		}
 		window.lastPos.y += $('#tbl' + table.name).position().top;
 
-		bsalert({text:table.name+"added!", type:'success'});
+		bsalert({text:table.name+" added!", type:'success'});
     }
     else 
     {
