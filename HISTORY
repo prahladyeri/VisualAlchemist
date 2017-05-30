@@ -1,0 +1,12 @@
+== Visual Alchemist 1.0.4 ==
+
+1. Added HISTORY file for tracking changes.
+2. Changed background-color of navbar.
+3. Updated screenshots.
+
+== Visual Alchemist 1.0.5 ==
+
+1. Fixed bootstrap navbar hovers.
+2. Changed the logo.
+3. Improved modal css.
+4. Store first use boolean setting in localStorage instead of cookies (pending).

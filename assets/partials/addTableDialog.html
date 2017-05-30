@@ -1,0 +1,46 @@
+<div id="addTableDialog" class="modal fade">
+  <input id="editMode" type="hidden" value=""></input>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title"><label>Table Name<input id="tableName" class="form-control" type="text"  placeholder="Table Name" autofocus="true"></input></label><input id="originalTableName" type="hidden" value=""></input></h4>
+      </div>
+      <div class="modal-body form-inline">
+        <input id="fieldName" style="width:110px;" class="form-control" type="text" placeholder="Field name"></input>
+        <select id="fieldType" class="form-control" type="text" onchange="if ($('#fieldType').val()!='String' && $('#fieldType').val()!='Text') $('#fieldSize').attr('disabled',''); else $('#fieldSize').removeAttr('disabled');">
+			<option value="Text">Text</option>
+			<option value="Integer">Integer</option>
+			<option value="Float">Float</option>
+			<option value="Date">Date</option>
+			<option value="Date">DateTime</option>
+		</select>
+        <input id="fieldSize" style="width:70px;" class="form-control" type="number" min="0" placeholder="size" value=""></input>
+        <input id="fieldDefault" style="width:100px;" class="form-control" type="text" placeholder="Default" value=""></input>
+        <div class="checkbox"><label><input id="fieldPrimary" type="checkbox" value="primary">Primary</label></div>
+        <div class="checkbox"><label><input id="fieldUnique" type="checkbox" value="unique">Unique</label></div>
+		<div class="checkbox"><label><input id="fieldNotNull" type="checkbox" value="notnull">Not Null</label></div>
+		
+		<p></p>
+        <button style="text-align:right;" type="button" class="btn btn-success" onclick="addField();">Add Field</button>
+		<p></p>
+		<table id="fields" class="table table-striped">
+			<tr>
+				<th>Name</th>
+				<th>Type</th>
+				<th>Size</th>
+				<th>Details</th>
+				<th>Action</th>
+			</tr>
+		</table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="saveData();">Save changes</button>
+	</div>
+		<div class="alert alert-info" role="alert">
+		<small>Note: Use <kbd>tab</kbd> key to navigate through the widgets.</small>
+		</div>
+    </div>
+  </div>
+</div>
