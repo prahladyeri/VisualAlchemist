@@ -243,7 +243,7 @@ function bshelp() {
 }
 
 function bsabout() {
-	bspopup({type:"about"});	
+	bspopup({type:"about"});
 }
 
 /**
