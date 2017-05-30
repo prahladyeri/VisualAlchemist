@@ -1,6 +1,9 @@
 custom.css
 custom.js
 /nbproject
+.project
+.pydevproject
+/.settings
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

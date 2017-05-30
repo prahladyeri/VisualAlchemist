@@ -66,10 +66,13 @@ $(window).load(function() {
 	$(".footer #theyear").text((new Date()).getFullYear());
 	
 	// Display an initial popup with helpful information the first time the user loads this page
+	console.log('now checking cookie');
 	if (readCookie(".mainAlert.closed") != "true") 
 	{
-		bshelp();;
-		createCookie(".mainAlert.closed", "true");
+		console.log('cookie not found. creating cookie.');
+		//createCookie(".mainAlert.closed", "true");
+		console.log('now showing help.');
+		bshelp();
 	}
 });
 
