@@ -79,7 +79,7 @@ Visual Alchemist is under active development, so there is no extensive documenta
 
 I'm presently looking for people who can contribute to Visual Alchemist. Mainly in the areas of:
 
-1. Testing: Extensive alpha/beta testing, so our `v1.1` can be a big hit!
+1. Testing: Extensive alpha/beta testing, so our `v1.1` can be a big hit.
 2. Code review: There is no such thing as bug-free code and more the number of eyeballs, the better it is.
 3. Logo Design: Though a new logo is not immediately necessary, it is still a nice to have, though.
 4. Documentation: Docs are very critical at this early of the project, and we don't have any apart from the basic guide accompnied by the app itself.
@@ -92,7 +92,7 @@ I'm presently looking for people who can contribute to Visual Alchemist. Mainly 
 
 ## License
 
-`Visual Alchemist` is free and open source and it always will be! It is licensed under the [GPLv3](https://opensource.org/licenses/GPL-3.0).
+`Visual Alchemist` is free and open source, and it always will be. It is licensed under the [GPLv3](https://opensource.org/licenses/GPL-3.0).
 
 ## Contribution Guidelines
 
