@@ -18,9 +18,9 @@
 * @author Prahlad Yeri
 * @date 2015/06/16
 */
-var version = "1.0.6"; //TODO: Remember to automate this.
+var version = "1.0.7"; //TODO: Remember to automate this.
 
-if (window.location.href.indexOf('127.0.0.1:') >=0 ) {
+if (window.location.href.indexOf('127.0.0.1:') >=0 || window.location.href.indexOf('localhost')) {
 	window.DEBUG = true;
 }
 else {
@@ -66,10 +66,13 @@ $(window).load(function() {
 	$(".footer #theyear").text((new Date()).getFullYear());
 	
 	// Display an initial popup with helpful information the first time the user loads this page
+	console.log('now checking cookie');
 	if (readCookie(".mainAlert.closed") != "true") 
 	{
-		bshelp();;
+		console.log('cookie not found. creating cookie.');
 		createCookie(".mainAlert.closed", "true");
+		console.log('now showing help.');
+		bshelp();
 	}
 });
 

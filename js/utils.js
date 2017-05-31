@@ -243,7 +243,7 @@ function bshelp() {
 }
 
 function bsabout() {
-	bspopup({type:"about"});	
+	bspopup({type:"about"});
 }
 
 /**
@@ -274,8 +274,8 @@ function bspopup(options, success) {
         $.get("assets/partials/bootui.html?time=" + (new Date()).getTime(), function(data){
             $('body').append(data);
             bspopup(options, success);
-            return;
         });
+        return; //fixes #42
     }
     
 	// Make sure options is a valid object with text, type, and title properties
@@ -323,7 +323,8 @@ function bspopup(options, success) {
     else if (type=='text') 
     {
 		var tobj = theBox.find(".messageText").text(text);
-		tobj.html(tobj.html().replace(/\n/g,'<br/>'));
+		var theHTML = tobj.html();
+		tobj.html(theHTML.replace(/\n/g,'<br/>'));
         if (options.button1 != undefined) {
             theBox.find("#btnClose").text(options.button1);
             
