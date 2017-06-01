@@ -16,6 +16,7 @@ function validateTableName(tableName,originalTableName) {
 }
 
 function renameTable(tableName,originalName) {
+	console.log("renameTable::", tableName, originalName);
 	table = tables[originalName];
 	
 	// Remove the table under its original name and add it under new name
@@ -24,17 +25,18 @@ function renameTable(tableName,originalName) {
 	tables[tableName] = table;
 	
 	// Rename the jsplumb table and re-label it
-	var tablePanel = $('#tbl' + originalName)
-	tablePanel.prop('id', '#tbl'+table.name);
-	var labelSpan = $('[data-table-label="'+originalName+'"]')
-	labelSpan.html(tableName);
-	labelSpan.prop('data-table-label',tableName);
+	var tablePanel = $('#tbl' + originalName);
+	tablePanel.prop('id', 'tbl'+table.name);
+	var labelSpan = $('[data-table-label="'+originalName+'"]');
+	console.log("labelSpan count: ", labelSpan.length);
+	labelSpan.text(tableName);
+	labelSpan.attr('data-table-label',tableName);
 	
 	// Replace the edit and delete button events to use the new table name
 	var deleteBtn = tablePanel.find('[title="Delete"]');
-	deleteBtn.attr('onclick','editTable("'+tableName+'")');
+	deleteBtn.attr('onclick','editTable("'+tableName+'");');
 	var editBtn = tablePanel.find('[title="Edit"]');
-	editBtn.attr('onclick','editTable("'+tableName+'")');
+	editBtn.attr('onclick','editTable("'+tableName+'");');
 }
 
 function saveData() {
@@ -65,6 +67,18 @@ function saveData() {
 				bspopup('This table already exists.');
 				return;
 			} else {
+				//Delete existing endpoints for this table.
+//				$.each(tables[originalName].fields, function(fieldName, field){
+//					if (field.pkEndpoint != null) {
+//						jsPlumb.deleteEndpoint(field.pkEndpoint);
+//						field.pkEndpoint = null;
+//					}
+//					if (field.fkEndpoint != null) {
+//						jsPlumb.deleteEndpoint(field.fkEndpoint);
+//						field.fkEndpoint = null;
+//					}
+//				});
+				//
 				renameTable(tableName,originalName);
 				table = tables[tableName];
 			}

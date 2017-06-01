@@ -146,7 +146,7 @@ function createThePanel(table, mode, func) {
 }
 
 function setThePanel(table, mode) {
-	
+	//console.log('setThePanel(): ' + table.name + '::' + mode);
 	var tableID = '#tbl' + table.name;
 	
 	// If editing an existing table, delete all existing rows from the table
@@ -154,9 +154,12 @@ function setThePanel(table, mode) {
 		//jsPlumb.empty("tbl" + table.name);
 		$(tableID + " .table tr").remove();
     }
+    //return;
 
     //Now lets build the new panel
     $.each(table.fields, function(fieldName, field) {
+    	//console.log("Processing: " + fieldName);
+    	//console.log("Row length: ", tableID, "::", $(tableID + " .table tr").length);
 
 		// Setup details field for this row
 		var details = [];
@@ -180,7 +183,6 @@ function setThePanel(table, mode) {
 
 		if (field.primaryKey == true) {
 					
-			
 			if (field.pkEndpoint != null) {
 				// Delete the old endpoint attached to the previous element
 				jsPlumb.deleteEndpoint(field.pkEndpoint);
@@ -331,6 +333,8 @@ function createAllConnections(tables) {
 			// check incoming
 			if (field.ref != null) {
 				tsa = field.ref.split('.');
+				//console.log("source: " + tsa[0] + "." + tsa[1]);
+				//console.log("destination: " , field.fkEndpoint);
 				jsPlumb.connect({source: tables[tsa[0]].fields[tsa[1]].pkEndpoint, target: field.fkEndpoint});
 			}
 		});
@@ -415,7 +419,6 @@ function runAddTableDialog(tableName, mode)
 	$("#addTableDialog #editMode").val(mode);
 	$("#addTableDialog .fieldRow").remove();
 	if (mode=='edit') {
-		$("#addTableDialog #tableName").attr('disabled',''); //TODO: Remove this once #43, #44 are fixed.
 		$.each(tables[tableName].fields, function(key, val){
 			
 			// Load the field values into the dialog
