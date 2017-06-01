@@ -419,6 +419,7 @@ function runAddTableDialog(tableName, mode)
 	$("#addTableDialog #editMode").val(mode);
 	$("#addTableDialog .fieldRow").remove();
 	if (mode=='edit') {
+		$("#addTableDialog #tableName").attr('disabled',''); //TODO: Remove once the rename functionality is stable.
 		$.each(tables[tableName].fields, function(key, val){
 			
 			// Load the field values into the dialog
