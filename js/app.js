@@ -415,6 +415,7 @@ function runAddTableDialog(tableName, mode)
 	$("#addTableDialog #editMode").val(mode);
 	$("#addTableDialog .fieldRow").remove();
 	if (mode=='edit') {
+		$("#addTableDialog #tableName").attr('disabled',''); //TODO: Remove this once #43, #44 are fixed.
 		$.each(tables[tableName].fields, function(key, val){
 			
 			// Load the field values into the dialog

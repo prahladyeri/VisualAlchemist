@@ -23,7 +23,7 @@ function renameTable(tableName,originalName) {
 	table.name = tableName;
 	tables[tableName] = table;
 	
-	// Rename the jsplumb table and re-lable it
+	// Rename the jsplumb table and re-label it
 	var tablePanel = $('#tbl' + originalName)
 	tablePanel.prop('id', '#tbl'+table.name);
 	var labelSpan = $('[data-table-label="'+originalName+'"]')
@@ -38,7 +38,6 @@ function renameTable(tableName,originalName) {
 }
 
 function saveData() {
-
 	var tableName = $('#tableName').val();
 	var originalName = $('#originalTableName').val();
 	var editMode = $('#editMode').val()
