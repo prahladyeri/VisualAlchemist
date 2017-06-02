@@ -150,9 +150,23 @@ function setThePanel(table, mode) {
 	var tableID = '#tbl' + table.name;
 	
 	// If editing an existing table, delete all existing rows from the table
-    if (mode=='edit') {
+    if (mode == 'edit') {
 		//jsPlumb.empty("tbl" + table.name);
-		$(tableID + " .table tr").remove();
+    	//jsPlumb.empty($(tableID  + ' table tbody tr'));
+		$(tableID + " div.field").each(function(){
+			jsPlumb.remove($(this));
+		});
+		$(tableID + " div.prima").each(function(){
+			jsPlumb.remove($(this));
+		});
+    	
+    	$(tableID + " tbody tr").remove();
+
+    	//maybe, recreate it entirely.
+    	jsPlumb.remove("tbl" + table.name);
+    	$(tableID).remove();
+    	$('.canvas').append(tableTemplate.format({table: table.name}));    	
+    	setTablePosition(table);
     }
     //return;
 
@@ -192,9 +206,11 @@ function setThePanel(table, mode) {
 			// Create an endpoint for PK connections
 			var pkAnchor = $(tableID + " div[fpname='" + table.name + "." +  field.name + "']");
 			if (field.pkEndpoint == null) {
+				//console.log('pkEndpoint is null.');
 				field.pkEndpoint = jsPlumb.addEndpoint(pkAnchor, {
 					isSource: true,
 					anchor: "Right",
+					//anchor: "Continuous",
 					endpoint: ["Rectangle",{width:15, height:15}], //Dot
 					paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
 					connectorOverlays: [ 
@@ -202,6 +218,7 @@ function setThePanel(table, mode) {
 					],
 				});
 			} else {
+				console.log('pkEndpoint is not null.');
 				field.pkEndpoint.setElement(pkAnchor[0]);
 			}
 		}
@@ -240,37 +257,41 @@ function setThePanel(table, mode) {
     if (mode=='edit') {
 		createAllConnections(tables);
     }
+    
 
     if (mode=='add') {
-		if (window.lastPos == undefined) {
-			window.lastPos = {'x':0, 'y':0};
-		}
-
-		var maxX = $(".canvas").width() - $('#tbl' + table.name).width() ;
-		var maxY = $(".canvas").height() - $('#tbl' + table.name).height();
-		if (table.position.x==0 && table.position.y==0) {
-				table.position.x = (Math.random() * maxX) + 'px';
-				table.position.y = (Math.random() * maxY) + 'px';
-		}
-		$('#tbl' + table.name).css({
-			left: table.position.x,
-			top: table.position.y
-		});
-
-		if (window.lastPos.x >= $('.container').offset().left + $('.container').offset().width) {
-			window.lastPos.x = 0;
-		}
-		else {
-			window.lastPos.x += $('#tbl' + table.name).width() + 20;
-		}
-		window.lastPos.y += $('#tbl' + table.name).position().top;
-
+    	setTablePosition(table); //set the table position
 		bsalert({text:table.name+" added!", type:'success'});
     }
     else 
     {
 		bsalert({text:"Table updated!", type:'success'});
     }
+}
+
+function setTablePosition(table) {
+	if (window.lastPos == undefined) {
+		window.lastPos = {'x':0, 'y':0};
+	}
+
+	var maxX = $(".canvas").width() - $('#tbl' + table.name).width() ;
+	var maxY = $(".canvas").height() - $('#tbl' + table.name).height();
+	if (table.position.x==0 && table.position.y==0) {
+			table.position.x = (Math.random() * maxX) + 'px';
+			table.position.y = (Math.random() * maxY) + 'px';
+	}
+	$('#tbl' + table.name).css({
+		left: table.position.x,
+		top: table.position.y
+	});
+
+	if (window.lastPos.x >= $('.container').offset().left + $('.container').offset().width) {
+		window.lastPos.x = 0;
+	}
+	else {
+		window.lastPos.x += $('#tbl' + table.name).width() + 20;
+	}
+	window.lastPos.y += $('#tbl' + table.name).position().top;
 }
 
 /**
@@ -415,6 +436,7 @@ function showAddTableDialog() {
 function runAddTableDialog(tableName, mode) 
 {
 	$("#addTableDialog #tableName").val(tableName);
+	$("#addTableDialog #tableName").removeAttr('disabled'); //TODO: Remove once the rename functionality is stable.
 	$("#addTableDialog #originalTableName").val(tableName);
 	$("#addTableDialog #editMode").val(mode);
 	$("#addTableDialog .fieldRow").remove();
