@@ -31,6 +31,8 @@ var tableTemplate = "";
 
 $(window).load(function() {
 	
+	$("#theCanvas").height($(window).height() - $(".navbar.header").height()-  10);
+	
 	//Objects Initialization
 	tables = {}; //dict of String:Table objects
 	
@@ -66,14 +68,23 @@ $(window).load(function() {
 	$(".footer #theyear").text((new Date()).getFullYear());
 	
 	// Display an initial popup with helpful information the first time the user loads this page
-	console.log('now checking cookie');
-	if (readCookie(".mainAlert.closed") != "true") 
-	{
-		console.log('cookie not found. creating cookie.');
-		createCookie(".mainAlert.closed", "true");
-		console.log('now showing help.');
-		bshelp();
+	
+	//TODO: Find a solution: createCookie/readCookie not working in android Webview.
+	// console.log('now checking cookie');
+	// if (readCookie(".mainAlert.closed") != "true") 
+	// {
+		// console.log('cookie not found. creating cookie.');
+		// createCookie(".mainAlert.closed", "true");
+		// console.log('now showing help.');
+		// bshelp();
+	// }
+	if (window.localStorage) {
+		if (localStorage.getItem("mainAlert") == undefined) {
+			localStorage.setItem("mainAlert", "true");
+			bshelp();
+		}
 	}
+	
 });
 
 function loadCanvasFromLocalStorage() {
@@ -125,6 +136,8 @@ jsPlumb.bind("connectionDetached", function(info, originalEvent) {
 		return;
 	var pkey = $(info.source).attr('fpname').split(".");
 	var fkey = $(info.target).attr('ffname').split(".");
+	
+	console.log("fkey: ", fkey[0], fkey[1]);
 
 	tables[fkey[0]].fields[fkey[1]].ref = null;
 	bsalert({text: pkey[1] + '->' + fkey[1], title:"Detached connection: "});
