@@ -153,7 +153,7 @@ var codeGenerators = {"ORM/SQLAlchemy": ORMSQLAlchemy, "mysql": MySQL, "sqlite":
 function generateCode(outputType) {
 
 	var codeGenerator;
-	var templateDir = "/assets/templates/";
+	var templateDir = "assets/templates/";
 	
 	// Pick code generator based on desired output format
 	var codeGenerator = new codeGenerators[outputType](templateDir);

@@ -21,6 +21,7 @@
 <script src='lib/jquery.min.js'></script>
 <script src='lib/bootstrap.min.js'></script>
 <script src="lib/jsPlumb-2.1.2-min.js"></script>
+<!--<script src="lib/jsplumb-2.4.2.min.js"></script>-->
 <script src='js/classes.js'></script>
 <script src="js/utils.js"></script>
 <script src='js/app.js'></script>
@@ -47,8 +48,9 @@
         <li><a href="javascript:" onclick="javascript:showAddTableDialog();"><span class="glyphicon glyphicon-plus"></span>&nbsp;New Table</a></li>
         <li><a href="javascript:" onclick="eraseCanvasState();"><span class="glyphicon glyphicon-remove"></span>&nbsp;Clear All</a></li>
         <li><a href="javascript:" onclick="showResultsDialog();"><span class="glyphicon glyphicon-list"></span>&nbsp;Code</a></li>
+		<!-- TODO: Fix this so that it uses a separate method or is invisible in mobile size -->
         <li><a href="javascript:" onclick="exportCanvas();"><span class="glyphicon glyphicon-export"></span>&nbsp;Export Canvas</a></li>
-		<li><a href="javascript:" class="btn-file"><form action="#" onchange="importCanvas();"><input id="inputCanvasFile" type="file"><span class="glyphicon glyphicon-import"></span>&nbsp;Import Canvas</input></form></a></li>
+		<li><a href="javascript:" class="btn-file"><form action="#" onchange="importCanvas();"><input id="inputCanvasFile" type="file"><span class="glyphicon glyphicon-import"></span>&nbsp;Import Canvas</input></form></a></li>-->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a id="lnkHelp" onclick="bshelp();" href="javascript:"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;Help</a></li>
@@ -69,7 +71,7 @@
 
 	<div class="container-fluid">
 		<div class="row">
-			<div id="theCanvas" class="col-md-12 canvas" >
+			<div id="theCanvas" class="col-md-12 canvas">
 				<div class="hidden mainAlert col-md-push-3 col-md-6 alert alert-success alert-dismissible" role="alert">
 				  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 				  <strong>How to:</strong> Just click the <a class="alert-link" href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a> link above to start creating tables.
@@ -88,8 +90,8 @@
   <div class="container">
 	<div class="row">
 		<div class="col-md-12" >
-			<p style="color:white;">&copy; Prahlad Yeri <span id='theyear'></span>. Code licensed under <a href="https://github.com/prahladyeri/valchemist/blob/master/LICENSE">GPLv3</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.
-			<a class="hidden" style="float:right" href="https://gratipay.com/prahladyeri/"><img alt="Support via Gratipay" src="https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.png"></img></a></p>
+			<p style="color:white;">&copy; Prahlad Yeri <span id='theyear'></span>. Code licensed under <a href="https://github.com/prahladyeri/valchemist/blob/master/LICENSE">GPLv3</a>.
+			</p>
 		</div>
 	</div>
   </div>

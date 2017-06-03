@@ -20,19 +20,21 @@
 */
 var version = "1.0.7"; //TODO: Remember to automate this.
 
-if (window.location.href.indexOf('127.0.0.1:') >=0 || window.location.href.indexOf('localhost')) {
-	window.DEBUG = true;
-}
-else {
-	window.DEBUG  = false;
-}
+//if (window.location.href.indexOf('127.0.0.1:') >=0 || window.location.href.indexOf('localhost')) {
+//	window.DEBUG = true;
+//}
+//else {
+//	window.DEBUG  = false;
+//}
+
+window.DEBUG = false;
+console.log("window.DEBUG is ", window.DEBUG);
 
 var tableTemplate = "";
 
 $(window).load(function() {
-	
-	$("#theCanvas").height($(window).height() - $(".navbar.header").height()-  10);
-	
+	$("#theCanvas").height($(window).height() - $(".navbar.header").height() - $(".navbar.footer").height());
+
 	//Objects Initialization
 	tables = {}; //dict of String:Table objects
 	
@@ -68,16 +70,14 @@ $(window).load(function() {
 	$(".footer #theyear").text((new Date()).getFullYear());
 	
 	// Display an initial popup with helpful information the first time the user loads this page
-	
-	//TODO: Find a solution: createCookie/readCookie not working in android Webview.
-	// console.log('now checking cookie');
-	// if (readCookie(".mainAlert.closed") != "true") 
-	// {
-		// console.log('cookie not found. creating cookie.');
-		// createCookie(".mainAlert.closed", "true");
-		// console.log('now showing help.');
-		// bshelp();
-	// }
+//	console.log('now checking cookie');
+//	if (readCookie(".mainAlert.closed") != "true")
+//	{
+//		console.log('cookie not found. creating cookie.');
+//		createCookie(".mainAlert.closed", "true");
+//		console.log('now showing help.');
+//		bshelp();
+//	}
 	if (window.localStorage) {
 		if (localStorage.getItem("mainAlert") == undefined) {
 			localStorage.setItem("mainAlert", "true");
@@ -222,7 +222,7 @@ function setThePanel(table, mode) {
 				//console.log('pkEndpoint is null.');
 				field.pkEndpoint = jsPlumb.addEndpoint(pkAnchor, {
 					isSource: true,
-					anchor: "Right",
+					//anchor: "Right",
 					//anchor: "Continuous",
 					endpoint: ["Rectangle",{width:15, height:15}], //Dot
 					paintStyle: {fillStyle:"orange", outlineColor:"black", outlineWidth:1 },
@@ -256,7 +256,9 @@ function setThePanel(table, mode) {
 	// Make table draggable
 	jsPlumb.draggable('tbl' + table.name, {
 	   containment:true,
+	   //containment: "parent",
 	   stop: function(event, ui) {
+			//console.log("drag ended.", $(window).width());
 			tables[table.name].position.x = event.pos[0] + 'px';
 			tables[table.name].position.y = event.pos[1] + 'px';
 			saveCanvasState();
@@ -409,11 +411,12 @@ function showResultsDialog() {
 		console.log('not found in cache');
 		$("#holderResults").load("assets/partials/resultsDialog.html?time=" + (new Date()).getTime(), function(){
 			$('#resultsDialog').on('shown.bs.modal', function(e) {
+				console.log("resultsDialog loaded.");
 				prettyPrint();
 			});
 		});
 	}
-	
+	console.log("Now starting runResultsDialog()");
 	runResultsDialog();
 }
 
@@ -483,12 +486,26 @@ function editTable(tableName) {
 }
 
 function deleteTable(tableName) {
-	if (confirm("Sure you want to delete this table along with all it's relations?")) {
-		delete tables[tableName];
-		jsPlumb.empty("tbl" + tableName);
-		$("#tbl" + tableName).remove();
-		saveCanvasState();
-	}
+    bspopup({
+        "text": "Sure you want to delete this table along with all it's relations?",
+        "button1": "Yes",
+        "button2": "No",
+        "success": function(event){
+            if (event.button == "button1") {
+                delete tables[tableName];
+                jsPlumb.empty("tbl" + tableName);
+                $("#tbl" + tableName).remove();
+                saveCanvasState();
+            }
+        }
+    });
+
+//	if (confirm("Sure you want to delete this table along with all it's relations?")) {
+//		delete tables[tableName];
+//		jsPlumb.empty("tbl" + tableName);
+//		$("#tbl" + tableName).remove();
+//		saveCanvasState();
+//	}
 }
 
 function importCanvas() {

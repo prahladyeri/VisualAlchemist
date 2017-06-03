@@ -178,13 +178,13 @@ if (!String.prototype.capitalize) {
 COOKIE_ENCODER = '{|}~';
 function createCookie(name, value, days) 
 {
-	value = value.replace(';', COOKIE_ENCODER);
-	
-    //if (days>=0) {
+	value = value.split(";").join(COOKIE_ENCODER); //replace(';', COOKIE_ENCODER);
+
+    if (days>=0) {
         var date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         var expires = "; expires=" + date.toGMTString();
-    //}
+    }
     //else var expires = "";
 
 
@@ -202,7 +202,7 @@ function readCookie(name)
         if (c.indexOf(nameEQ) == 0)
         {
         	s = c.substring(nameEQ.length, c.length);
-        	s = s.replace(COOKIE_ENCODER,';');
+        	s = s.split(COOKIE_ENCODER).join(';');
         	return s;
         }
     }
@@ -238,7 +238,7 @@ function selectText(element) {
 function bshelp() {
 	//bsalert({title:'How to:',text:"Just click the New Table link above to start creating tables. Once done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).<br><br>To detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel.", type:'success', delay:0});
 	bspopup({
-		text: "Just click the New Table link to start creating tables. \n\nOnce done, simply click the Build button to get the python code for the sqlalchemy models!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).\n\nTo detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel."
+		text: "Just click the New Table link to start creating tables. \n\nOnce done, simply click the Code button to get the code!\n\nTo create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).\n\nTo detach/remove the relationships, click the blue area on the foreign-keys and drag it outside the table panel."
 	});
 }
 
@@ -428,3 +428,11 @@ function bsalert(obj) {
 		});
 	}
 }
+
+
+//regex based implementation.
+//https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string-in-javascript
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
