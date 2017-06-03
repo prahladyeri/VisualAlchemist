@@ -60,11 +60,11 @@
 
 ## Screenshots
 
-![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/mobile1.png)
-![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/mobile2.png)
-![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/mobile3.png)
-![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/tablet1.png)
-![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/img/tablet3.png)
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/screens/mobile1.png)
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/screens/mobile2.png)
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/screens/mobile3.png)
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/screens/tablet1.png)
+![Screenshot](https://github.com/prahladyeri/valchemist/raw/master/screens/tablet3.png)
 
 ## Demo
 
