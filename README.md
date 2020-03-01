@@ -6,13 +6,13 @@
 
 ##### Table of Contents
 
-1. [Visual Alchemist reloaded](#Visual Alchemist reloaded)
-2. [What it is](#What it is)
-3. [Version 1.0.7](#Version 1.0.7)
-4. [Version 2.0.0](#Version 2.0.0)
+1. [Visual Alchemist reloaded](#visual-alchemist-reloaded)
+2. [What it is](#what-it-is)
+3. [Version 1.0.7](#version-1.0.7)
+4. [Version 2.0.0](#version-2.0.0)
 5. [Screenshots](#screenshots)
-6. [For users](#For users)
-7. [For developers](#For developers)
+6. [For users](#for-users)
+7. [For developers](#for-developers)
 8. [License](#license)
 
 
@@ -65,7 +65,7 @@ I beamed the version number to 2.0.0. because major code reorganization has been
 What to download for a minimal installation? 
 * Get the "dist" folder
 * Get the index.html and the index.js (the latter only if you want to use the express webserver.. see below)
-* From the "src" folder you'll need "img", the "assets" and the "index.js" file.
+* From the "src" folder you'll need the "assets" and the "index.js" file.
 * Grab the "src/lib" folder if you want  or get your preferred version of jQuery and Bootstrap. (Tested with 3.4.1 / 4.4.1)
 * All other software (javascript, css and external libs) are bundled in the vialch.js that you'll find in the "dist" folder.
  
@@ -86,6 +86,6 @@ If not, hmm... it's definitely worth the time to get started with these framewor
 
 Visual Alchemist is free and open source, and it always will be. It is licensed under the [GPLv3](https://opensource.org/licenses/GPL-3.0).
 
-André Kreienbring
+AndrÃ© Kreienbring
 
 Mar, 2020
