@@ -24,10 +24,8 @@
     "@fortawesome/fontawesome-free": "^5.12.1",
     "@panzoom/panzoom": "^4.0.3",
     "@popperjs/core": "^2.0.6",
-    "base-64": "^0.1.0",
     "jsplumb": "^2.12.13",
     "moment": "^2.24.0",
-    "npm-check-updates": "^4.0.3",
     "tempusdominus-bootstrap-4": "^5.1.2"
   }
 }
