@@ -20,7 +20,8 @@
 ## Visual Alchemist reloaded
 
 This is a major rewrite / update of the 4 year old repository from Prahlad Yery.
-[GitHub](https://github.com/prahladyeri/VisualAlchemist)
+[Original Repo of Visual Alchemist](https://github.com/prahladyeri/VisualAlchemist)
+
 
 I basically ripped the code apart into modules and added new functionality as described below.
 

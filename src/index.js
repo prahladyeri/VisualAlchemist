@@ -15,7 +15,7 @@
 import {DBDesigner} from "./js/dbdesigner.js";
 
 import "./css/app.scss";
-import "./css/tempusdominus-bootstrap-4.css";
+import "./lib/tempusdominus-bootstrap-4.css";
 import "@fortawesome/fontawesome-free/js/fontawesome";
 import "@fortawesome/fontawesome-free/js/solid";
 
