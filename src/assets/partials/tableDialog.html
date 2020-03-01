@@ -1,0 +1,75 @@
+<!-- Modal -->
+<div id="tableDialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tableDialogModalLabel" aria-hidden="true">
+  <input id="editMode" type="hidden" value=""></input>
+  <div class="modal-dialog mw-100 w-100 tableDialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="cursor:move">
+        <h5 id="tableDialogModalLabel" class="modal-title">Add Table</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+           <form>
+	          <div class="form-group form-inline">
+        		<div class="form-group-item">
+		        	<input id="tableName" class="form-control form-control-sm" type="text"  placeholder="Table Name" autofocus="true" maxlength="20"></input>
+		        	<input id="tableId" type="hidden" value=""></input>
+	        	</div>
+	          </div>
+	          <div class="form-group form-inline">
+		        <input id="fieldName" style="width:100px;" class="form-control form-control-sm mr-1" type="text" placeholder="Field name" maxlength="10"></input>
+		        <input id="fieldId" type="hidden" value=""></input>
+		        <select id="fieldType" name="fieldType" style="width:100px;" class="form-control form-control-sm mr-1" type="text" onchange="dbdesigner.typeHasChanged()">
+					<option value="Text">Text</option>
+					<option value="Integer">Integer</option>
+					<option value="Float">Float</option>
+					<option value="Date">Date</option>
+					<option value="DateTime">DateTime</option>
+				</select>
+		        <input id="fieldSize" style="width:100px;" class="form-control form-control-sm mr-1" type="number" min="1" max="65535" placeholder="Size" value="255"></input>
+ 		        <!-- DATEPICKER: TEMPUS DOMINUS BOOTSTRAP 4 -->
+                <div id="datetimepicker1" class="input-group date" data-target-input="nearest">
+                    <input type="text" id="fieldDefault" style="width:140px;" class="form-control form-control-sm" placeholder="Default" data-target="#datetimepicker1"></input>
+                    <div id="datepickerButton" class="input-group-append invisible" disabled data-target="#datetimepicker1" data-toggle="datetimepicker">
+                        <div id="datepickerDiv" class="input-group-text"><i id="datepickerIcon" class="fas fa-calendar"></i></div>
+                    </div>
+                </div>
+              </div>
+	          <div class="form-group form-inline">
+				<div class="form-check form-check-inline">
+				  <div class="form-check-input ml-1"><label class="form-check-label" for="fieldPrimary"><input id="fieldPrimary" class="form-check-input" type="checkbox" value="primary">Primary</label></div>
+				  <div class="form-check-input ml-1"><label class="form-check-label" for="fieldUnique"><input id="fieldUnique" class="form-check-input" type="checkbox" value="unique">Unique</label></div>
+				  <div class="form-check-input ml-1"><label class="form-check-label" for="fieldNotNull"><input id="fieldNotNull" class="form-check-input" type="checkbox" value="notnull">Not Null</label></div>
+				</div>
+			  </div>
+			  
+	          <div class="form-row mt-1" >
+	          	<button id="addField" type="button" class="btn btn-sm btn-success" onclick="dbdesigner.addField()">Add Field</button>
+			  </div>
+		    </form>
+            <!-- Fixed header table-->
+	 		<table id="tableDialogTable" class="table table-sm small table-striped mt-1">
+	 		  <thead>
+				<tr>
+					<th class="fieldName" scope="col">Name</th>
+					<th class="fieldType" scope="col">Type</th>
+					<th class="fieldSize" scope="col">Size</th>
+					<th class="fieldDetails" scope="col">Details</th>
+					<th class="fieldAction" scope="col">Action</th>
+				</tr>
+			  </thead>
+			  <tbody>
+			  </tbody>
+			</table>
+ 	    </div><!-- container fluid -->
+      </div><!-- /modal-body -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="dbdesigner.saveData();">Save changes</button>
+      </div>
+	  <div class="alert alert-info" role="alert">
+		<small>Note: Use <kbd>tab</kbd> key to navigate through the widgets.</small>
+	  </div>
+    </div>
+  </div>
+</div>

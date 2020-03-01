@@ -1,0 +1,20 @@
+<div id="tblDiv{tableId}" style="position:absolute" class="bg-light zoomable">
+	  <div class="panel-heading"><span data-table-label='{tableId}' style="font-weight:bold">{tableName}</span>&nbsp;
+		<button type="button" title="Delete" onclick='dbdesigner.deleteTable("{tableId}");' style="float:right; font-size: 0.75em;" class="btn btn-sm btn-danger"><span class="fas fa-trash-alt"></span></button>
+		<button type="button" title="Edit" onclick='dbdesigner.editTable("{tableId}");' style="float:right; font-size: 0.75em;" class="btn btn-sm btn-success"><span class="fas fa-edit"></span></button>
+	  </div>
+	  <!-- Table -->
+	  <table class="table table-striped tableDesign">
+ 	     <thead>
+			<tr>
+				<td style="padding-top: 0px; padding-bottom: 0px;"></td>
+				<th style="padding-top: 0px; padding-bottom: 0px;" scope="col">Name</th>
+				<th style="padding-top: 0px; padding-bottom: 0px;" scope="col">Type</th>
+				<th style="padding-top: 0px; padding-bottom: 0px;" scope="col">Attributes</th>
+				<td style="padding-top: 0px; padding-bottom: 0px;"></td>
+			</tr>
+		  </thead> 
+		  <tbody>
+		  </tbody>
+	  </table>
+</div>

@@ -1,100 +1,103 @@
 <!DOCTYPE html>
 <html>
 <!-- 
-* @brief: App to create database models from scratch.
-* @author: Prahlad Yeri
-* @copyright: GPLv3
-* @date: 26-04-2015
+// Copyright 2016 by Prahlad Yeri
+// Copyright 2020 by André Kreienbring
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License version 3 as published by
+// the Free Software Foundation.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Visual Alchemist</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Visual Alchemist</title>
 
-<link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
-<link rel='stylesheet' href='css/bootstrap.min-3.3.5.css'/>
-<link rel="icon" href="img/thumb.png"/>
-<link type="text/css" href="lib/prettify/prettify.css" rel="stylesheet" />
-<link rel='stylesheet' href='css/app.css'/>
+	<script type="text/javascript" src="src/lib/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="src/lib/bootstrap.min.js"></script>
+	<script type="text/javascript" src="dist/vialch.js"></script>
 
-<script type="text/javascript" src="lib/prettify/prettify.js"></script>
-<script src='lib/jquery.min.js'></script>
-<script src='lib/bootstrap.min.js'></script>
-<script src="lib/jsPlumb-2.1.2-min.js"></script>
-<!--<script src="lib/jsplumb-2.4.2.min.js"></script>-->
-<script src='js/classes.js'></script>
-<script src="js/utils.js"></script>
-<script src='js/app.js'></script>
-<script src='js/addTableDialog.js'></script>
-<script src='js/codeGenerator.js'></script>
+ 	<link rel="stylesheet" type="text/css" href="src/lib/bootstrap.min.css">
 </head>
-<body>
-<nav class="header navbar navbar-inverse" role="navigation" style="margin-bottom:2px;">
-  <div class="container">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-	
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#"><img style="padding:0px;margin-top:-10px;border-radius:10px" class='img-responsive' src="img/thumb.png"></img></a>
-    </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li><a href="javascript:" onclick="javascript:showAddTableDialog();"><span class="glyphicon glyphicon-plus"></span>&nbsp;New Table</a></li>
-        <li><a href="javascript:" onclick="eraseCanvasState();"><span class="glyphicon glyphicon-remove"></span>&nbsp;Clear All</a></li>
-        <li><a href="javascript:" onclick="showResultsDialog();"><span class="glyphicon glyphicon-list"></span>&nbsp;Code</a></li>
-		<!-- TODO: Fix this so that it uses a separate method or is invisible in mobile size -->
-        <li><a href="javascript:" onclick="exportCanvas();"><span class="glyphicon glyphicon-export"></span>&nbsp;Export Canvas</a></li>
-		<li><a href="javascript:" class="btn-file"><form action="#" onchange="importCanvas();"><input id="inputCanvasFile" type="file"><span class="glyphicon glyphicon-import"></span>&nbsp;Import Canvas</input></form></a></li>-->
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a id="lnkHelp" onclick="bshelp();" href="javascript:"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;Help</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Links <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="https://github.com/prahladyeri/valchemist">Github Project</a></li>
-            <li class="divider"></li>
-            <li><a href="https://github.com/prahladyeri/valchemist/issues">Bug Tracker</a></li>
-            <li><a href="https://www.reddit.com/r/VisualAlchemist">Discussion Room</a></li>
-            <li><a href="#" onclick="javascript:bsabout();">About</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
 
-	<div class="container-fluid">
-		<div class="row">
-			<div id="theCanvas" class="col-md-12 canvas">
-				<div class="hidden mainAlert col-md-push-3 col-md-6 alert alert-success alert-dismissible" role="alert">
-				  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				  <strong>How to:</strong> Just click the <a class="alert-link" href="javascript:" onclick="javascript:showAddTableDialog();">New Table</a> link above to start creating tables.
-				  Once done, simply click the <strong>Code</strong> button to get the python code for the sqlalchemy models!
-				  <br>
-				  <br>
-				  To create relationships, drag the orange dots (primary-keys) and connect them to blue dots (candidate foreign-keys).
-				</div>
-			</div>
-		</div>
-	</div>
+<body>
+<div class="vialch"> <!-- Wrapper to separate Application if not isStandAlone -->
+
+	<div id="popupHolder"></div>
 	<div id="holder"></div>
 	<div id="holderResults"></div>
 	
-<nav class="navbar navbar-inverse  navbar-fixed-bottom  footer" style="min-height:30px;max-height:30px;" role="navigation">
-  <div class="container">
-	<div class="row">
-		<div class="col-md-12" >
-			<p style="color:white;">&copy; Prahlad Yeri <span id='theyear'></span>. Code licensed under <a href="https://github.com/prahladyeri/valchemist/blob/master/LICENSE">GPLv3</a>.
-			</p>
-		</div>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light" role="navigation">
+		<div class="container">
+			<a class="navbar-brand" href=""><img id="icon" style="padding: 0px; margin-top: -10px; border-radius: 10px" class='img-fluid' src="src/img/thumb.png"></a>
+			<div class="d-flex flex-row order-2 order-lg-3">
+				<form class="slidecontainer form-inline  my-auto ml-4 mr-4">
+						<input type="range" min="0.6" max="1" value="1" step="0.1" class="slider form-control-range" id="zoomSlider">
+				</form>
+				<button type="button" class="navbar-toggler" data-toggle="collapse"
+					data-target="#navbarSupportedContent"
+					aria-controls="navbarSupportedContent" aria-expanded="false"
+					aria-label="Toggle navigation">
+					<span class="sr-only">Toggle navigation</span> <span class="navbar-toggler-icon"></span>
+				</button>
+			</div>
+			
+			
+			<div class="collapse navbar-collapse order-3 order-lg-2" id="navbarSupportedContent">
+				<ul class="navbar-nav" >
+					<li class="nav-item"><a class="nav-link" href="javascript:"
+						onclick="dbdesigner.showTableDialog();"><span class="fas fa-plus"></span>&nbsp;New Table</a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:"
+						onclick="dbdesigner.eraseCanvasState();"><span class="fas fa-minus"></span>&nbsp;Clear All</a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:"
+						onclick="dbdesigner.showResultsDialog();"><span class="fas fa-code"></span>&nbsp;Code</a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:"
+						onclick="dbdesigner.exportCanvas();"><span class="fas fa-file-export"></span>&nbsp;Export Canvas</a></li>
+					<li class="nav-item">
+						<a class="nav-link btn-file" href="javascript:">
+							<form action="#" onchange="dbdesigner.importCanvas();">
+								<input id="inputCanvasFile" type="file"> <span class="fas fa-file-import"></span>&nbsp;Import Canvas </input>
+							</form>
+						</a>
+					</li>
+				</ul>
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item"><a class="nav-link mr-1" id="lnkHelp" href="javascript:" onclick="dbdesigner.showBsHelp();"><span class="fas fa-question-circle"></span>&nbsp;Help</a>
+					</li>
+					<li class="nav-item dropdown">
+						<button type="button"
+							class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split mr-2"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="sr-only">Toggle Dropdown</span> About
+						</button>
+						<div class="dropdown-menu  dropdown-menu-right"
+							aria-labelledby="dropdownMenuLink">
+							<a class="dropdown-item" href="https://github.com/akreienbring/VisualAlchemist">Github Project</a> 
+							<a class="dropdown-item" href="https://github.com/prahladyeri/valchemist/issues">Bug Tracker</a> 
+							<a class="dropdown-item" href="https://www.reddit.com/r/VisualAlchemist">Discussion Room</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="javascript:" onclick="dbdesigner.showBsPopup({title: 'Stack', type:'stack'});">Stack</a>
+							<a class="dropdown-item" href="javascript:" onclick="dbdesigner.showBsPopup({title: 'About', type:'about'});">About</a>
+						</div>
+					</li>
+				</ul>
+			</div> <!-- .navbar-collapse -->
+			
+		</div> <!-- .container -->
+	</nav>
+
+	<div id="canvasParent" class="jtk-page-container jtk-surface-nopan">
+		<div id="theCanvas" class="canvas"></div>
 	</div>
-  </div>
-</nav>
+	
+</div> <!-- vialch -->
 </body>
 </html>

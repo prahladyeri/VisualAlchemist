@@ -1,0 +1,46 @@
+<div id="popupBox" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupBoxLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header special-header">
+       	<h5 class="modal-title" id="popupBoxLabel">Visual Alchemist</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          <span class="sr-only">Close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="popupBoxGeneric" class="d-none">
+        	<p class="messageText">Default Message</p>
+        </div>
+        <div id="popupBoxAbout" class="d-none">
+	        <img id="logo" class="img-fluid" style='border-radius:500px;' src="src/img/thumb.png"/>
+			<h5 style="margin:0px;">Visual Alchemist <span class='version'>1.0.0</span></h5>
+			<p class="messageText"><span>Open source, web-based, database diagramming and automation tool.</span></p>
+			<p class="messageText">License: GNU GPLv3</a></p>
+        </div>
+        <div id="popupBoxStack" class="d-none">
+		    <h5>Visual Alchemist Stack</h5>
+		    <p class="messageText">
+		    	jsPlumb 2.12.13 <br>
+		    	jQuery 3.4.1<br>
+		    	Bootstrap 4.4.1<br>
+		    	tempusdominus-bootstrap-4 5.1.2<br>
+		    	popper 2.0.6<br>
+	 	    	moment 2.24.0<br>
+	 	    	fontawesome-free 5.12.1<br>
+	 	    	panzoom 4.0.3
+		    </p>
+        </div>
+        <div id="popupBoxInput" class="d-none">
+	        <p class="messageText">Default Message</p>
+	        <form>
+	        	<input id="txtInput" type="text" class="form-control form-control-sm">
+	        </form>
+         </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnClose" type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

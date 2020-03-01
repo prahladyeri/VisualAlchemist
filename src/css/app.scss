@@ -1,0 +1,222 @@
+$isStandAlone: true;
+$isDevelopment: true;
+$wrapper: ".vialch"; /*apply with #{$wrapper} */
+
+body {
+	@if ($isStandAlone) { 
+		overflow: hidden;
+	}
+}
+
+/*VisualAlchemist classes*/
+
+#{$wrapper}{
+	.special-header {
+		border-radius: 5px;
+		background-color: rgb(239, 202, 139);
+	}
+	
+	p.messageText{
+		font-size: 0.8em;
+	}
+	
+
+	/*Overwriting Bootstrap classes BEGIN*/
+	.nav-item{
+		font-size: 0.9em;
+	}
+	
+	.dropdown-item{
+		font-size: 0.9em;
+	}
+	/*Overwriting Bootstrap classes END*/
+
+	#theCanvas {
+		background-color: rgba(14, 63, 56, 0.56);
+		position: relative;
+		flex-grow: 1;
+		min-width: 4800px;
+		min-height: 4800px;
+		max-width: 4800px;
+		max-height: 4800px;
+	}
+	
+	
+	#resultsDialog #theCode pre {
+		max-height:340px;
+	}
+	
+	.bsaBody{
+		font-size: 0.8em;
+	}
+	
+	.panel-heading {
+		padding: 5px 5px;
+		border-radius: 0px;
+		cursor: move;
+	}
+	
+	.tableDesign {
+		font-size: 0.8em;
+		border-radius: 0px;
+	}
+	
+	.btn-file {
+	    position: relative;
+	    overflow: hidden;
+	}
+	
+	.btn-file input[type=file] {
+	    position: absolute;
+	    top: 0;
+	    right: 0;
+	    min-width: 100%;
+	    min-height: 100%;
+	    font-size: 100px;
+	    text-align: right;
+	    filter: alpha(opacity=0);
+	    opacity: 0;
+	    outline: none;
+	    background: white;
+	    cursor: inherit;
+	    display: block;
+	}
+	
+	/*Kill the responsiveness of the TableDialog for the sake of scrollbars*/
+	.tableDialog {
+		width: 560px; 
+		max-width: 560px!important; 
+		min-width: 560px!important; 	
+	}
+	
+	#tableDialog {
+		overflow: hidden;
+	}
+	
+	#tableDialogTable {
+	    display: flex;
+	    flex-flow: column;
+	    overflow-y: auto;
+	    overflow-x: hidden;
+	    width: 500px;
+		table-layout: fixed;
+	}
+	
+	#tableDialogTable thead {
+		flex: 0 0 auto;
+		width: inherit;
+		height: 23px;
+		position: fixed;
+		background-color: white;
+		@if not ($isStandAlone) { 
+			z-index: 1;
+		}
+	}
+	
+	#tableDialogTable tbody {
+	    flex: 1 1 auto;
+	    display: block;
+		height: 107px;
+		width: inherit;
+		margin-top: 23px;
+	}
+	
+	#tableDialogTable tr {
+	    display: table;
+		width: 100%;
+	}
+		
+	#tableDialogTable td, 
+	#tableDialogTable th {
+		padding-top: 1px;
+		padding-bottom: 1px;
+		vertical-align: middle;
+	}
+	
+	#tableDialogTable .fieldName{
+		width: 17%;
+	}
+	
+	#tableDialogTable .fieldType{
+		width: 14%;
+	}
+
+	#tableDialogTable .fieldSize{
+		width: 7%;
+	}
+
+	#tableDialogTable .fieldDetails{
+		width: 43%;
+	}
+	
+	#tableDialogTable .fieldAction{
+	    text-align: center; 
+		display: block;
+		margin: auto;	
+	}
+	
+	.jtk-drag-select {
+	  -webkit-touch-callout: none;
+	  -webkit-user-select: none;
+	  -khtml-user-select: none;
+	  -moz-user-select: none;
+	  -ms-user-select: none;
+	  user-select: none;    
+	}
+	
+	.jtk-page-container{
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		height: calc(100% - 60px); /*100% - 60px Important for the horinzontal scrollbar*/
+		width: calc(100%); /* Important: calc this value to get a fixed size for the scroll container*/
+	}
+	
+	.jtk-surface-nopan {
+		@if ($isStandAlone) { 
+			overflow: scroll !important;
+		}
+	    cursor: default;
+	}
+	
+	.slidecontainer {
+	  width: 100px;
+	}
+	
+	.slider {
+	  -webkit-appearance: none;
+	  width: 100%;
+	  height: 10px;
+	  border-radius: 5px;
+	  background: #d3d3d3;
+	  outline: none;
+	  opacity: 0.7;
+	  -webkit-transition: .2s;
+	  transition: opacity .2s;
+	}
+	
+	.slider:hover {
+	  opacity: 1;
+	}
+	
+	/*DatePicker CSS Correction*/
+	#datetimepicker1{
+		@if not ($isStandAlone) { 
+			padding-top:0px; 
+		}
+	}
+	
+	#datepickerDiv{
+		@if not ($isStandAlone) { 
+			height:32px; 
+			width:10px;
+		}
+	}
+	
+	#datepickerIcon{
+		@if not ($isStandAlone) { 
+			 font-size: 1.2em;
+		}
+	}
+}
+
