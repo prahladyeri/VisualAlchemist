@@ -65,7 +65,7 @@ I beamed the version number to 2.0.0. because major code reorganization has been
 
 What to download for a minimal installation? 
 * Get the "dist" folder
-* Get the index.html and the index.js (the latter only if you want to use the express webserver.. see below)
+* Get the index.html and the startUp.js (the latter only if you want to use the express webserver.. see below)
 * From the "src" folder you'll need the "assets" and the "index.js" file.
 * Grab the "src/lib" folder if you want  or get your preferred version of jQuery and Bootstrap. (Tested with 3.4.1 / 4.4.1)
 * All other software (javascript, css and external libs) are bundled in the vialch.js that you'll find in the "dist" folder.
