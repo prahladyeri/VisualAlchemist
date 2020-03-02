@@ -70,15 +70,17 @@ What to download for a minimal installation?
 * All other software (javascript, css and external libs) are bundled in the vialch.js that you'll find in the "dist" folder.
 
 So the final structure of a minimal installation looks like this:
-    _index.html
-    _startUp.js
-    _dist
-    |-vialch.js
-    _src
-    |_assets
-    |_img
-    |_lib
-    
+```
+VisualAlchemist
+_index.html
+_startUp.js
+_dist
+|-vialch.js
+_src
+|_assets
+|_img
+|_lib
+```  
 
 You'll need a webserver of your choice to run the tool. However, I included a little javascript "startUp.js" that uses express to get you started.
 
