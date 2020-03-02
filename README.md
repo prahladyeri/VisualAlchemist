@@ -72,20 +72,22 @@ What to download for a minimal installation?
 So the final structure of a minimal installation looks like this:
 ```
 VisualAlchemist
-_index.html
-_startUp.js
-_dist
-|-vialch.js
-_src
-|_assets
-|_img
-|_lib
+|__index.html
+|__startUp.js
+|__dist
+   |__vialch.js
+|__src
+   |__assets
+   |__img
+   |__lib
 ```  
 
 You'll need a webserver of your choice to run the tool. However, I included a little javascript "startUp.js" that uses express to get you started.
 
 1. Install node.js (with npm) https://nodejs.org/en/
-2. Do `npm install --save express`
+2. Go to your applicaton root (VisualAlchimist in the sample above)
+  2.a type `npm init` and follow the initialization procedure
+  2.b type `npm install --save express`
 3. Run the server with `node startUp.js`
 4. Navigate your browser to `localhost:3000`
 
