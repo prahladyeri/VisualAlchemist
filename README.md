@@ -8,8 +8,8 @@
 
 1. [Visual Alchemist reloaded](#visual-alchemist-reloaded)
 2. [What it is](#what-it-is)
-3. [Version 1.0.7](#version-1.0.7)
-4. [Version 2.0.0](#version-2.0.0)
+3. [Version 1.0.7](#version-107)
+4. [Version 2.0.0](#version-200)
 5. [Screenshots](#screenshots)
 6. [For users](#for-users)
 7. [For developers](#for-developers)
@@ -86,8 +86,8 @@ You'll need a webserver of your choice to run the tool. However, I included a li
 
 1. Install node.js (with npm) https://nodejs.org/en/
 2. Go to your applicaton root (VisualAlchimist in the sample above)
-  2.a type `npm init` and follow the initialization procedure
-  2.b type `npm install --save express`
+   - type `npm init` and follow the initialization procedure
+   - type `npm install --save express`
 3. Run the server with `node startUp.js`
 4. Navigate your browser to `localhost:3000`
 
