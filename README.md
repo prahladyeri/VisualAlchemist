@@ -13,7 +13,8 @@
 5. [Screenshots](#screenshots)
 6. [For users](#for-users)
 7. [For developers](#for-developers)
-8. [License](#license)
+8. [Supported Browsers](#supported-browsers)
+9. [License](#license)
 
 
 
@@ -96,6 +97,10 @@ You'll need a webserver of your choice to run the tool. However, I included a li
 As this software uses nodejs and webpack you'll have to install these tools. See the "package.json" and the "webpack.config.js"?
 If you're familiar with these, you'll have no problem to bundle the distribution after you changed code. 
 If not, hmm... it's definitely worth the time to get started with these frameworks.
+
+## Supported Browsers
+
+So far I tested with the current versions of Firefox and Chrome. And I can say that IE 11 definitely does NOT work.
 
 ## License
 
