@@ -65,11 +65,22 @@ I beamed the version number to 2.0.0. because major code reorganization has been
 What to download for a minimal installation? 
 * Get the "dist" folder
 * Get the index.html and the startUp.js (the latter only if you want to use the express webserver.. see below)
-* From the "src" folder you'll need the "assets" and the "index.js" file.
+* From the "src" folder you'll need the "assets" and the "img" folder.
 * Grab the "src/lib" folder if you want  or get your preferred version of jQuery and Bootstrap. (Tested with 3.4.1 / 4.4.1)
 * All other software (javascript, css and external libs) are bundled in the vialch.js that you'll find in the "dist" folder.
- 
-You'll need a webserver of your choice to run the tool. However, I included a little javascript "vialch.js" that uses express to get you started.
+
+So the final structure of a minimal installation looks like this:
+    -index.html
+    -startUp.js
+    -dist
+    |-vialch.js
+    -src
+    |-assets
+    |-img
+    |-lib
+    
+
+You'll need a webserver of your choice to run the tool. However, I included a little javascript "startUp.js" that uses express to get you started.
 
 1. Install node.js (with npm) https://nodejs.org/en/
 2. Do `npm install --save express`
