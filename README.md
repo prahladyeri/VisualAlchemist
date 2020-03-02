@@ -84,7 +84,7 @@ VisualAlchemist
 
 You'll need a webserver of your choice to run the tool. However, I included a little javascript "startUp.js" that uses express to get you started.
 
-1. Install node.js (with npm) https://nodejs.org/en/
+1. Install node.js (with npm) https://nodejs.org
 2. Go to your applicaton root (VisualAlchimist in the sample above)
    - type `npm init` and follow the initialization procedure
    - type `npm install --save express`
