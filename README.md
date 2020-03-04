@@ -30,7 +30,7 @@ As this is a fork of the original repository I will create a Pull Request for Pr
 ## What it is
 
 Visual Alchemist is a visual design tool for Entity Relationship Diagrams (ERD) that can be run by using a webserver and a browser.
-Once the tables and their field are designed the code to create the entities can be generated and executed on the target database system.
+Once the tables and their fields are designed the code to create the entities can be generated and executed on the target database system.
 
 ## Version 1.0.7
 
