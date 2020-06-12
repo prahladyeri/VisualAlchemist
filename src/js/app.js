@@ -27,7 +27,7 @@ import {storage} from "./localStorage.js";
 //jQuery.noConflict();
 
 const logger = Logger.getClassLogger("App");
-Logger.disableAll();
+//Logger.disableAll();
 
 /**
  * The main application that represents the single page App.
@@ -359,7 +359,7 @@ class App {
 		
 		// Clear out the copy stored in storage
 		//storage.remove(true)  ACTIVATE FOR Testing when an other storage then local storage is used.
-		storage.remove(true);
+		storage.remove();
 	};
 	
 	/**
