@@ -93,7 +93,7 @@ You'll need a webserver of your choice to run the tool. However, I included a li
 
 ## For developers
 
-As this software uses nodejs and webpack you'll have to install these tools. See the "package.json" and the "webpack.config.js"?
+As this software uses nodejs and webpack you'll have to install these tools. Do you see the "package.json" and the "webpack.config.js"?
 If you're familiar with these, you'll have no problem to bundle the distribution after you changed code. 
 If not, hmm... it's definitely worth the time to get started with these frameworks.
 
