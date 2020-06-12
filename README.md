@@ -34,8 +34,7 @@ Once the tables and their fields are designed the code to create the entities ca
 
 ## Version 1.0.7
 
-The version number of Prahlads original repo is 1.0.7. Here are the features of that version. Important: I didn't change the code generation
-stuff. Nor did I add any new code generators. 
+The version number of Prahlads original repo is 1.0.7. Here are the features of that version. Important: I didn't change the code generation stuff. Nor did I add any new code generators. 
 
 - Create tables structures and relationships and represent them as elements on canvas.
 - Drag/Drop the elements on canvas.
