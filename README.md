@@ -4,6 +4,8 @@
 
 # Visual Alchemist
 
+ATTENTION: This is the old version and there will be no further development by me. Visit [DBDesigner](https://github.com/akreienbring/dbdesigner) instead
+
 ##### Table of Contents
 
 1. [Visual Alchemist reloaded](#visual-alchemist-reloaded)
